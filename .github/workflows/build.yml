@@ -1,0 +1,57 @@
+# This workflow will install Python dependencies, run tests and lint with a variety of Python versions
+# For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
+
+name: build
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        python-version: [3.8, 3.9]
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2.1.4
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install Poetry
+        uses: abatilo/actions-poetry@v2.1.0
+      - name: Install dependencies with Poetry
+        run: |
+          poetry install
+      - name: Format code with black
+        run: |
+          poetry run black .
+      - name: Lint with flake8
+        run: |
+          # stop the build if there are Python syntax errors or undefined names
+          poetry run flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+          # exit-zero treats all errors as warnings.
+          poetry run flake8 . --count --exit-zero --max-complexity=10 --statistics
+      - name: Type check with mypy
+        run: |
+          mypy .
+      - name: Test with pytest
+        run: |
+          poetry run pytest tests --cov ./seq2rel --cov-report=xml --cov-config=./.coveragerc
+      - name: Upload coverage to Codecov
+        # We don't want to push coverge for every job in the matrix.
+        # Rather arbitrarily, choose to push on Ubuntu with Python 3.8.
+        if: matrix.python-version == '3.9' && matrix.os == 'ubuntu-latest' && github.event_name == 'push'
+        uses: codecov/codecov-action@v1.0.14
+        with:
+          file: ./coverage.xml
+          # Ignore codecov failures as the codecov server is not very reliable but we don't
+          # want to report a failure in the github UI just because the coverage report failed
+          # to be published.
+          fail_ci_if_error: false

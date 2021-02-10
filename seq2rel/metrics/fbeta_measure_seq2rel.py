@@ -11,7 +11,7 @@ class FBetaMeasureSeq2Rel(FBetaMeasure):
     """A thin wrapper around FBetaMeasure, which computes the precision, recall and F-measure for
     the output a Seq2Rel model. Besides `labels` and `ordered_ents`, the parameters are the same as
     the parent class. For details, please see:
-    [FBetaMeasure](https://github.com/allenai/allennlp/blob/master/allennlp/training/metrics/fbeta_measure.py)
+    [FBetaMeasure](https://github.com/allenai/allennlp/blob/main/allennlp/training/metrics/fbeta_measure.py)
 
     # Parameters
 

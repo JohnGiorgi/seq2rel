@@ -5,9 +5,9 @@ name: build
 
 on:
   push:
-    branches: [ master ]
+    branches: [ main ]
   pull_request:
-    branches: [ master ]
+    branches: [ main ]
 
 jobs:
   build:
@@ -40,7 +40,7 @@ jobs:
           poetry run flake8 . --count --exit-zero --max-complexity=10 --statistics
       - name: Type check with mypy
         run: |
-          mypy .
+          poetry run mypy .
       - name: Test with pytest
         run: |
           poetry run pytest tests --cov ./seq2rel --cov-report=xml --cov-config=./.coveragerc

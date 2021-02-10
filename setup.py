@@ -11,67 +11,58 @@ except ImportError:
 
 import os.path
 
-readme = ""
+readme = ''
 here = os.path.abspath(os.path.dirname(__file__))
-readme_path = os.path.join(here, "README.rst")
+readme_path = os.path.join(here, 'README.rst')
 if os.path.exists(readme_path):
-    with open(readme_path, "rb") as stream:
-        readme = stream.read().decode("utf8")
+    with open(readme_path, 'rb') as stream:
+        readme = stream.read().decode('utf8')
 
 setup(
     long_description=readme,
-    name="seq2rel",
-    version="0.1.0",
-    description="A Python package that makes it easy to use sequence-to-sequence (seq2seq) learning for information extraction.",
-    python_requires="==3.*,>=3.8.0",
+    name='seq2rel',
+    version='0.1.0',
+    description='A Python package that makes it easy to use sequence-to-sequence (seq2seq) learning for information extraction.',
+    python_requires='==3.*,>=3.8.0',
     project_urls={
         "homepage": "https://github.com/johngiorgi/seq2rel",
-        "repository": "https://github.com/johngiorgi/seq2rel",
+        "repository": "https://github.com/johngiorgi/seq2rel"
     },
-    author="johngiorgi",
-    author_email="johnmgiorgi@gmail.com",
-    license="Apache-2.0",
-    keywords="named entity recognition relation extraction information extraction seq2seq",
+    author='johngiorgi',
+    author_email='johnmgiorgi@gmail.com',
+    license='Apache-2.0',
+    keywords='named entity recognition relation extraction information extraction seq2seq',
     classifiers=[
-        "Development Status :: 1 - Planning",
-        "Environment :: Console",
-        "Intended Audience :: Science/Research",
-        "License :: OSI Approved :: Apache Software License",
-        "Operating System :: OS Independent",
-        "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.8",
-        "Programming Language :: Python :: 3.9",
-        "Topic :: Scientific/Engineering :: Artificial Intelligence",
-        "Topic :: Software Development :: Libraries :: Python Modules",
-        "Typing :: Typed",
+        'Development Status :: 1 - Planning', 'Environment :: Console',
+        'Intended Audience :: Science/Research',
+        'License :: OSI Approved :: Apache Software License',
+        'Operating System :: OS Independent',
+        'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3.8',
+        'Programming Language :: Python :: 3.9',
+        'Topic :: Scientific/Engineering :: Artificial Intelligence',
+        'Topic :: Software Development :: Libraries :: Python Modules',
+        'Typing :: Typed'
     ],
     packages=[
-        "seq2rel",
-        "seq2rel.seq2rel",
-        "seq2rel.seq2rel.metrics",
-        "seq2rel.seq2rel.models",
-        "seq2rel.seq2rel.modules",
-        "seq2rel.seq2rel.modules.attention",
+        'seq2rel', 'seq2rel.common', 'seq2rel.data',
+        'seq2rel.data.dataset_readers', 'seq2rel.metrics', 'seq2rel.models',
+        'seq2rel.modules', 'seq2rel.modules.attention'
     ],
     package_dir={"": "."},
     package_data={},
     install_requires=[
-        "allennlp==1.*,>=1.2.2",
-        "allennlp-models==1.*,>=1.2.2",
-        "typer[all]==0.*,>=0.3.2",
+        'allennlp==1.*,>=1.4.1', 'allennlp-models==1.*,>=1.4.1',
+        'typer[all]==0.*,>=0.3.2'
     ],
     extras_require={
         "dev": [
-            "black==20.*,>=20.8.0.b1",
-            "codecov==2.*,>=2.1.10",
-            "coverage==5.*,>=5.3.0",
-            "dephell[full]==0.*,>=0.8.3",
-            "flake8==3.*,>=3.8.4",
-            "hypothesis==5.*,>=5.38.0",
-            "mypy==0.*,>=0.790.0",
-            "pytest==6.*,>=6.1.2",
-            "pytest-cov==2.*,>=2.10.1",
+            "black==20.*,>=20.8.0.b1", "codecov==2.*,>=2.1.10",
+            "coverage==5.*,>=5.4.0", "dephell[full]==0.*,>=0.8.3",
+            "flake8==3.*,>=3.8.4", "hypothesis==6.*,>=6.1.1",
+            "mypy==0.*,>=0.800.0", "pytest==6.*,>=6.2.2",
+            "pytest-cov==2.*,>=2.11.1"
         ],
-        "optuna": ["allennlp-optuna==0.*,>=0.1.3"],
+        "optuna": ["allennlp-optuna==0.*,>=0.1.4"]
     },
 )

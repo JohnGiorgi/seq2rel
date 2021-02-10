@@ -21,7 +21,7 @@ class CopyNetSeq2Rel(CopyNetSeq2Seq):
     This is a thin wrapper around `CopyNetSeq2Seq` to provide any of the modifications necessary to
     use the model for information extraction. Besides `target_tokenizer` and `sequence_based_metric`
     the arguments are identical to `CopyNetSeq2Seq`. For details, please see:
-    [`CopyNetSeq2Seq`](https://github.com/allenai/allennlp-models/blob/master/allennlp_models/generation/models/copynet_seq2seq.py),
+    [`CopyNetSeq2Seq`](https://github.com/allenai/allennlp-models/blob/main/allennlp_models/generation/models/copynet_seq2seq.py),
 
     # Parameters
 

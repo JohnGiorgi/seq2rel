@@ -1,3 +1,2 @@
-This config is borrowed from: https://github.com/allenai/allennlp/blob/main/.coveragerc
 [run]
 omit = tests/*

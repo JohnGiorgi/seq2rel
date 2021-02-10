@@ -1,0 +1,1 @@
+from seq2rel.data.dataset_readers.copynet_seq2rel import CopyNetSeq2RelDatasetReader

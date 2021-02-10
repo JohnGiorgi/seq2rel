@@ -10,7 +10,7 @@ from allennlp.modules.seq2seq_encoders import PassThroughEncoder
 from allennlp.training.metrics import Metric
 from allennlp_models.generation.models import CopyNetSeq2Seq
 from overrides import overrides
-from seq2rel.common.util import sanitize
+from seq2rel.common.util import sanitize_text
 
 logger = logging.getLogger(__name__)
 
@@ -18,8 +18,8 @@ logger = logging.getLogger(__name__)
 @Model.register("copynet_seq2rel")
 class CopyNetSeq2Rel(CopyNetSeq2Seq):
     """
-    This is a thin wrapper around CopyNetSeq2Seq to provide any of the modifications necessary to
-    use the class for information extraction. Besides `target_tokenizer` and `sequence_based_metric`
+    This is a thin wrapper around `CopyNetSeq2Seq` to provide any of the modifications necessary to
+    use the model for information extraction. Besides `target_tokenizer` and `sequence_based_metric`
     the arguments are identical to `CopyNetSeq2Seq`. For details, please see:
     [`CopyNetSeq2Seq`](https://github.com/allenai/allennlp-models/blob/master/allennlp_models/generation/models/copynet_seq2seq.py),
 
@@ -49,8 +49,8 @@ class CopyNetSeq2Rel(CopyNetSeq2Seq):
         **kwargs,  # type: ignore
     ) -> None:
         # I am expecting most users to use a PretrainedTransformerEmbedder as source_embedder,
-        # in which case it is annoying to have to specify an input_dim. Assume, if the user
-        # does not specify an encoder, that they want a PassThroughEncoder.
+        # in which case we don't need an encoder and it is annoying to have to specify an input_dim.
+        # Assume, if the user does not specify an encoder, that they want a PassThroughEncoder.
         encoder = encoder or PassThroughEncoder(source_embedder.get_output_dim())
         super().__init__(source_embedder=source_embedder, encoder=encoder, **kwargs)
         self._target_tokenizer: Tokenizer = target_tokenizer
@@ -72,7 +72,9 @@ class CopyNetSeq2Rel(CopyNetSeq2Seq):
     ) -> Dict[str, torch.Tensor]:
         """
         Make foward pass with decoder logic for producing the entire target sequence.
+
         # Parameters
+
         source_tokens : `TextFieldTensors`, required
             The output of `TextField.as_array()` applied on the source `TextField`. This will be
             passed through a `TextFieldEmbedder` and then through an encoder.
@@ -93,7 +95,9 @@ class CopyNetSeq2Rel(CopyNetSeq2Seq):
         target_token_ids : `torch.Tensor`, optional (default = `None`)
             A tensor of shape `(batch_size, target_sequence_length)` which indicates which
             tokens in the target sequence match tokens in the source sequence.
+
         # Returns
+
         `Dict[str, torch.Tensor]`
         """
         state = self._encode(source_tokens)
@@ -154,19 +158,21 @@ class CopyNetSeq2Rel(CopyNetSeq2Seq):
         )
         output_dict["predicted_tokens"] = predicted_tokens
 
-        # It is helpful to see the models predictions as a string.
+        # We need the models predictions as a string in order to compute the sequence metrics.
         # Depending on the tokenizer used, we try to join the tokens into a string
         # in the smartest way possible. As a fallback, we join on whitespace.
         predicted_strings: List[str]
         if isinstance(self._target_tokenizer, PretrainedTransformerTokenizer):
 
             def _tokens_to_string(tokens: List[str]) -> str:
-                return sanitize(self._target_tokenizer.tokenizer.convert_tokens_to_string(tokens))
+                return sanitize_text(
+                    self._target_tokenizer.tokenizer.convert_tokens_to_string(tokens)
+                )
 
         else:
 
             def _tokens_to_string(tokens: List[str]) -> str:
-                return sanitize(" ".join(tokens))
+                return sanitize_text(" ".join(tokens))
 
         predicted_strings = [_tokens_to_string(tokens) for tokens in predicted_tokens]
         output_dict["predicted_strings"] = predicted_strings

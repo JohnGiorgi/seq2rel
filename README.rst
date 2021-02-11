@@ -1,4 +1,25 @@
 
+
+.. image:: https://github.com/JohnGiorgi/seq2rel/workflows/build/badge.svg
+   :target: https://github.com/JohnGiorgi/seq2rel/workflows/build/badge.svg
+   :alt: build
+
+
+.. image:: https://codecov.io/gh/JohnGiorgi/seq2rel/branch/master/graph/badge.svg
+   :target: https://codecov.io/gh/JohnGiorgi/seq2rel
+   :alt: codecov
+
+
+.. image:: http://www.mypy-lang.org/static/mypy_badge.svg
+   :target: http://mypy-lang.org/
+   :alt: Checked with mypy
+
+
+.. image:: https://img.shields.io/github/license/JohnGiorgi/seq2rel?color=blue
+   :target: https://img.shields.io/github/license/JohnGiorgi/seq2rel?color=blue
+   :alt: GitHub
+
+
 seq2rel
 =======
 

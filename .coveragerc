@@ -1,2 +1,2 @@
 [run]
-source = seq2rel
+omit = tests/*

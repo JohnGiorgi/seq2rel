@@ -43,7 +43,7 @@ jobs:
           poetry run mypy .
       - name: Test with pytest
         run: |
-          poetry run pytest tests --cov .seq2rel --cov-report=xml --cov-config=.coveragerc
+          poetry run pytest tests --cov-report=xml --cov ./seq2rel --cov-config=.coveragerc
       - name: Upload coverage to Codecov
         # We don't want to push coverge for every job in the matrix.
         # Rather arbitrarily, choose to push on Ubuntu with Python 3.9.

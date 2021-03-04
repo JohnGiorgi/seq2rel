@@ -697,7 +697,7 @@ lxml = ["lxml"]
 
 [[package]]
 name = "hypothesis"
-version = "6.4.0"
+version = "6.4.2"
 description = "A library for property-based testing"
 category = "dev"
 optional = false
@@ -1715,7 +1715,7 @@ optuna = ["allennlp-optuna"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "381dc85858dbe58637dc94ecd0576556b9ef6b5affffb1daad358ed3299a5d9e"
+content-hash = "bcc6907b3ce39b49972dbfadd6480667e544bc6a4c828a84c63e001df2a75a09"
 
 [metadata.files]
 aiofiles = [
@@ -2049,8 +2049,8 @@ html5lib = [
     {file = "html5lib-1.1.tar.gz", hash = "sha256:b2e5b40261e20f354d198eae92afc10d750afb487ed5e50f9c4eaf07c184146f"},
 ]
 hypothesis = [
-    {file = "hypothesis-6.4.0-py3-none-any.whl", hash = "sha256:89e3b3c4252f07d1135f67679ee94ace507155242868d56e24640b445046d182"},
-    {file = "hypothesis-6.4.0.tar.gz", hash = "sha256:c41aed6cd183f5fe3f54613b3fc86c8eccd0d1dd158474dd424133fc038b94a3"},
+    {file = "hypothesis-6.4.2-py3-none-any.whl", hash = "sha256:5af48511a5fa0265f48fbd613131729691ddcf1b5631b7df0596a4db86b082b2"},
+    {file = "hypothesis-6.4.2.tar.gz", hash = "sha256:c8e2360a423fee23f3af9797eb7ccdbdb98a943d5cf80c565af52fc6023a9613"},
 ]
 idna = [
     {file = "idna-2.10-py2.py3-none-any.whl", hash = "sha256:b97d804b1e9b523befed77c48dacec60e6dcb0b5391d57af6a65a312a90648c0"},

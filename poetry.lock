@@ -697,7 +697,7 @@ lxml = ["lxml"]
 
 [[package]]
 name = "hypothesis"
-version = "6.4.0"
+version = "6.6.0"
 description = "A library for property-based testing"
 category = "dev"
 optional = false
@@ -1715,7 +1715,7 @@ optuna = ["allennlp-optuna"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "381dc85858dbe58637dc94ecd0576556b9ef6b5affffb1daad358ed3299a5d9e"
+content-hash = "6f00be6f069dfdf10b5b487ed8181a0c3b33588418127d3c713952ee2eb27117"
 
 [metadata.files]
 aiofiles = [
@@ -1762,6 +1762,7 @@ aiohttp = [
     {file = "aiohttp-3.7.3.tar.gz", hash = "sha256:9c1a81af067e72261c9cbe33ea792893e83bc6aa987bfbd6fdc1e5e7b22777c4"},
 ]
 alembic = [
+    {file = "alembic-1.5.4-py2.py3-none-any.whl", hash = "sha256:422883bf429105b9b5f1fece6d79da64ed1ee648af2ef256d9b52edac236bc46"},
     {file = "alembic-1.5.4.tar.gz", hash = "sha256:e871118b6174681f7e9a9ea67cfcae954c6d18e05b49c6b17f662d2530c76bf5"},
 ]
 allennlp = [
@@ -2049,8 +2050,8 @@ html5lib = [
     {file = "html5lib-1.1.tar.gz", hash = "sha256:b2e5b40261e20f354d198eae92afc10d750afb487ed5e50f9c4eaf07c184146f"},
 ]
 hypothesis = [
-    {file = "hypothesis-6.4.0-py3-none-any.whl", hash = "sha256:89e3b3c4252f07d1135f67679ee94ace507155242868d56e24640b445046d182"},
-    {file = "hypothesis-6.4.0.tar.gz", hash = "sha256:c41aed6cd183f5fe3f54613b3fc86c8eccd0d1dd158474dd424133fc038b94a3"},
+    {file = "hypothesis-6.6.0-py3-none-any.whl", hash = "sha256:6a23d0c342d01a88f3b30b54ad459246beb01b0ce28d865cf06623a9209aac03"},
+    {file = "hypothesis-6.6.0.tar.gz", hash = "sha256:0f6b970178b7676267029eb5d352ea7ff4fda4533d2d2eaa3adbda660db54b65"},
 ]
 idna = [
     {file = "idna-2.10-py2.py3-none-any.whl", hash = "sha256:b97d804b1e9b523befed77c48dacec60e6dcb0b5391d57af6a65a312a90648c0"},
@@ -2083,6 +2084,7 @@ m2r = [
     {file = "m2r-0.2.1.tar.gz", hash = "sha256:bf90bad66cda1164b17e5ba4a037806d2443f2a4d5ddc9f6a5554a0322aaed99"},
 ]
 mako = [
+    {file = "Mako-1.1.4-py2.py3-none-any.whl", hash = "sha256:aea166356da44b9b830c8023cd9b557fa856bd8b4035d6de771ca027dfc5cc6e"},
     {file = "Mako-1.1.4.tar.gz", hash = "sha256:17831f0b7087c313c0ffae2bcbbd3c1d5ba9eeac9c38f2eb7b50e8c99fe9d5ab"},
 ]
 markupsafe = [

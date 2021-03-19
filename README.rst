@@ -82,4 +82,29 @@ Coming soon.
 Inference
 ^^^^^^^^^
 
-Coming soon.
+To use the model as a library, import ``Seq2Rel`` and pass it some text (it accepts both strings and lists of strings)
+
+.. code-block:: python
+
+   from seq2rel import Seq2Rel
+
+   # Pretrained models stored in GitHub. Downloaded and cached automatically. This model is ~500mb.
+   pretrained_model = "ade"
+
+   # Models are loaded via a dead-simple interface
+   seq2rel = Seq2Rel(pretrained_model)
+
+   # Extremely flexible inputs. User can provide...
+   # - a string
+   # - a list of strings
+   # - a text file (local path or URL)
+   input_text = "Ciprofloxacin-induced renal insufficiency in cystic fibrosis."
+
+   seq2rel(input_text)
+   >>> ['<ADE> ciprofloxacin <DRUG> renal insufficiency <EFFECT> </ADE>']
+
+See the list of available ``PRETRAINED_MODELS`` in `seq2rel/seq2rel.py <seq2rel/seq2rel.py>`_
+
+.. code-block:: bash
+
+   python -c "from seq2rel import PRETRAINED_MODELS ; print(list(PRETRAINED_MODELS.keys()))"

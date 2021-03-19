@@ -58,8 +58,8 @@ setup(
     extras_require={
         "dev": [
             "black==20.*,>=20.8.0.b1", "codecov==2.*,>=2.1.10",
-            "coverage==5.*,>=5.4.0", "dephell[full]==0.*,>=0.8.3",
-            "flake8==3.*,>=3.8.4", "hypothesis==6.*,>=6.3.0",
+            "coverage==5.*,>=5.5.0", "dephell[full]==0.*,>=0.8.3",
+            "flake8==3.*,>=3.9.0", "hypothesis==6.*,>=6.8.1",
             "mypy==0.*,>=0.812.0", "pytest==6.*,>=6.2.2",
             "pytest-cov==2.*,>=2.11.1"
         ],

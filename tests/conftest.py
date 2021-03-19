@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Tuple
 
 import pytest
 from seq2rel import Seq2Rel
@@ -12,7 +12,7 @@ def pretrained_ade_model() -> Seq2Rel:
 
 
 @pytest.fixture()
-def ade_examples() -> List[str]:
+def ade_examples() -> Tuple[List[str], List[str]]:
     texts = [
         "Vincristine induced cranial polyneuropathy.",
         "Intravenous diazepam exacerbated the seizures.",

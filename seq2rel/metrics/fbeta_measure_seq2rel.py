@@ -1,9 +1,9 @@
-import re
-from typing import Dict, List, Optional, Set, Tuple, Iterable
+from typing import List, Optional
 
 import torch
 from allennlp.training.metrics.fbeta_measure import FBetaMeasure
 from allennlp.training.metrics.metric import Metric
+from seq2rel.common import util
 
 
 @Metric.register("fbeta_seq2rel")
@@ -42,10 +42,6 @@ class FBetaMeasureSeq2Rel(FBetaMeasure):
         self._num_classes = len(self._labels)
         self._ordered_ents = ordered_ents
 
-        # RegEx patterns to split serialized string representations into entities and relations.
-        self._ent_pattern = re.compile(r"(?:\s?)(.*?)(?:\s?)<([A-Z][A-Z0-9]*)\b[^>]*>")
-        self._rel_pattern = re.compile(r"<([A-Z][A-Z0-9]*)\b[^>]*>(.*?)</\1>")
-
     def __call__(self, predictions: List[str], gold_labels: List[str]) -> None:
         """
         # Parameters
@@ -61,9 +57,6 @@ class FBetaMeasureSeq2Rel(FBetaMeasure):
                 f" Got {len(gold_labels)} and {len(predictions)}."
             )
 
-        pred_rels = self._get_ents_and_rels(predictions)
-        gold_rels = self._get_ents_and_rels(gold_labels)
-
         # It means we call this metric at the first time
         # when `self._true_positive_sum` is None.
         if self._true_positive_sum is None:  # type: ignore
@@ -72,51 +65,34 @@ class FBetaMeasureSeq2Rel(FBetaMeasure):
             self._pred_sum = torch.zeros(self._num_classes)
             self._total_sum = torch.zeros(self._num_classes)
 
+        pred_rels = util.deserialize_annotations(predictions)
+        gold_rels = util.deserialize_annotations(gold_labels)
+
         for pred, gold in zip(pred_rels, gold_rels):
-            for rel_type, gold_ents in gold.items():
-                if rel_type not in self._str_labels:
-                    continue
-                class_index = self._str_labels.index(rel_type)
-                pred_ents = pred.get(rel_type, set())
-                self._true_positive_sum[class_index] += len(pred_ents & gold_ents)  # type: ignore
-                self._pred_sum[class_index] += len(pred_ents)
-                self._true_sum[class_index] += len(gold_ents)
-        # We need to set the total sum to be compatible with the parent class.
-        # Because we do not support masking, it is equal to the "true sum".
-        self._total_sum = self._true_sum.detach().clone()
+            if not gold:
+                for rel_label, pred_ents in pred.items():
+                    if self._labels and rel_label not in self._str_labels:
+                        continue
+                    class_index = self._str_labels.index(rel_label)
+                    pred_ents = set(pred_ents)
+                    self._pred_sum[class_index] += len(pred_ents)
+            else:
+                for rel_label, gold_ents in gold.items():
+                    if self._labels and rel_label not in self._str_labels:
+                        continue
+                    class_index = self._str_labels.index(rel_label)
+                    pred_ents = pred.get(rel_label, [])
+                    # Convert everything to a set, as we don't care about
+                    # duplicates or the order of decoded relations.
+                    pred_ents = set(pred_ents)
+                    gold_ents = set(gold_ents)
 
-    def _get_ents_and_rels(
-        self, serialized_strings: List[str]
-    ) -> List[Dict[str, Set[Tuple[Tuple[str]]]]]:
-        """Returns dictionaries containing the entities and the relations that are present
-        in the `serialized_strings`, the string serialized representation of entities and relations.
-
-        # Parameters
-
-        serialized_strings: `list`
-            A list containing the string serialized representation of entities and relations.
-
-        # Returns
-
-        A list of dictionaries, keyed by class name, containing the relations of the string
-        serialized representations `serialized_strings`.
-
-        """
-        parsed_rels = []  # type: ignore
-        for string in serialized_strings:
-            parsed_rels.append({})
-            for rel in self._rel_pattern.findall(string):
-                rel_type, rel_string = rel
-                ents: Iterable[str] = self._ent_pattern.findall(rel_string)
-                # We can enforce order by casting the entities as a tuple.
-                ents = tuple(ents) if self._ordered_ents else set(ents)
-                if rel_type in parsed_rels[-1]:
-                    parsed_rels[-1][rel_type].add(ents)
-                else:
-                    parsed_rels[-1][rel_type] = {
-                        ents,
-                    }
-        return parsed_rels
+                    self._true_positive_sum[class_index] += len(pred_ents & gold_ents)  # type: ignore
+                    self._pred_sum[class_index] += len(pred_ents)
+                    self._true_sum[class_index] += len(gold_ents)
+            # We need to set the total sum to be compatible with the parent class.
+            # Because we do not support masking, it is equal to the "true sum".
+            self._total_sum = self._true_sum.detach().clone()
 
 
 @Metric.register("f1_seq2rel")

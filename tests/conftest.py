@@ -21,6 +21,9 @@ def ade_examples() -> Tuple[List[str], List[str]]:
     annotations = [
         "<ADE> vincristine <DRUG> cranial polyneuropathy <EFFECT> </ADE>",
         "<ADE> diazepam <DRUG> seizures <EFFECT> </ADE>",
-        "<ADE> l - thyroxine <DRUG> acute myocardial infarction <EFFECT> </ADE> <ADE> l - thyroxine <DRUG> coronary spasm <EFFECT> </ADE>",
+        (
+            "<ADE> l - thyroxine <DRUG> acute myocardial infarction <EFFECT> </ADE>"
+            " <ADE> l - thyroxine <DRUG> coronary spasm <EFFECT> </ADE>"
+        ),
     ]
     return texts, annotations

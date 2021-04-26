@@ -101,7 +101,7 @@ To use the model as a library, import ``Seq2Rel`` and pass it some text (it acce
    input_text = "Ciprofloxacin-induced renal insufficiency in cystic fibrosis."
 
    seq2rel(input_text)
-   >>> ['<ADE> ciprofloxacin <DRUG> renal insufficiency <EFFECT> </ADE>']
+   >>> ['@ADE@ ciprofloxacin @DRUG@ renal insufficiency @EFFECT@ @EOR@']
 
 See the list of available ``PRETRAINED_MODELS`` in `seq2rel/seq2rel.py <seq2rel/seq2rel.py>`_
 

@@ -1,6 +1,6 @@
 # seq2rel
 
-![build](https://github.com/JohnGiorgi/seq2rel/workflows/build/badge.svg)
+[![ci](https://github.com/JohnGiorgi/seq2rel/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/JohnGiorgi/seq2rel/actions/workflows/ci.yml)
 [![codecov](https://codecov.io/gh/JohnGiorgi/seq2rel/branch/main/graph/badge.svg?token=RKJ7EV4WQK)](https://codecov.io/gh/JohnGiorgi/seq2rel)
 [![Checked with mypy](http://www.mypy-lang.org/static/mypy_badge.svg)](http://mypy-lang.org/)
 ![GitHub](https://img.shields.io/github/license/JohnGiorgi/seq2rel?color=blue)
@@ -9,7 +9,7 @@ A Python package that makes it easy to use sequence-to-sequence (seq2seq) learni
 
 ## Installation
 
-This repository requires Python 3.8 or later. The preferred way to install is via pip:
+This repository requires Python 3.7.1 or later. The preferred way to install is via pip:
 
 ```
 pip install seq2rel

@@ -1,9 +1,9 @@
+# seq2rel
+
 ![build](https://github.com/JohnGiorgi/seq2rel/workflows/build/badge.svg)
 [![codecov](https://codecov.io/gh/JohnGiorgi/seq2rel/branch/master/graph/badge.svg)](https://codecov.io/gh/JohnGiorgi/seq2rel)
 [![Checked with mypy](http://www.mypy-lang.org/static/mypy_badge.svg)](http://mypy-lang.org/)
 ![GitHub](https://img.shields.io/github/license/JohnGiorgi/seq2rel?color=blue)
-
-# seq2rel
 
 A Python package that makes it easy to use sequence-to-sequence (seq2seq) learning for information extraction.
 
@@ -75,7 +75,7 @@ seq2rel = Seq2Rel(pretrained_model)
 input_text = "Ciprofloxacin-induced renal insufficiency in cystic fibrosis."
 
 seq2rel(input_text)
->>> ['<ADE> ciprofloxacin <DRUG> renal insufficiency <EFFECT> </ADE>']
+>>> ['@ADE@ ciprofloxacin @DRUG@ renal insufficiency @EFFECT@ @EOR@']
 ```
 
 See the list of available `PRETRAINED_MODELS` in [seq2rel/seq2rel.py](seq2rel/seq2rel.py)

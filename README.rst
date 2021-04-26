@@ -1,4 +1,7 @@
 
+seq2rel
+=======
+
 
 .. image:: https://github.com/JohnGiorgi/seq2rel/workflows/build/badge.svg
    :target: https://github.com/JohnGiorgi/seq2rel/workflows/build/badge.svg
@@ -19,9 +22,6 @@
    :target: https://img.shields.io/github/license/JohnGiorgi/seq2rel?color=blue
    :alt: GitHub
 
-
-seq2rel
-=======
 
 A Python package that makes it easy to use sequence-to-sequence (seq2seq) learning for information extraction.
 

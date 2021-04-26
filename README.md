@@ -1,7 +1,7 @@
 # seq2rel
 
 ![build](https://github.com/JohnGiorgi/seq2rel/workflows/build/badge.svg)
-[![codecov](https://codecov.io/gh/JohnGiorgi/seq2rel/branch/master/graph/badge.svg)](https://codecov.io/gh/JohnGiorgi/seq2rel)
+[![codecov](https://codecov.io/gh/JohnGiorgi/seq2rel/branch/main/graph/badge.svg?token=RKJ7EV4WQK)](https://codecov.io/gh/JohnGiorgi/seq2rel)
 [![Checked with mypy](http://www.mypy-lang.org/static/mypy_badge.svg)](http://mypy-lang.org/)
 ![GitHub](https://img.shields.io/github/license/JohnGiorgi/seq2rel?color=blue)
 

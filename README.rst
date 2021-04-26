@@ -8,7 +8,7 @@ seq2rel
    :alt: build
 
 
-.. image:: https://codecov.io/gh/JohnGiorgi/seq2rel/branch/master/graph/badge.svg
+.. image:: https://codecov.io/gh/JohnGiorgi/seq2rel/branch/main/graph/badge.svg?token=RKJ7EV4WQK
    :target: https://codecov.io/gh/JohnGiorgi/seq2rel
    :alt: codecov
 

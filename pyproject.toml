@@ -31,9 +31,9 @@ exclude = ["tests", "training_config"]
 [tool.poetry.dependencies]
 python = "^3.7.1"
 typer = {extras = ["all"], version = "^0.3.2"}
-allennlp = "^1.4.1"
-allennlp-models = "^1.4.1"
-allennlp-optuna = { version = "^0.1.4", optional = true }
+allennlp = "^2.4.0"
+allennlp-models = "^2.4.0"
+allennlp-optuna = { version = "^0.1.5", optional = true }
 validators = "^0.18.2"
 
 [tool.poetry.extras]

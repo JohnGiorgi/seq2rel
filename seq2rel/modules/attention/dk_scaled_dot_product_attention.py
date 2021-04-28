@@ -5,14 +5,14 @@ from allennlp.modules.attention.attention import Attention
 from overrides import overrides
 
 
-@Attention.register("scaled_dot_product")
-class ScaledDotProductAttention(Attention):
+@Attention.register("dk_scaled_dot_product")
+class DkScaledDotProductAttention(Attention):
     """
     Computes attention between two tensors using scaled dot product.
     # Reference: [Attention Is All You Need (Vaswani et al, 2017)]
     # (https://api.semanticscholar.org/CorpusID:13756489)
 
-    Registered as an `Attention` with name "scaled_dot_product".
+    Registered as an `Attention` with name "dk_scaled_dot_product".
     """
 
     @overrides

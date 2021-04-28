@@ -58,8 +58,8 @@ setup(
     package_dir={"": "."},
     package_data={},
     install_requires=[
-        "allennlp==1.*,>=1.4.1",
-        "allennlp-models==1.*,>=1.4.1",
+        "allennlp==2.*,>=2.4.0",
+        "allennlp-models==2.*,>=2.4.0",
         "typer[all]==0.*,>=0.3.2",
         "validators==0.*,>=0.18.2",
     ],
@@ -75,6 +75,6 @@ setup(
             "pytest==6.*,>=6.2.3",
             "pytest-cov==2.*,>=2.11.1",
         ],
-        "optuna": ["allennlp-optuna==0.*,>=0.1.4"],
+        "optuna": ["allennlp-optuna==0.*,>=0.1.5"],
     },
 )

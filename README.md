@@ -45,7 +45,15 @@ poetry install
 
 ### Preparing a dataset
 
-Coming soon.
+Datasets are tab-seperated files, where each example is contained on its own line. The first column contains the text, and the last column contains the relation. Relations themselves must be serialized to strings.
+
+Take the following example, which denotes an _adverse drug event_ (`"@ADE@"`) between the drug _benzodiazepine_ (`"@DRUG@"`) and the effect _coma_ (`"@EFFECT@`")
+
+```
+A review of the literature showed no previous description of this pattern in benzodiazepine coma.	@ADE@ benzodiazepine @DRUG@ coma @EFFECT@ @EOR@
+```
+
+For convenience, we provide a second package, [seq2rel-ds](https://github.com/JohnGiorgi/seq2rel-ds), which makes it easy to generate data in this format for various popular corpora.
 
 ### Training
 

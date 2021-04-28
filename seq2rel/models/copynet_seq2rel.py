@@ -10,7 +10,7 @@ from allennlp.modules.seq2seq_encoders import PassThroughEncoder
 from allennlp.training.metrics import Metric
 from allennlp_models.generation.models import CopyNetSeq2Seq
 from overrides import overrides
-from seq2rel.common.util import sanitize_text
+from seq2rel.common.util import sanitize_text, END_OF_REL_SYMBOL, COREF_SEP_SYMBOL
 
 logger = logging.getLogger(__name__)
 
@@ -52,10 +52,15 @@ class CopyNetSeq2Rel(CopyNetSeq2Seq):
         # in which case we don't need an encoder and it is annoying to have to specify an input_dim.
         # Assume, if the user does not specify an encoder, that they want a PassThroughEncoder.
         encoder = encoder or PassThroughEncoder(source_embedder.get_output_dim())
+
         super().__init__(source_embedder=source_embedder, encoder=encoder, **kwargs)
+
+        # Any seq2rel specific setup goes here
         self._target_tokenizer: Tokenizer = target_tokenizer
         self._sequence_based_metric = sequence_based_metric
-
+        # Add the two structural tokens we use to denote coreferent mentions and end of relations
+        _ = self.vocab.add_token_to_namespace(END_OF_REL_SYMBOL, self._target_namespace)
+        _ = self.vocab.add_token_to_namespace(COREF_SEP_SYMBOL, self._target_namespace)
         # The parent class initializes this to BLEU, but we aren't interested
         # in "tensor based metrics", so revert it to the users input.
         self._tensor_based_metric = tensor_based_metric

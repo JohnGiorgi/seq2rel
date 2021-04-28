@@ -45,7 +45,7 @@ poetry install
 
 ### Preparing a dataset
 
-Datasets are tab-seperated files, where each example is contained on its own line, the first column contains the text, and the last column contains the relation. Relations themselves must be serialized to strings.
+Datasets are tab-seperated files, where each example is contained on its own line. The first column contains the text, and the last column contains the relation. Relations themselves must be serialized to strings.
 
 Take the following example, which denotes an _adverse drug event_ (`"@ADE@"`) between the drug _benzodiazepine_ (`"@DRUG@"`) and the effect _coma_ (`"@EFFECT@`")
 

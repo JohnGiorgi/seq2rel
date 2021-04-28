@@ -18,21 +18,6 @@ class CopyNetSeq2RelDatasetReader(CopyNetDatasetReader):
     necessary to use the dataset reader for information extraction. The arguments are identical to
     `CopyNetSeq2Seq`. For details, please see:
     [`CopyNetSeq2Seq`](https://github.com/allenai/allennlp-models/blob/main/allennlp_models/generation/dataset_readers/copynet_seq2seq.py),
-
-    # Parameters
-
-    target_namespace : `str`, required
-        The vocab namespace for the targets. This needs to be passed to the dataset reader
-        in order to construct the NamespaceSwappingField.
-    source_tokenizer : `Tokenizer`, optional
-        Tokenizer to use to split the input sequences into words or other kinds of tokens. Defaults
-        to `SpacyTokenizer()`.
-    target_tokenizer : `Tokenizer`, optional
-        Tokenizer to use to split the output sequences (during training) into words or other kinds
-        of tokens. Defaults to `source_tokenizer`.
-    source_token_indexers : `Dict[str, TokenIndexer]`, optional
-        Indexers used to define input (source side) token representations. Defaults to
-        `{"tokens": SingleIdTokenIndexer()}`.
     """
 
     def __init__(
@@ -52,7 +37,7 @@ class CopyNetSeq2RelDatasetReader(CopyNetDatasetReader):
         self, source_string: str, target_string: str = None
     ) -> Instance:  # type: ignore
         # We have to add a space in front of the source/target strings in order to achieve
-        # consistant tokenization with certain tokenizers, like GPT-2. Enforce this behavior here.
+        # consistant tokenization with certain tokenizers, like GPT. Enforce this behavior here.
         # See: https://github.com/huggingface/transformers/issues/1196
         source_string = " " + source_string.lstrip()
         if target_string:

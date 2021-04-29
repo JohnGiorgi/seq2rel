@@ -37,7 +37,7 @@ class Seq2Rel:
     input_text = "Ciprofloxacin-induced renal insufficiency in cystic fibrosis."
 
     seq2rel(input_text)
-    >>> ['<ADE> ciprofloxacin <DRUG> renal insufficiency <EFFECT> </ADE>']
+    >>> ['@ADE@ ciprofloxacin @DRUG@ renal insufficiency @EFFECT@ @EOR@']
     ```
 
     # Parameters
@@ -75,9 +75,12 @@ class Seq2Rel:
             If given, the `inputs` will be batched before embedding.
         """
         if isinstance(inputs, str):
-            if Path(inputs).is_file() or url(inputs):
-                inputs = Path(cached_path(inputs)).read_text().split("\n")
-            else:
+            try:
+                if Path(inputs).is_file() or url(inputs):
+                    inputs = Path(cached_path(inputs)).read_text().split("\n")
+                else:
+                    inputs = [inputs]
+            except OSError:
                 inputs = [inputs]
 
         if batch_size is None:

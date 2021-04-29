@@ -75,12 +75,9 @@ class Seq2Rel:
             If given, the `inputs` will be batched before embedding.
         """
         if isinstance(inputs, str):
-            try:
-                if Path(inputs).is_file() or url(inputs):
-                    inputs = Path(cached_path(inputs)).read_text().split("\n")
-                else:
-                    inputs = [inputs]
-            except OSError:
+            if Path(inputs).is_file() or url(inputs):
+                inputs = Path(cached_path(inputs)).read_text().split("\n")
+            else:
                 inputs = [inputs]
 
         if batch_size is None:

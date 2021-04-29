@@ -6,6 +6,7 @@ from allennlp.common import util as common_util
 from allennlp.common.file_utils import cached_path
 from allennlp.models.archival import load_archive
 from allennlp.predictors import Predictor
+from more_itertools import chunked
 from validators.url import url
 
 from seq2rel.common.util import sanitize_text
@@ -88,10 +89,8 @@ class Seq2Rel:
             batch_size = len(inputs)
 
         predicted_strings = []
-        for i in range(0, len(inputs), batch_size):
-            batch_json = [
-                {"source": sanitize_text(input_)} for input_ in inputs[i : i + batch_size]
-            ]
+        for batch in chunked(inputs, batch_size):
+            batch_json = [{"source": sanitize_text(example)} for example in batch]
             outputs = self._predictor.predict_batch_json(batch_json)
             outputs = [output[self._output_dict_field] for output in outputs]
             predicted_strings.extend(outputs)

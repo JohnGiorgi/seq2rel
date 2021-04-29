@@ -29,6 +29,7 @@ def test_deserialize_annotation() -> None:
     # - non-empty string with no relation
     # - a single relation string
     # - a multiple relation string
+    # - a more complicated relation type with non-alpha-numeric characters
     serialized_annotations = [
         "",
         "I don't contain anything of interest!",
@@ -38,6 +39,7 @@ def test_deserialize_annotation() -> None:
             " @ADE@ latanoprost @DRUG@ cystoid macula edema @EFFECT@ @EOR@"
             " @CID@ methamphetamine; meth @CHEMICAL@ psychosis; psychotic disorders @DISEASE@ @EOR@"
         ),
+        "@LOCATED_IN_THE_ADMINISTRATIVE_TERRITORIAL_ENTITY@ pasay city @LOC@ metro manila @LOC@ @EOR@",
     ]
 
     # Check that we can call the function of a list of strings
@@ -55,6 +57,11 @@ def test_deserialize_annotation() -> None:
                     ("methamphetamine; meth", "CHEMICAL"),
                     ("psychosis; psychotic disorders", "DISEASE"),
                 )
+            ],
+        },
+        {
+            "LOCATED_IN_THE_ADMINISTRATIVE_TERRITORIAL_ENTITY": [
+                (("pasay city", "LOC"), ("metro manila", "LOC"))
             ],
         },
     ]

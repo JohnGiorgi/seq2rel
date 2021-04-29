@@ -3,8 +3,8 @@ from typing import Any, Dict, List, Union
 
 END_OF_REL_SYMBOL = "@EOR@"
 COREF_SEP_SYMBOL = ";"
-ENT_PATTERN = re.compile(r"(?:\s?)(.*?)(?:\s?)@([A-Z][A-Z0-9]*)\b[^@]*@")
-REL_PATTERN = re.compile(fr"@([A-Z][A-Z0-9]*)\b[^@]*@(.*?){END_OF_REL_SYMBOL}")
+ENT_PATTERN = re.compile(r"(?:\s?)(.*?)(?:\s?)@([^\s]*)\b[^@]*@")
+REL_PATTERN = re.compile(fr"@([^\s]*)\b[^@]*@(.*?){END_OF_REL_SYMBOL}")
 
 
 def sanitize_text(text: str, lowercase: bool = False) -> str:

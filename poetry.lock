@@ -2127,7 +2127,7 @@ optuna = ["allennlp-optuna"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.7.1"
-content-hash = "2f7dd80dec9bdc7fc672be236db0ac75e0d7a0f1e0559a21d9da6d20596f0bc2"
+content-hash = "235b6858a396c1555bc4ba5c407a57d6231e5759af2cddfe38556121da198429"
 
 [metadata.files]
 aiofiles = [

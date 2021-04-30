@@ -60,12 +60,13 @@ setup(
     install_requires=[
         "allennlp==2.*,>=2.4.0",
         "allennlp-models==2.*,>=2.4.0",
+        "more-itertools==8.*,>=8.7.0",
         "typer[all]==0.*,>=0.3.2",
         "validators==0.*,>=0.18.2",
     ],
     extras_require={
         "dev": [
-            "black==20.*,>=20.8.0.b1",
+            "black==21.*,>=21.4.0.b2",
             "codecov==2.*,>=2.1.10",
             "coverage==5.*,>=5.5.0",
             "dephell[full]==0.*,>=0.8.3",

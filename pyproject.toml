@@ -41,7 +41,7 @@ more-itertools = "^8.7.0"
 optuna = ["allennlp-optuna"]
 
 [tool.poetry.dev-dependencies]
-black = "^20.8b1"
+black = "^21.4b2"
 flake8 = "^3.9.1"
 hypothesis = "^6.10.0"
 mypy = "^0.812"

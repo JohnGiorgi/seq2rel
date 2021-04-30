@@ -1,3 +1,4 @@
+import copy
 import logging
 from typing import Any, Dict, List
 
@@ -10,7 +11,7 @@ from allennlp.modules.seq2seq_encoders import PassThroughEncoder
 from allennlp.training.metrics import Metric
 from allennlp_models.generation.models import CopyNetSeq2Seq
 from overrides import overrides
-from seq2rel.common.util import sanitize_text, END_OF_REL_SYMBOL, COREF_SEP_SYMBOL
+from seq2rel.common.util import SPECIAL_TARGET_TOKENS, sanitize_text
 
 logger = logging.getLogger(__name__)
 
@@ -58,9 +59,9 @@ class CopyNetSeq2Rel(CopyNetSeq2Seq):
         # Any seq2rel specific setup goes here
         self._target_tokenizer: Tokenizer = target_tokenizer
         self._sequence_based_metric = sequence_based_metric
-        # Add the two structural tokens we use to denote coreferent mentions and end of relations
-        _ = self.vocab.add_token_to_namespace(END_OF_REL_SYMBOL, self._target_namespace)
-        _ = self.vocab.add_token_to_namespace(COREF_SEP_SYMBOL, self._target_namespace)
+        # Add any structural tokens we use in the serialization
+        special_target_tokens = copy.deepcopy(SPECIAL_TARGET_TOKENS)
+        _ = self.vocab.add_tokens_to_namespace(special_target_tokens, self._target_namespace)
         # The parent class initializes this to BLEU, but we aren't interested
         # in "tensor based metrics", so revert it to the users input.
         self._tensor_based_metric = tensor_based_metric

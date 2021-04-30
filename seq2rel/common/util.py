@@ -3,6 +3,7 @@ from typing import Any, Dict, List, Union
 
 END_OF_REL_SYMBOL = "@EOR@"
 COREF_SEP_SYMBOL = ";"
+SPECIAL_TARGET_TOKENS = [END_OF_REL_SYMBOL, COREF_SEP_SYMBOL]
 ENT_PATTERN = re.compile(r"(?:\s?)(.*?)(?:\s?)@([^\s]*)\b[^@]*@")
 REL_PATTERN = re.compile(fr"@([^\s]*)\b[^@]*@(.*?){END_OF_REL_SYMBOL}")
 

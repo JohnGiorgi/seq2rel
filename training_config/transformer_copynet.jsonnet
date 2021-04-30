@@ -4,8 +4,10 @@ local tokens_to_add = [null];
 // The relation labels in your dataset
 local labels = [null];
 
-// These are good defaults and likely should not be changed
-local sorting_keys = ["source_tokens", "target_tokens"];
+// These should not be changed
+local source_namespace = "source_tokens";
+local target_namespace = "target_tokens";
+local sorting_keys = [source_namespace, target_namespace];
 
 // These are hyperparameters that are set using environment variables.
 // This also allows us to tune them automatically with Optuna.
@@ -30,7 +32,7 @@ local SOURCE_TOKENIZER = {
 };
 
 local TARGET_TOKENIZER = {
-    "type": "pretrained_transformer",
+    "type": "pretrained_transformer_seq2rel",
     "model_name": model_name,
     "add_special_tokens": false,
     "tokenizer_kwargs": {
@@ -58,7 +60,7 @@ local TARGET_TOKENIZER = {
     "validation_data_path": valid_data_path,
     "dataset_reader": {
         "type": "copynet_seq2rel",
-        "target_namespace": "target_tokens",
+        "target_namespace": target_namespace,
         "source_tokenizer": SOURCE_TOKENIZER,
         "target_tokenizer": TARGET_TOKENIZER,
         "source_token_indexers": {

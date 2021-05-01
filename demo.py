@@ -59,10 +59,9 @@ def process_ent(text: str, ents: str) -> str:
         except ValueError:
             matched_ents.append(ent)
 
-    ents = matched_ents
-    ent_text = f"{ents[0]}"
-    if ents[1:]:
-        ent_text += f"{util.COREF_SEP_SYMBOL} {util.COREF_SEP_SYMBOL.join(ents[1:])}"
+    ent_text = f"{matched_ents[0]}"
+    if matched_ents[1:]:
+        ent_text += f"{util.COREF_SEP_SYMBOL} {util.COREF_SEP_SYMBOL.join(matched_ents[1:])}"
     return ent_text
 
 

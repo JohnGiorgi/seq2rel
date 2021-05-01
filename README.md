@@ -7,7 +7,7 @@
 [![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://share.streamlit.io/johngiorgi/seq2rel/main/demo.py)
 
 
-A Python package that makes it easy to use sequence-to-sequence (seq2seq) learning for information extraction. Checkout out demo [here](https://share.streamlit.io/johngiorgi/seq2rel/main/demo.py)!
+A Python package that makes it easy to use sequence-to-sequence (seq2seq) learning for information extraction. Checkout our demo [here](https://share.streamlit.io/johngiorgi/seq2rel/main/demo.py)!
 
 ## Installation
 

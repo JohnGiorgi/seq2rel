@@ -4,8 +4,10 @@
 [![codecov](https://codecov.io/gh/JohnGiorgi/seq2rel/branch/main/graph/badge.svg?token=RKJ7EV4WQK)](https://codecov.io/gh/JohnGiorgi/seq2rel)
 [![Checked with mypy](http://www.mypy-lang.org/static/mypy_badge.svg)](http://mypy-lang.org/)
 ![GitHub](https://img.shields.io/github/license/JohnGiorgi/seq2rel?color=blue)
+[![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://share.streamlit.io/johngiorgi/seq2rel/main/demo.py)
 
-A Python package that makes it easy to use sequence-to-sequence (seq2seq) learning for information extraction.
+
+A Python package that makes it easy to use sequence-to-sequence (seq2seq) learning for information extraction. Checkout our demo [here](https://share.streamlit.io/johngiorgi/seq2rel/main/demo.py)!
 
 ## Installation
 

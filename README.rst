@@ -23,7 +23,12 @@ seq2rel
    :alt: GitHub
 
 
-A Python package that makes it easy to use sequence-to-sequence (seq2seq) learning for information extraction.
+.. image:: https://static.streamlit.io/badges/streamlit_badge_black_white.svg
+   :target: https://share.streamlit.io/johngiorgi/seq2rel/main/demo.py
+   :alt: Open in Streamlit
+
+
+A Python package that makes it easy to use sequence-to-sequence (seq2seq) learning for information extraction. Checkout our demo `here <https://share.streamlit.io/johngiorgi/seq2rel/main/demo.py>`_\ !
 
 Installation
 ------------
@@ -80,7 +85,24 @@ For convenience, we provide a second package, `seq2rel-ds <https://github.com/Jo
 Training
 ^^^^^^^^
 
-Coming Soon.
+To train the model, use the `\ ``allennlp train`` <https://docs.allennlp.org/main/api/commands/train/>`_ command with `one of our configs <https://github.com/JohnGiorgi/seq2rel/tree/main/training_config>`_ (or write your own!)
+
+For example, to train a model on the `Adverse Drug Event (ADE) corpus <https://github.com/trunghlt/AdverseDrugReaction/tree/master/ADE-Corpus-V2>`_\ , first preprocess this data with `seq2rel-ds <https://github.com/JohnGiorgi/seq2rel-ds>`_
+
+.. code-block:: bash
+
+   seq2rel-ds preprocess ade "path/to/preprocessed/ade"
+
+Then, call ``allennlp train`` with the `ADE config we have provided <https://github.com/JohnGiorgi/seq2rel/tree/main/training_config/transformer_copynet_ade.jsonnet>`_
+
+.. code-block:: bash
+
+   allennlp train "training_config/transformer_copynet_ade.jsonnet" \
+       --serialization-dir "output" \
+       --overrides "{'train_data_path': 'path/to/preprocessed/ade/train.tsv'}" \
+       --include-package "seq2rel"
+
+The ``--overrides`` flag allows you to override any field in the config with a JSON-formatted string, but you can equivalently update the config itself if you prefer. During training, models, vocabulary, configuration, and log files will be saved to the directory provided by ``--serialization-dir``. This can be changed to any directory you like. 
 
 Hyperparameter tuning
 ~~~~~~~~~~~~~~~~~~~~~

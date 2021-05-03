@@ -59,7 +59,7 @@ For convenience, we provide a second package, [seq2rel-ds](https://github.com/Jo
 
 ### Training
 
-To train the model, use the [`allennlp train`](https://docs.allennlp.org/master/api/commands/train/) command with [one of our configs](https://github.com/JohnGiorgi/seq2rel/tree/main/training_config) (or write your own!)
+To train the model, use the [`allennlp train`](https://docs.allennlp.org/main/api/commands/train/) command with [one of our configs](https://github.com/JohnGiorgi/seq2rel/tree/main/training_config) (or write your own!)
 
 For example, to train a model on the [Adverse Drug Event (ADE) corpus](https://github.com/trunghlt/AdverseDrugReaction/tree/master/ADE-Corpus-V2), first preprocess this data with [seq2rel-ds](https://github.com/JohnGiorgi/seq2rel-ds)
 

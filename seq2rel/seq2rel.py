@@ -53,7 +53,7 @@ class Seq2Rel:
     **kwargs : `Dict`, optional
         Keyword arguments that will be passed to `allennlp.models.archival.load_archive`. This is
         useful, for example, to specify a CUDA device id with `cuda_device`. See:
-        https://docs.allennlp.org/master/api/models/archival/#load_archive for more details.
+        https://docs.allennlp.org/main/api/models/archival/#load_archive for more details.
     """
 
     _output_dict_field = "predicted_strings"

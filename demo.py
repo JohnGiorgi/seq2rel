@@ -41,6 +41,21 @@ TEXT_EXAMPLES = {
         " Katoomba, MV Neptuna and HMAT Zealandia, to defend their strategically important harbours"
         "and airfields."
     ),
+    "gda": (
+        "Functional gene polymorphisms in aggressive and chronic periodontitis. There is strong"
+        " evidence that genetic as well as environmental factors affect the development of"
+        " periodontitis, and some suggestion that aggressive and chronic forms of the disease share"
+        " the same genetic predisposition. This study addresses the hypothesis that there are both"
+        " shared and unique genetic associations in these forms of periodontitis. A sample of 51"
+        " patients with aggressive disease, 57 patients with chronic disease, and 100 healthy"
+        " controls was recruited for this study. Ten functional polymorphisms in 7 candidate genes"
+        " were genotyped. The results show statistically significant (p <or= 0.05) differences"
+        " between genotype frequencies in aggressive and controls (IL-1B +3954 IL-6 -174); chronic"
+        " and controls (IL-6 -174 VDR -1056); chronic and aggressive periodontitis (IL-1A -889);"
+        " and periodontitis as a whole and controls (VDR -1056, TLR-4 399 _ IL-6 -174). These"
+        " results suggest that there are in fact both shared and unique genetic associations in"
+        " aggressive and chronic periodontitis."
+    ),
 }
 
 
@@ -80,7 +95,9 @@ st.sidebar.write(
 
 
 model_name = (
-    st.sidebar.selectbox("Model name", ("ADE", "BC5CDR", "BioGRID", "DocRED")).strip().lower()
+    st.sidebar.selectbox("Model name", ("ADE", "BC5CDR", "BioGRID", "DocRED", "GDA"))
+    .strip()
+    .lower()
 )
 
 st.sidebar.subheader("Additional Settings")

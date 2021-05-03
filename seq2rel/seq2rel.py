@@ -13,9 +13,10 @@ from seq2rel.common.util import sanitize_text
 
 PRETRAINED_MODELS = {
     "ade": "https://github.com/JohnGiorgi/seq2rel/releases/download/v0.1.0rc1/ade.tar.gz",
-    "docred": "https://github.com/JohnGiorgi/seq2rel/releases/download/v0.1.0rc1/docred.tar.gz",
-    "biogrid": "https://github.com/JohnGiorgi/seq2rel/releases/download/v0.1.0rc1/biogrid.tar.gz",
     "bc5cdr": "https://github.com/JohnGiorgi/seq2rel/releases/download/v0.1.0rc1/bc5cdr.tar.gz",
+    "biogrid": "https://github.com/JohnGiorgi/seq2rel/releases/download/v0.1.0rc1/biogrid.tar.gz",
+    "docred": "https://github.com/JohnGiorgi/seq2rel/releases/download/v0.1.0rc1/docred.tar.gz",
+    "gda": "https://github.com/JohnGiorgi/seq2rel/releases/download/v0.1.0rc1/gda.tar.gz",
 }
 
 

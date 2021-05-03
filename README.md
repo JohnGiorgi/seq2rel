@@ -59,7 +59,24 @@ For convenience, we provide a second package, [seq2rel-ds](https://github.com/Jo
 
 ### Training
 
-Coming Soon.
+To train the model, use the [`allennlp train`](https://docs.allennlp.org/master/api/commands/train/) command with [one of our configs](https://github.com/JohnGiorgi/seq2rel/tree/main/training_config) (or write your own!)
+
+For example, to train a model on the [Adverse Drug Event (ADE) corpus](https://github.com/trunghlt/AdverseDrugReaction/tree/master/ADE-Corpus-V2), first preprocess this data with [seq2rel-ds](https://github.com/JohnGiorgi/seq2rel-ds)
+
+```bash
+seq2rel-ds preprocess ade "path/to/preprocessed/ade"
+```
+
+Then, call `allennlp train` with the [ADE config we have provided](https://github.com/JohnGiorgi/seq2rel/tree/main/training_config/transformer_copynet_ade.jsonnet)
+
+```bash
+allennlp train "training_config/transformer_copynet_ade.jsonnet" \
+    --serialization-dir "output" \
+    --overrides "{'train_data_path': 'path/to/preprocessed/ade/train.tsv'}" \
+    --include-package "seq2rel" 
+```
+
+The `--overrides` flag allows you to override any field in the config with a JSON-formatted string, but you can equivalently update the config itself if you prefer. During training, models, vocabulary, configuration, and log files will be saved to the directory provided by `--serialization-dir`. This can be changed to any directory you like. 
 
 #### Hyperparameter tuning
 

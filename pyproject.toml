@@ -33,7 +33,7 @@ python = "^3.7.1"
 typer = {extras = ["all"], version = "^0.3.2"}
 allennlp = "^2.4.0"
 allennlp-models = "^2.4.0"
-allennlp-optuna = { version = "^0.1.5", optional = true }
+allennlp-optuna = { version = "^0.1.6", optional = true }
 validators = "^0.18.2"
 more-itertools = "^8.7.0"
 

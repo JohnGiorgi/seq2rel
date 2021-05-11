@@ -90,7 +90,7 @@ word2number = ">=1.1"
 
 [[package]]
 name = "allennlp-optuna"
-version = "0.1.5"
+version = "0.1.6"
 description = "AllenNLP integration for hyperparameter optimization"
 category = "main"
 optional = true
@@ -2309,7 +2309,7 @@ optuna = ["allennlp-optuna"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.7.1"
-content-hash = "d4a034a665efdf3dd12b50fa416474a8358f742fa9f7f1f6acca50174f888b1a"
+content-hash = "08a404742fb5aa0d91d02e897fa6676fe25b650aa75b1b2a7019abbba9ed58c7"
 
 [metadata.files]
 aiofiles = [
@@ -2368,8 +2368,8 @@ allennlp-models = [
     {file = "allennlp_models-2.4.0.tar.gz", hash = "sha256:b4787b87d3998c524a29e6165ce68a5c63ab44ee15eb25264788022158e550d4"},
 ]
 allennlp-optuna = [
-    {file = "allennlp_optuna-0.1.5-py3-none-any.whl", hash = "sha256:79cff511359bdd21d2749425657bbd2a7b15d16ce69db1d01321779db7aab1f7"},
-    {file = "allennlp_optuna-0.1.5.tar.gz", hash = "sha256:dd77ceb737960d5dbde8b4f1c645900e4c3f1658ea76deba8394cad060708457"},
+    {file = "allennlp_optuna-0.1.6-py3-none-any.whl", hash = "sha256:b41d5121a375c560287317acb11092f0f6c5deeb92f49598aefc5fe667d27630"},
+    {file = "allennlp_optuna-0.1.6.tar.gz", hash = "sha256:24af087477f607b62f743bfb840bd6a70928c518676f5c701db95dacb552a943"},
 ]
 appdirs = [
     {file = "appdirs-1.4.4-py2.py3-none-any.whl", hash = "sha256:a841dacd6b99318a741b166adb07e19ee71a274450e68237b4650ca1055ab128"},

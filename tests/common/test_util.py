@@ -29,15 +29,19 @@ def test_deserialize_annotation() -> None:
     # - non-empty string with no relation
     # - a single relation string
     # - a multiple relation string
-    # - a more complicated relation type with non-alpha-numeric characters
+    # - a more complicated relation type with non-alpha-numeric characters in the special tokens
+    # - duplicate entity mentions and duplicate coreferent mentions
     serialized_annotations = [
         "",
         "I don't contain anything of interest!",
         "@ADE@ fenoprofen @DRUG@ pure red cell aplasia @EFFECT@ @EOR@",
         (
             "@ADE@ bimatoprost @DRUG@ cystoid macula edema @EFFECT@ @EOR@"
+            # A duplicate relation that should not be included in the deserialized annotation
+            " @ADE@ bimatoprost @DRUG@ cystoid macula edema @EFFECT@ @EOR@"
             " @ADE@ latanoprost @DRUG@ cystoid macula edema @EFFECT@ @EOR@"
-            " @CID@ methamphetamine; meth @CHEMICAL@ psychosis; psychotic disorders @DISEASE@ @EOR@"
+            # A duplicate mention that should not be included in the deserialized annotation
+            " @CID@ methamphetamine ; meth ; meth @CHEMICAL@ psychosis ; psychotic disorders @DISEASE@ @EOR@"
         ),
         "@LOCATED_IN_THE_ADMINISTRATIVE_TERRITORIAL_ENTITY@ pasay city @LOC@ metro manila @LOC@ @EOR@",
     ]
@@ -71,3 +75,21 @@ def test_deserialize_annotation() -> None:
     # Check that we can call the function on a single string
     actual = util.deserialize_annotations(serialized_annotations[-1])
     assert [expected[-1]] == actual
+
+
+def test_deduplicate_ents() -> None:
+    # Coreferent mentioned decoded by the model will be seperated by SPACE ; SPACE...
+    ents = (
+        # Duplicate coreferent mention
+        ("methamphetamine ; meth ; meth", "CHEMICAL"),
+        ("psychosis ; psychotic disorders", "DISEASE"),
+        # Duplicate entity mention
+        ("psychosis ; psychotic disorders", "DISEASE"),
+    )
+    actual = util._deduplicate_ents(ents)
+    # ...whereas the deserialized mentions with by sperated by ; SPACE
+    expected = (
+        ("methamphetamine; meth", "CHEMICAL"),
+        ("psychosis; psychotic disorders", "DISEASE"),
+    )
+    assert actual == expected

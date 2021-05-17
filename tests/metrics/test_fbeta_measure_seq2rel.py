@@ -154,3 +154,6 @@ class TestF1MeasureSeq2Rel(MetricsTestCase):
     ):
         fbeta = F1MeasureSeq2Rel(labels=self.labels)
         assert fbeta._beta == 1.0
+
+
+# %%

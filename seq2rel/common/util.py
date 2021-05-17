@@ -1,10 +1,13 @@
 import re
-from typing import Any, Dict, List, Union
+from typing import Any, Dict, List, Union, Tuple
 
 END_OF_REL_SYMBOL = "@EOR@"
 COREF_SEP_SYMBOL = ";"
 ENT_PATTERN = re.compile(r"(?:\s?)(.*?)(?:\s?)@([^\s]*)\b[^@]*@")
 REL_PATTERN = re.compile(fr"@([^\s]*)\b[^@]*@(.*?){END_OF_REL_SYMBOL}")
+
+
+# Public functions #
 
 
 def sanitize_text(text: str, lowercase: bool = False) -> str:
@@ -40,6 +43,9 @@ def deserialize_annotations(
         for rel in rels:
             rel_label, rel_string = rel
             ents = tuple(ENT_PATTERN.findall(rel_string))
+            # Remove duplicate coreferent mentions. We don't care if the model generated
+            # the same mention twice, only that it generated it at all.
+            ents = _deduplicate_ents(ents)
             # TODO. We can enforce order by casting the entities as a tuple.
             # ents = tuple(ents) if self._ordered_ents else set(ents)
             if rel_label in deserialized[-1]:
@@ -49,3 +55,22 @@ def deserialize_annotations(
             else:
                 deserialized[-1][rel_label] = [ents]
     return deserialized
+
+
+# Private functions #
+
+
+def _deduplicate_ents(ents: Tuple[Tuple[str, ...], ...]) -> Tuple[Tuple[str, ...], ...]:
+    # First, remove any duplicate coreferent mentions
+    dedup_coref = tuple(
+        (
+            f"{COREF_SEP_SYMBOL} ".join(
+                dict.fromkeys(coref.strip() for coref in ent[0].split(COREF_SEP_SYMBOL))
+            ),
+            ent[1],
+        )
+        for ent in ents
+    )
+    # Then remove duplicate entity mentions
+    dedup_ents = tuple(dict.fromkeys(dedup_coref))
+    return dedup_ents

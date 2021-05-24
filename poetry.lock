@@ -839,7 +839,7 @@ testing = ["pytest"]
 
 [[package]]
 name = "hypothesis"
-version = "6.12.1"
+version = "6.13.5"
 description = "A library for property-based testing"
 category = "dev"
 optional = false
@@ -2312,7 +2312,7 @@ optuna = ["allennlp-optuna"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.7.1"
-content-hash = "704cc0a0dee324a853abde883cc744f19e19077cfb9d228dd7210eec13d6c3a7"
+content-hash = "f2f6b0018271c7489b1a5db6ffe75ddc639ac5de8659a4a1ff1b80af2c31034c"
 
 [metadata.files]
 aiofiles = [
@@ -2782,8 +2782,8 @@ huggingface-hub = [
     {file = "huggingface_hub-0.0.8.tar.gz", hash = "sha256:be5b9a7ed36437bb10a780d500154d426798ec16803ff3406f7a61107e4ebfc2"},
 ]
 hypothesis = [
-    {file = "hypothesis-6.12.1-py3-none-any.whl", hash = "sha256:27b489fedf54746a1ecfdf1d49dd01611f3fd833c164283c341f8cc1eed2a5fd"},
-    {file = "hypothesis-6.12.1.tar.gz", hash = "sha256:7fdca79cc4005c9a8c5a4688537d47578bcfa307595769858ef811fa3f16e3c7"},
+    {file = "hypothesis-6.13.5-py3-none-any.whl", hash = "sha256:7539bb747998dec16240fb273f2519f08e8ef576642d46feac02afa01ad14831"},
+    {file = "hypothesis-6.13.5.tar.gz", hash = "sha256:7b1d886ff78c6d2d3eee921d00116548e67310c2bf3bd13e3e59e073f4fdad88"},
 ]
 idna = [
     {file = "idna-2.10-py2.py3-none-any.whl", hash = "sha256:b97d804b1e9b523befed77c48dacec60e6dcb0b5391d57af6a65a312a90648c0"},

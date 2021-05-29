@@ -7,10 +7,11 @@ from allennlp.data.tokenizers import PretrainedTransformerTokenizer
 from allennlp.models import Model
 from allennlp.modules import Seq2SeqEncoder, TextFieldEmbedder
 from allennlp.modules.seq2seq_encoders import PassThroughEncoder
+from allennlp.nn import util
 from allennlp.training.metrics import Metric
 from allennlp_models.generation.models import CopyNetSeq2Seq
 from overrides import overrides
-from seq2rel.common.util import sanitize_text, END_OF_REL_SYMBOL, COREF_SEP_SYMBOL
+from seq2rel.common.util import COREF_SEP_SYMBOL, END_OF_REL_SYMBOL, sanitize_text
 
 logger = logging.getLogger(__name__)
 
@@ -19,8 +20,7 @@ logger = logging.getLogger(__name__)
 class CopyNetSeq2Rel(CopyNetSeq2Seq):
     """
     This is a thin wrapper around `CopyNetSeq2Seq` to provide any of the modifications necessary to
-    use the model for information extraction. Besides `target_tokenizer` and `sequence_based_metric`
-    the arguments are identical to `CopyNetSeq2Seq`. For details, please see:
+    use the model for information extraction. For details, please see:
     [`CopyNetSeq2Seq`](https://github.com/allenai/allennlp-models/blob/main/allennlp_models/generation/models/copynet_seq2seq.py),
 
     # Parameters
@@ -37,6 +37,11 @@ class CopyNetSeq2Rel(CopyNetSeq2Seq):
         accept two arguments when called, both of type `List[str]`. The first is a predicted
         sequence for each item in the batch and the second is a gold sequence for each item in the
         batch.
+    init_decoder_state_stategy: `Optional[str]`, optional (default = `"first"`)
+        If `init_decoder_state_stategy` is `"first"`, initialize decoders hidden state with first encoder output
+        If `init_decoder_state_stategy` is `"last"`, initialize decoders hidden state with last encoder output
+        If `init_decoder_state_stategy` is `"mean"`, initialize decoders hidden state with mean of encoder outputs
+        If invalid `init_decoder_state_stategy` is provided, throw `ValueError`
     """
 
     def __init__(
@@ -46,6 +51,7 @@ class CopyNetSeq2Rel(CopyNetSeq2Seq):
         target_tokenizer: Tokenizer = None,
         tensor_based_metric: Metric = None,
         sequence_based_metric: Metric = None,
+        init_decoder_state_stategy: str = "first",
         **kwargs,  # type: ignore
     ) -> None:
         # I am expecting most users to use a PretrainedTransformerEmbedder as source_embedder,
@@ -61,9 +67,48 @@ class CopyNetSeq2Rel(CopyNetSeq2Seq):
         # Add the two structural tokens we use to denote coreferent mentions and end of relations
         _ = self.vocab.add_token_to_namespace(END_OF_REL_SYMBOL, self._target_namespace)
         _ = self.vocab.add_token_to_namespace(COREF_SEP_SYMBOL, self._target_namespace)
+        # The strategy to use for initializing the decoders hidden state
+        if init_decoder_state_stategy not in ["first", "last", "mean"]:
+            raise ValueError(
+                (
+                    f'init_decoder_state_stategy must be one of "first", "last" or "mean".'
+                    f"Got: {init_decoder_state_stategy}"
+                )
+            )
+        self._init_decoder_state_stategy = init_decoder_state_stategy
         # The parent class initializes this to BLEU, but we aren't interested
         # in "tensor based metrics", so revert it to the users input.
         self._tensor_based_metric = tensor_based_metric
+
+    @overrides
+    def _init_decoder_state(self, state: Dict[str, torch.Tensor]) -> Dict[str, torch.Tensor]:
+        """
+        Initialize the encoded state to be passed to the first decoding time step.
+        """
+        batch_size, _ = state["source_mask"].size()
+
+        # Initialize the decoder hidden state according to self._init_decoder_state_stategy
+        # and the decoder context with zeros.
+        # shape: (batch_size, encoder_output_dim)
+        if self._init_decoder_state_stategy == "first":
+            final_encoder_output = state["encoder_outputs"][:, 0, :]
+        elif self._init_decoder_state_stategy == "last":
+            final_encoder_output = util.get_final_encoder_states(
+                state["encoder_outputs"], state["source_mask"], self._encoder.is_bidirectional()
+            )
+        else:
+            final_encoder_output = torch.sum(
+                state["encoder_outputs"] * state["source_mask"].unsqueeze(-1), dim=1
+            ) / torch.clamp(torch.sum(state["source_mask"], dim=1, keepdims=True), min=1e-9)
+
+        # shape: (batch_size, decoder_output_dim)
+        state["decoder_hidden"] = final_encoder_output
+        # shape: (batch_size, decoder_output_dim)
+        state["decoder_context"] = state["encoder_outputs"].new_zeros(
+            batch_size, self.decoder_output_dim
+        )
+
+        return state
 
     @overrides
     def forward(

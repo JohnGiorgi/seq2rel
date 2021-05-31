@@ -61,6 +61,9 @@ local weight_decay = std.parseJson(std.extVar('weight_decay'));
             // of the batch size used during training.
             "batch_size": batch_size * 64,
             "sorting_keys": sorting_keys,
+            // We don't care about deterministic batches during validation, so drop
+            // padding noise to further speed things up.
+            "padding_noise": 0.0
         },
     },
     "trainer": {

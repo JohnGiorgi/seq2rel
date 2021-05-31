@@ -37,11 +37,11 @@ class CopyNetSeq2Rel(CopyNetSeq2Seq):
         accept two arguments when called, both of type `List[str]`. The first is a predicted
         sequence for each item in the batch and the second is a gold sequence for each item in the
         batch.
-    init_decoder_state_stategy: `Optional[str]`, optional (default = `"first"`)
-        If `init_decoder_state_stategy` is `"first"`, initialize decoders hidden state with first encoder output
-        If `init_decoder_state_stategy` is `"last"`, initialize decoders hidden state with last encoder output
-        If `init_decoder_state_stategy` is `"mean"`, initialize decoders hidden state with mean of encoder outputs
-        If invalid `init_decoder_state_stategy` is provided, throw `ValueError`
+    init_decoder_state_strategy: `Optional[str]`, optional (default = `"first"`)
+        If `init_decoder_state_strategy` is `"first"`, initialize decoders hidden state with first encoder output
+        If `init_decoder_state_strategy` is `"last"`, initialize decoders hidden state with last encoder output
+        If `init_decoder_state_strategy` is `"mean"`, initialize decoders hidden state with mean of encoder outputs
+        If invalid `init_decoder_state_strategy` is provided, throw `ValueError`
     """
 
     def __init__(
@@ -51,7 +51,7 @@ class CopyNetSeq2Rel(CopyNetSeq2Seq):
         target_tokenizer: Tokenizer = None,
         tensor_based_metric: Metric = None,
         sequence_based_metric: Metric = None,
-        init_decoder_state_stategy: str = "first",
+        init_decoder_state_strategy: str = "first",
         **kwargs,  # type: ignore
     ) -> None:
         # I am expecting most users to use a PretrainedTransformerEmbedder as source_embedder,
@@ -68,14 +68,14 @@ class CopyNetSeq2Rel(CopyNetSeq2Seq):
         _ = self.vocab.add_token_to_namespace(END_OF_REL_SYMBOL, self._target_namespace)
         _ = self.vocab.add_token_to_namespace(COREF_SEP_SYMBOL, self._target_namespace)
         # The strategy to use for initializing the decoders hidden state
-        if init_decoder_state_stategy not in ["first", "last", "mean"]:
+        if init_decoder_state_strategy not in ["first", "last", "mean"]:
             raise ValueError(
                 (
-                    f'init_decoder_state_stategy must be one of "first", "last" or "mean".'
-                    f"Got: {init_decoder_state_stategy}"
+                    f'init_decoder_state_strategy must be one of "first", "last" or "mean".'
+                    f"Got: {init_decoder_state_strategy}"
                 )
             )
-        self._init_decoder_state_stategy = init_decoder_state_stategy
+        self._init_decoder_state_strategy = init_decoder_state_strategy
         # The parent class initializes this to BLEU, but we aren't interested
         # in "tensor based metrics", so revert it to the users input.
         self._tensor_based_metric = tensor_based_metric
@@ -87,12 +87,12 @@ class CopyNetSeq2Rel(CopyNetSeq2Seq):
         """
         batch_size, _ = state["source_mask"].size()
 
-        # Initialize the decoder hidden state according to self._init_decoder_state_stategy
+        # Initialize the decoder hidden state according to self._init_decoder_state_strategy
         # and the decoder context with zeros.
         # shape: (batch_size, encoder_output_dim)
-        if self._init_decoder_state_stategy == "first":
+        if self._init_decoder_state_strategy == "first":
             final_encoder_output = state["encoder_outputs"][:, 0, :]
-        elif self._init_decoder_state_stategy == "last":
+        elif self._init_decoder_state_strategy == "last":
             final_encoder_output = util.get_final_encoder_states(
                 state["encoder_outputs"], state["source_mask"], self._encoder.is_bidirectional()
             )

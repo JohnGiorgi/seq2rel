@@ -23,8 +23,8 @@ class TestCopyNetSeq2Rel(ModelTestCase):
     def test_model_can_train_save_load(self):
         self.ensure_model_can_train_save_and_load(self.param_file, tolerance=1e-2)
 
-    def test_invalid_init_decoder_state_stategy(self):
+    def test_invalid_init_decoder_state_strategy(self):
         params = Params.from_file(self.param_file)
-        params["model"]["init_decoder_state_stategy"] = "blahblah"
+        params["model"]["init_decoder_state_strategy"] = "blahblah"
         with pytest.raises(ValueError):
             Model.from_params(vocab=self.vocab, params=params.get("model"))

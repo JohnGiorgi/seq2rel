@@ -841,7 +841,7 @@ torch = ["torch"]
 
 [[package]]
 name = "hypothesis"
-version = "6.13.8"
+version = "6.13.10"
 description = "A library for property-based testing"
 category = "dev"
 optional = false
@@ -2323,7 +2323,7 @@ optuna = ["allennlp-optuna"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.7.1"
-content-hash = "b3561dd4072432163d5370a077bdd9cd266feed863acfd4ed9ae14e8f3831e3e"
+content-hash = "e51e69c453968a8531d8a632fbbdaebfb85e36a8f02e0eaf7a24c2b4c83809b4"
 
 [metadata.files]
 aiofiles = [
@@ -2794,8 +2794,8 @@ huggingface-hub = [
     {file = "huggingface_hub-0.0.9.tar.gz", hash = "sha256:6a693bc401b2bb5457f8c88dff00fa9690721e8b54fc0bc3707fa7a94e60cf06"},
 ]
 hypothesis = [
-    {file = "hypothesis-6.13.8-py3-none-any.whl", hash = "sha256:8a31c9617f63f6e8c03c433815a710e8afd195e48d2cca94a567c87f85277067"},
-    {file = "hypothesis-6.13.8.tar.gz", hash = "sha256:0689b969768e2f810e90a98e5a742db417886cfb66b5d326a80f3490ee216d1b"},
+    {file = "hypothesis-6.13.10-py3-none-any.whl", hash = "sha256:d3038cb55263cc31e42cd79d98197d16b74cff28a3b8c0f41ccda30fdabf0752"},
+    {file = "hypothesis-6.13.10.tar.gz", hash = "sha256:f431ec921d4d1eb1c0fd8e59e64452158e8587342c3841a39d24bb1e5788a7fd"},
 ]
 idna = [
     {file = "idna-2.10-py2.py3-none-any.whl", hash = "sha256:b97d804b1e9b523befed77c48dacec60e6dcb0b5391d57af6a65a312a90648c0"},
@@ -3118,6 +3118,7 @@ pillow = [
     {file = "Pillow-8.2.0-pp37-pypy37_pp73-manylinux2010_i686.whl", hash = "sha256:aac00e4bc94d1b7813fe882c28990c1bc2f9d0e1aa765a5f2b516e8a6a16a9e4"},
     {file = "Pillow-8.2.0-pp37-pypy37_pp73-manylinux2010_x86_64.whl", hash = "sha256:22fd0f42ad15dfdde6c581347eaa4adb9a6fc4b865f90b23378aa7914895e120"},
     {file = "Pillow-8.2.0-pp37-pypy37_pp73-win32.whl", hash = "sha256:e98eca29a05913e82177b3ba3d198b1728e164869c613d76d0de4bde6768a50e"},
+    {file = "Pillow-8.2.0-pp37-pypy37_pp73-win_amd64.whl", hash = "sha256:8b56553c0345ad6dcb2e9b433ae47d67f95fc23fe28a0bde15a120f25257e291"},
     {file = "Pillow-8.2.0.tar.gz", hash = "sha256:a787ab10d7bb5494e5f76536ac460741788f1fbce851068d73a87ca7c35fc3e1"},
 ]
 pluggy = [

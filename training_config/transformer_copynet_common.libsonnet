@@ -59,7 +59,7 @@ local weight_decay = std.parseJson(std.extVar('weight_decay'));
             "type": "bucket",
             // To speed up validation, we set the batch size to a multiple of
             // of the batch size used during training.
-            "batch_size": batch_size * 4,
+            "batch_size": batch_size * 64,
             "sorting_keys": sorting_keys,
         },
     },

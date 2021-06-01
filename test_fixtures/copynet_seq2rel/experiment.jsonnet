@@ -83,8 +83,19 @@ local TARGET_TOKENIZER = {
         "attention": {
             "type": "seq2rel.modules.attention.dk_scaled_dot_product_attention.DkScaledDotProductAttention"
         },
-        "beam_size": COMMON["beam_size"],
-        "max_decoding_steps": max_decoding_steps,
+        "beam_search": {
+            "max_steps": max_decoding_steps,
+            "beam_size": COMMON["beam_size"],
+            "final_sequence_scorer": {
+                "type": "length-normalized-sequence-log-prob"
+            },
+            "constraints": [
+                {
+                    "type": "repeated-ngram-blocking",
+                    "ngram_size": 2
+                },
+            ],
+        },
         "target_embedding_dim": COMMON["target_embedding_dim"],
     },
     "data_loader": COMMON["data_loader"],

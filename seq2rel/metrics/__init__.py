@@ -1,1 +1,2 @@
+from seq2rel.metrics.average_length import AverageLength
 from seq2rel.metrics.fbeta_measure_seq2rel import F1MeasureSeq2Rel, FBetaMeasureSeq2Rel

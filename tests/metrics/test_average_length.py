@@ -17,8 +17,9 @@ class TestAverageLength(AverageLengthTestCase):
         average_length = AverageLength()
         average_length(self.predictions, self.targets)
         expected = {
-            "decoded_mean_length": self.decoded_mean_length,
-            "target_mean_length": self.target_mean_length,
+            "decoded_mean_length": round(self.decoded_mean_length, 2),
+            "target_mean_length": round(self.target_mean_length, 2),
+            "ratio": round(self.decoded_mean_length / self.target_mean_length, 2),
         }
         actual = average_length.get_metric()
         assert actual == expected

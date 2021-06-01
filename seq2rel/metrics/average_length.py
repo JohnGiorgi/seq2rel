@@ -30,6 +30,7 @@ class AverageLength(Metric):
         return {
             "decoded_mean_length": round(decoded_mean_length, 2),
             "target_mean_length": round(target_mean_length, 2),
+            "ratio": round(decoded_mean_length / target_mean_length, 2),
         }
 
     def reset(self) -> None:

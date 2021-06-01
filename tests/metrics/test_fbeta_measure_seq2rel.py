@@ -6,7 +6,7 @@ from seq2rel.metrics.fbeta_measure_seq2rel import FBetaMeasureSeq2Rel, F1Measure
 from torch.testing import assert_allclose
 
 
-class MetricsTestCase:
+class FBetaMeasureSeq2RelTestCase:
     def setup_method(self):
         self.labels = ["PHYSICAL", "GENETIC"]
         self.predictions = [
@@ -46,7 +46,7 @@ class MetricsTestCase:
         self.desired_fscores = desired_fscores
 
 
-class TestFBetaMeasureSeq2Rel(MetricsTestCase):
+class TestFBetaMeasureSeq2Rel(FBetaMeasureSeq2RelTestCase):
     """Tests for FBetaMeasureSeq2Rel. Note that for now, these tests assume
     that entities in a relation have an inherent order.
 
@@ -140,7 +140,7 @@ class TestFBetaMeasureSeq2Rel(MetricsTestCase):
         assert_allclose(fscores, micro_fscore)
 
 
-class TestF1MeasureSeq2Rel(MetricsTestCase):
+class TestF1MeasureSeq2Rel(FBetaMeasureSeq2RelTestCase):
     """Tests for F1MeasureSeq2Rel. Because F1MeasureSeq2Rel is a just a wrapper on
     FBetaMeasureSeq2Rel and introduces no new logic, this exists mainly just to ensure we
     can instantiate F1MeasureSeq2Rel without error.
@@ -154,6 +154,3 @@ class TestF1MeasureSeq2Rel(MetricsTestCase):
     ):
         fbeta = F1MeasureSeq2Rel(labels=self.labels)
         assert fbeta._beta == 1.0
-
-
-# %%

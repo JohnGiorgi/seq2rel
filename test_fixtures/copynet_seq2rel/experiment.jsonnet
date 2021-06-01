@@ -72,8 +72,11 @@ local TARGET_TOKENIZER = {
             },
         },
         "target_tokenizer": TARGET_TOKENIZER,
+        "token_based_metric": {
+            "type": "seq2rel.metrics.AverageLength"
+        },
         "sequence_based_metric": {
-            "type": "seq2rel.metrics.fbeta_measure_seq2rel.F1MeasureSeq2Rel",
+            "type": "seq2rel.metrics.F1MeasureSeq2Rel",
             "labels": labels,
             "average": "micro"
         },

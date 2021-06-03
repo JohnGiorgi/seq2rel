@@ -2,7 +2,7 @@
 local COMMON = import 'transformer_copynet_common.libsonnet';
 
 // ** THESE MUST BE SET BY THE USER **//
-// A list containing the special tokens in your vocabulary
+// A list containing the special tokens in your target vocabulary
 local special_tokens = [
     "@TIME@",
     "@ORG@",
@@ -206,10 +206,10 @@ local labels = [
     "SUBCLASS_OF",
     "SUBSIDIARY",
 ];
-// Max length of input text and max number of decoding steps
+// Max length of input text and max/min number of decoding steps
 // These should be set based on your dataset
 local max_length = 512;
-local max_decoding_steps = 1024;
+local max_steps = 1024;
 
 // Do not modify.
 local tokens_to_add = special_tokens + COMMON['special_tokens'];
@@ -277,10 +277,13 @@ local TARGET_TOKENIZER = {
             'type': 'dk_scaled_dot_product'
         },
         "beam_search": {
-            "max_steps": max_decoding_steps,
+            "max_steps": max_steps,
+            "min_steps": min_steps,
             "beam_size": COMMON["beam_size"],
             "final_sequence_scorer": {
-                "type": "length-normalized-sequence-log-prob"
+                "type": "length-normalized-sequence-log-prob",
+                // Larger values favour longer decodings and vice versa
+                "length_penalty": 1.0
             },
         },
         'target_embedding_dim': COMMON['target_embedding_dim'],

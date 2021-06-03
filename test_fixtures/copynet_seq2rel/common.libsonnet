@@ -5,8 +5,12 @@
 
 // These are special tokens used by the decoder
 local special_tokens = [
+    // These are seq2rel specific
     "@EOR@",
-    ";"
+    ";",
+    // These are AllenNLP specific
+    "@start@",
+    "@end@"
 ];
 
 // Define the name spaces of the source and target tokens respectively

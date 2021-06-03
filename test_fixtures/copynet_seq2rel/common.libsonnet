@@ -5,14 +5,18 @@
 
 // These are special tokens used by the decoder
 local special_tokens = [
+    // These are seq2rel specific
     "@EOR@",
-    ";"
+    ";",
+    // These are AllenNLP specific
+    "@start@",
+    "@end@"
 ];
 
 // Define the name spaces of the source and target tokens respectively
 local source_namespace = "source_tokens";
 local target_namespace = "target_tokens";
-local sorting_keys = [source_namespace, target_namespace];
+local sorting_keys = [source_namespace];
 
 // These are set using environment variables.
 // This allows us to tune them automatically with Optuna.

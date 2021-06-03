@@ -91,6 +91,9 @@ local TARGET_TOKENIZER = {
             },
         },
         "target_tokenizer": TARGET_TOKENIZER,
+        "token_based_metric": {
+            "type": "average_length"
+        },
         "sequence_based_metric": {
             "type": "f1_seq2rel",
             "labels": labels,

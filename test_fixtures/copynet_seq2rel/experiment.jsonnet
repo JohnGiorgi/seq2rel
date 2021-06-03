@@ -89,12 +89,6 @@ local TARGET_TOKENIZER = {
             "final_sequence_scorer": {
                 "type": "length-normalized-sequence-log-prob"
             },
-            "constraints": [
-                {
-                    "type": "repeated-ngram-blocking",
-                    "ngram_size": 2
-                },
-            ],
         },
         "target_embedding_dim": COMMON["target_embedding_dim"],
     },

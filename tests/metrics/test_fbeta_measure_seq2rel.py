@@ -11,21 +11,21 @@ class FBetaMeasureSeq2RelTestCase:
         self.labels = ["PHYSICAL", "GENETIC"]
         self.predictions = [
             # This is a false positive
-            "@PHYSICAL@ fgf-2 @PRGE@ rps19 @PRGE@ @EOR@",
+            "@PHYSICAL@ fgf-2 @GGP@ rps19 @GGP@ @EOR@",
             "I don't contain anything of interest!",
             # This prediction contains a relation with an incorrect order of entities
-            "@PHYSICAL@ atg1 @PRGE@ atg1 @PRGE@ @EOR@ @PHYSICAL@ atg17 @PRGE@ atg1 @PRGE@ @EOR@",
+            "@PHYSICAL@ atg1 @GGP@ atg1 @GGP@ @EOR@ @PHYSICAL@ atg17 @GGP@ atg1 @GGP@ @EOR@",
             # This prediction is missing a relation
-            "@GENETIC@ b-myb @PRGE@ cbp @PRGE@ @EOR@ @PHYSICAL@ b-myb @PRGE@ cbp @PRGE@ @EOR@",
+            "@GENETIC@ b-myb @GGP@ cbp @GGP@ @EOR@ @PHYSICAL@ b-myb @GGP@ cbp @GGP@ @EOR@",
         ]
         self.targets = [
             "",
             "I don't contain anything of interest!",
-            "@PHYSICAL@ atg1 @PRGE@ atg1 @PRGE@ @EOR@ @PHYSICAL@ atg1 @PRGE@ atg17 @PRGE@ @EOR@",
+            "@PHYSICAL@ atg1 @GGP@ atg1 @GGP@ @EOR@ @PHYSICAL@ atg1 @GGP@ atg17 @GGP@ @EOR@",
             (
-                "@GENETIC@ b-myb @PRGE@ cbp @PRGE@ @EOR@"
-                " @PHYSICAL@ b-myb @PRGE@ cbp @PRGE@ @EOR@"
-                " @GENETIC@ myb @PRGE@ cbp @PRGE@ @EOR@"
+                "@GENETIC@ b-myb @GGP@ cbp @GGP@ @EOR@"
+                " @PHYSICAL@ b-myb @GGP@ cbp @GGP@ @EOR@"
+                " @GENETIC@ myb @GGP@ cbp @GGP@ @EOR@"
             ),
         ]
 

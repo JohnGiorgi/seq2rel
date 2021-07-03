@@ -217,11 +217,9 @@ class CopyNetSeq2Rel(CopyNetSeq2Seq):
         attentive_weights = self._attention(
             state["decoder_hidden"], state["encoder_outputs"], encoder_outputs_mask
         )
-        # attentive_weights = self._dropout(attentive_weights)
         # shape: (group_size, encoder_output_dim)
         attentive_read = util.weighted_sum(state["encoder_outputs"], attentive_weights)
         # shape: (group_size, encoder_output_dim)
-        # selective_weights = self._dropout(selective_weights)
         selective_read = util.weighted_sum(state["encoder_outputs"], selective_weights)
         # shape: (group_size, target_embedding_dim + encoder_output_dim * 2)
         decoder_input = torch.cat((embedded_input, attentive_read, selective_read), -1)

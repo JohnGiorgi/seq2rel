@@ -68,15 +68,15 @@ def _normalize_clusters(clusters: ClusterAnnotation) -> EntityAnnotation:
         # Evaluation is insensitive to...
         (
             tuple(
-                # ...duplicate mentions
-                dict.fromkeys(
-                    # ...order
-                    sorted(
+                # ...order
+                sorted(
+                    # ...duplicate mentions
+                    dict.fromkeys(
                         # ...case
                         (coref.strip().lower() for coref in mentions.split(COREF_SEP_SYMBOL)),
-                        key=len,
-                        reverse=True,
-                    )
+                    ),
+                    key=len,
+                    reverse=True,
                 ),
             ),
             label,

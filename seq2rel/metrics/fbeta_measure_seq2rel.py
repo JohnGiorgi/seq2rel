@@ -5,8 +5,6 @@ from allennlp.training.metrics.fbeta_measure import FBetaMeasure
 from allennlp.training.metrics.metric import Metric
 from seq2rel.common.util import EntityAnnotation, deserialize_annotations
 
-# TODO: Change annotations to RelationAnnotation and ClusterAnnotation
-
 
 def _fuzzy_cluster_match(
     pred_rel: EntityAnnotation,
@@ -14,10 +12,10 @@ def _fuzzy_cluster_match(
     threshold: float = 0.5,
 ) -> bool:
     """Given some predicted relation `pred_rel`, returns True if there is a fuzzy match to any
-    relation in the ground truth relations `gold_rels`. A fuzzy match occurs when, for all
-    predicted clusters in a relation, P, there is a ground truth relation where for all clusters G,
-    | P ∩ G | / |P| > `threshold`. Regardless of `threshold`, the number and entity types of the
-    predicted clusters must exactly match the ground truth.
+    relation in the ground truth relations `gold_rels`. A fuzzy match occurs if there exists a
+    ground truth relation where, for every predicted cluster, P, there is a gold cluster G such
+    that | P ∩ G | / |P| > cluster_threshold. The number of predicted clusters and their predicted
+    entity classes must exactly match the ground truth regardless of threshold.
     """
     matched = False
     for gold_rel in gold_rels:
@@ -76,7 +74,7 @@ class FBetaMeasureSeq2Rel(FBetaMeasure):
         self._labels = list(range(len(labels)))
         self._num_classes = len(self._labels)
 
-        if cluster_threshold and (cluster_threshold <= 0 or cluster_threshold > 1):
+        if cluster_threshold is not None and (cluster_threshold <= 0 or cluster_threshold > 1):
             raise ValueError(f"cluster_threshold must be between (0, 1]. Got {cluster_threshold}.")
         self._cluster_threshold = cluster_threshold
 

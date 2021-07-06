@@ -2,6 +2,8 @@ from typing import List
 
 import pytest
 import torch
+from hypothesis import given
+from hypothesis.strategies import floats
 from seq2rel.metrics.fbeta_measure_seq2rel import (
     F1MeasureSeq2Rel,
     FBetaMeasureSeq2Rel,
@@ -120,7 +122,18 @@ class TestFBetaMeasureSeq2Rel(FBetaMeasureSeq2RelTestCase):
     def setup_method(self):
         super().setup_method()
 
-    def test_fbeta_seq2rel_raises_value_error(
+    @given(cluster_threshold=floats(min_value=-1, max_value=1))
+    def test_fbeta_seq2rel_invalid_cluster_threshold_raises_value_error(
+        self, cluster_threshold: float
+    ):
+        if cluster_threshold <= 0.0 or cluster_threshold > 1.0:
+            with pytest.raises(ValueError):
+                _ = FBetaMeasureSeq2Rel(labels=self.labels, cluster_threshold=cluster_threshold)
+        # Sanity check that valid values don't raise an error.
+        else:
+            _ = FBetaMeasureSeq2Rel(labels=self.labels, cluster_threshold=cluster_threshold)
+
+    def test_fbeta_seq2rel_diff_pred_and_ground_truth_lens_raises_value_error(
         self,
     ):
         fbeta = FBetaMeasureSeq2Rel(labels=self.labels)

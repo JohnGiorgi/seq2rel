@@ -54,7 +54,9 @@ class FBetaMeasureSeq2Rel(FBetaMeasure):
         multi-class average ignoring a majority negative class. Labels not present
         in the data will result in 0 components in a macro or weighted average.
     cluster_threshold : `float`, optional (default = `None`)
-        If `cluster_threshold`, use fuzzy matching, where a predicted cluster (P) is considered a true positive if | P ∩ G | / | P | > `cluster_threshold` for at least one gold cluster (G). A reasonable threshold value is `0.5`.
+        If `cluster_threshold`, use fuzzy matching, where a predicted cluster (P) is considered a
+        true positive if | P ∩ G | / | P | > `cluster_threshold` for at least one gold cluster (G).
+        A reasonable threshold value is `0.5`.
     """
 
     supports_distributed = True
@@ -74,7 +76,7 @@ class FBetaMeasureSeq2Rel(FBetaMeasure):
         self._labels = list(range(len(labels)))
         self._num_classes = len(self._labels)
 
-        if cluster_threshold <= 0 or cluster_threshold > 1:
+        if cluster_threshold and (cluster_threshold <= 0 or cluster_threshold > 1):
             raise ValueError(f"cluster_threshold must be between (0, 1]. Got {cluster_threshold}.")
         self._cluster_threshold = cluster_threshold
 
@@ -115,25 +117,28 @@ class FBetaMeasureSeq2Rel(FBetaMeasure):
                     class_index = self._str_labels.index(rel_label)
                     pred_rels = pred_ann.get(rel_label, [])
                     # Convert to a set, as we don't care about duplicates or order.
-                    pred_rels = set(pred_rels)
-                    gold_rels = set(gold_rels)
+                    dedup_pred_rels = set(pred_rels)
+                    dedup_gold_rels = set(gold_rels)
                     # If cluster_threshold, use fuzzy matching to determine true positives.
                     if self._cluster_threshold:
-                        for rel in pred_rels:
-                            if _fuzzy_cluster_match(rel, gold_rels, self._cluster_threshold):
-                                self._true_positive_sum[class_index] += 1
+                        for rel in dedup_pred_rels:
+                            if _fuzzy_cluster_match(rel, dedup_gold_rels, self._cluster_threshold):
+                                self._true_positive_sum[class_index] += 1  # type: ignore
                             self._pred_sum[class_index] += 1
                     else:
-                        self._true_positive_sum[class_index] += len(pred_rels & gold_rels)  # type: ignore
-                        self._pred_sum[class_index] += len(pred_rels)
-                    self._true_sum[class_index] += len(gold_rels)
+                        self._true_positive_sum[class_index] += len(  # type: ignore
+                            dedup_pred_rels & dedup_gold_rels
+                        )
+                        self._pred_sum[class_index] += len(dedup_pred_rels)
+                    self._true_sum[class_index] += len(dedup_gold_rels)
             # No corresponding gold annotation, so these are all false-positives.
             else:
                 for rel_label, pred_rels in pred_ann.items():
+                    dedup_pred_rels = set(pred_rels)
                     if self._labels and rel_label not in self._str_labels:
                         continue
                     class_index = self._str_labels.index(rel_label)
-                    self._pred_sum[class_index] += len(pred_rels)
+                    self._pred_sum[class_index] += len(dedup_pred_rels)
 
             # We need to set the total sum to be compatible with the parent class.
             # Because we do not support masking, it is equal to the "true sum".

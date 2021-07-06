@@ -2,7 +2,6 @@ import re
 
 from hypothesis import given
 from hypothesis.strategies import booleans, text
-
 from seq2rel.common import util
 
 
@@ -46,26 +45,26 @@ def test_deserialize_annotation() -> None:
         "@LOCATED_IN_THE_ADMINISTRATIVE_TERRITORIAL_ENTITY@ pasay city @LOC@ metro manila @LOC@ @EOR@",
     ]
 
-    # Check that we can call the function of a list of strings
+    # Check that we can call the function on a list of strings
     expected = [
         {},
         {},
-        {"ADE": [(("fenoprofen", "DRUG"), ("pure red cell aplasia", "EFFECT"))]},
+        {"ADE": [((("fenoprofen",), "DRUG"), (("pure red cell aplasia",), "EFFECT"))]},
         {
             "ADE": [
-                (("bimatoprost", "DRUG"), ("cystoid macula edema", "EFFECT")),
-                (("latanoprost", "DRUG"), ("cystoid macula edema", "EFFECT")),
+                ((("bimatoprost",), "DRUG"), (("cystoid macula edema",), "EFFECT")),
+                ((("latanoprost",), "DRUG"), (("cystoid macula edema",), "EFFECT")),
             ],
             "CID": [
                 (
-                    ("methamphetamine; meth", "CHEMICAL"),
-                    ("psychosis; psychotic disorders", "DISEASE"),
+                    (("methamphetamine", "meth"), "CHEMICAL"),
+                    (("psychotic disorders", "psychosis"), "DISEASE"),
                 )
             ],
         },
         {
             "LOCATED_IN_THE_ADMINISTRATIVE_TERRITORIAL_ENTITY": [
-                (("pasay city", "LOC"), ("metro manila", "LOC"))
+                ((("pasay city",), "LOC"), (("metro manila",), "LOC"))
             ],
         },
     ]
@@ -77,19 +76,20 @@ def test_deserialize_annotation() -> None:
     assert [expected[-1]] == actual
 
 
-def test_deduplicate_ents() -> None:
-    # Coreferent mentioned decoded by the model will be seperated by SPACE ; SPACE...
-    ents = (
-        # Duplicate coreferent mention
-        ("methamphetamine ; meth ; meth", "CHEMICAL"),
-        ("psychosis ; psychotic disorders", "DISEASE"),
-        # Duplicate entity mention
-        ("psychosis ; psychotic disorders", "DISEASE"),
+def test_normalize_clusters() -> None:
+    clusters = (
+        # Duplicate coreferent mentions + case insensitivity
+        ("methamphetamine ; Meth ; meth", "CHEMICAL"),
+        # Duplicate clusters + case insensitivity + order insensitivity
+        ("psychosis ; Psychotic disorders", "DISEASE"),
+        ("psychotic disorders ; psychosis", "DISEASE"),
     )
-    actual = util._deduplicate_ents(ents)
-    # ...whereas the deserialized mentions with by sperated by ; SPACE
+    actual = util._normalize_clusters(clusters)
     expected = (
-        ("methamphetamine; meth", "CHEMICAL"),
-        ("psychosis; psychotic disorders", "DISEASE"),
+        (("methamphetamine", "meth"), "CHEMICAL"),
+        (("psychotic disorders", "psychosis"), "DISEASE"),
+        # The duplicate cluster is kept because some relations do contain repeated
+        # clusters (like homodimers in protein-protein interactions).
+        (("psychotic disorders", "psychosis"), "DISEASE"),
     )
     assert actual == expected

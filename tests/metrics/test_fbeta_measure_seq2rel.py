@@ -2,8 +2,72 @@ from typing import List
 
 import pytest
 import torch
-from seq2rel.metrics.fbeta_measure_seq2rel import FBetaMeasureSeq2Rel, F1MeasureSeq2Rel
+from seq2rel.metrics.fbeta_measure_seq2rel import (
+    F1MeasureSeq2Rel,
+    FBetaMeasureSeq2Rel,
+    _fuzzy_cluster_match,
+)
 from torch.testing import assert_allclose
+
+
+def test_fuzzy_cluster_match() -> None:
+    threshold = 0.5
+    # Missing an entire cluster
+    pred_rel = (
+        # 0 / 1, NOT over threshold
+        (("arbitrary"), "CHEMICAL"),
+        # 2 / 2, over threshold
+        (("fasciculations", "fasciculation"), "DISEASE"),
+    )
+    gold_rels = [
+        (
+            (("suxamethonium chloride", "suxamethonium", "sch"), "CHEMICAL"),
+            (("fasciculations", "fasciculation"), "DISEASE"),
+        )
+    ]
+    assert not _fuzzy_cluster_match(pred_rel, gold_rels, threshold=threshold)
+    # Two additional mentions in each cluster
+    pred_rel = (
+        # 3 / 5, over threshold
+        (("suxamethonium chloride", "suxamethonium", "sch", "wrong", "incorrect"), "CHEMICAL"),
+        # 2 / 4, NOT the threshold
+        (("fasciculations", "fasciculation", "wrong", "incorrect"), "DISEASE"),
+    )
+    gold_rels = [
+        (
+            (("suxamethonium chloride", "suxamethonium", "sch"), "CHEMICAL"),
+            (("fasciculations", "fasciculation"), "DISEASE"),
+        )
+    ]
+    assert not _fuzzy_cluster_match(pred_rel, gold_rels, threshold=threshold)
+    # Missing a single mention in each cluster
+    pred_rel = (
+        # 2 / 3, over threshold
+        (("suxamethonium chloride", "suxamethonium"), "CHEMICAL"),
+        # 1 / 1, over threshold
+        (("fasciculations",), "DISEASE"),
+    )
+    gold_rels = [
+        (
+            (("suxamethonium chloride", "suxamethonium", "sch"), "CHEMICAL"),
+            (("fasciculations", "fasciculation"), "DISEASE"),
+        )
+    ]
+    assert _fuzzy_cluster_match(pred_rel, gold_rels, threshold=threshold)
+    # One additional mention in each cluster
+    pred_rel = (
+        # 2 / 3, over threshold
+        (("suxamethonium chloride", "suxamethonium", "arbitrary"), "CHEMICAL"),
+        # 2 / 2, over threshold
+        (("fasciculations", "fasciculation", "arbitrary"), "DISEASE"),
+    )
+    gold_rels = [
+        (
+            (("suxamethonium chloride", "suxamethonium", "sch"), "CHEMICAL"),
+            (("fasciculations", "fasciculation"), "DISEASE"),
+        )
+    ]
+    assert _fuzzy_cluster_match(pred_rel, gold_rels, threshold=threshold)
 
 
 class FBetaMeasureSeq2RelTestCase:

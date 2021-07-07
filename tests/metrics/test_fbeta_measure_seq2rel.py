@@ -20,8 +20,13 @@ def test_fuzzy_cluster_match() -> None:
         (("suxamethonium chloride", "suxamethonium", "sch"), "ARBITRARY"),
         (("fasciculations", "fasciculation"), "DISEASE"),
     )
+    # The matching gold annotation purposely comes second to ensure that order doesn't matter.
     gold_rels: Set[EntityAnnotation] = set(
         (
+            (
+                (("methamphetamine", "meth"), "CHEMICAL"),
+                (("psychotic disorders", "psychosis"), "DISEASE"),
+            ),
             (
                 (("suxamethonium chloride", "suxamethonium", "sch"), "CHEMICAL"),
                 (("fasciculations", "fasciculation"), "DISEASE"),
@@ -36,14 +41,6 @@ def test_fuzzy_cluster_match() -> None:
         # 2 / 2, over threshold
         (("fasciculations", "fasciculation"), "DISEASE"),
     )
-    gold_rels = set(
-        (
-            (
-                (("suxamethonium chloride", "suxamethonium", "sch"), "CHEMICAL"),
-                (("fasciculations", "fasciculation"), "DISEASE"),
-            ),
-        ),
-    )
     assert not _fuzzy_cluster_match(pred_rel, gold_rels, threshold=threshold)
     # Two additional mentions in each cluster
     pred_rel = (
@@ -51,14 +48,6 @@ def test_fuzzy_cluster_match() -> None:
         (("suxamethonium chloride", "suxamethonium", "sch", "wrong", "incorrect"), "CHEMICAL"),
         # 2 / 4, NOT the threshold
         (("fasciculations", "fasciculation", "wrong", "incorrect"), "DISEASE"),
-    )
-    gold_rels = set(
-        (
-            (
-                (("suxamethonium chloride", "suxamethonium", "sch"), "CHEMICAL"),
-                (("fasciculations", "fasciculation"), "DISEASE"),
-            ),
-        ),
     )
     assert not _fuzzy_cluster_match(pred_rel, gold_rels, threshold=threshold)
     # Missing a single mention in each cluster
@@ -68,14 +57,6 @@ def test_fuzzy_cluster_match() -> None:
         # 1 / 1, over threshold
         (("fasciculations",), "DISEASE"),
     )
-    gold_rels = set(
-        (
-            (
-                (("suxamethonium chloride", "suxamethonium", "sch"), "CHEMICAL"),
-                (("fasciculations", "fasciculation"), "DISEASE"),
-            ),
-        ),
-    )
     assert _fuzzy_cluster_match(pred_rel, gold_rels, threshold=threshold)
     # One additional mention in each cluster
     pred_rel = (
@@ -84,15 +65,6 @@ def test_fuzzy_cluster_match() -> None:
         # 2 / 2, over threshold
         (("fasciculations", "fasciculation", "arbitrary"), "DISEASE"),
     )
-    gold_rels = set(
-        (
-            (
-                (("suxamethonium chloride", "suxamethonium", "sch"), "CHEMICAL"),
-                (("fasciculations", "fasciculation"), "DISEASE"),
-            ),
-        ),
-    )
-    gold_rels = set(gold_rels)
     assert _fuzzy_cluster_match(pred_rel, gold_rels, threshold=threshold)
 
 

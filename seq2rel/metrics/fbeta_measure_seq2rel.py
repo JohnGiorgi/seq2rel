@@ -140,9 +140,9 @@ class FBetaMeasureSeq2Rel(FBetaMeasure):
                     class_index = self._str_labels.index(rel_label)
                     self._pred_sum[class_index] += len(dedup_pred_rels)
 
-            # We need to set the total sum to be compatible with the parent class.
-            # Because we do not support masking, it is equal to the "true sum".
-            self._total_sum = self._true_sum.detach().clone()
+        # We need to set the total sum to be compatible with the parent class.
+        # Because we do not support masking, it is equal to the "true sum".
+        self._total_sum = self._true_sum.detach().clone()
 
 
 @Metric.register("f1_seq2rel")

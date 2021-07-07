@@ -1,9 +1,72 @@
-from typing import List
+import copy
+from typing import List, Set
 
+import hypothesis.strategies as st
 import pytest
 import torch
-from seq2rel.metrics.fbeta_measure_seq2rel import FBetaMeasureSeq2Rel, F1MeasureSeq2Rel
+from hypothesis import given
+from seq2rel.common.util import EntityAnnotation
+from seq2rel.metrics.fbeta_measure_seq2rel import (
+    F1MeasureSeq2Rel,
+    FBetaMeasureSeq2Rel,
+    _fuzzy_cluster_match,
+)
 from torch.testing import assert_allclose
+
+
+def test_fuzzy_cluster_match() -> None:
+    threshold = 0.5
+    # Wrong entity type
+    pred_rel: EntityAnnotation = (
+        (("suxamethonium chloride", "suxamethonium", "sch"), "ARBITRARY"),
+        (("fasciculations", "fasciculation"), "DISEASE"),
+    )
+    # The matching gold annotation purposely comes second to ensure that order doesn't matter.
+    gold_rels: Set[EntityAnnotation] = set(
+        (
+            (
+                (("methamphetamine", "meth"), "CHEMICAL"),
+                (("psychotic disorders", "psychosis"), "DISEASE"),
+            ),
+            (
+                (("suxamethonium chloride", "suxamethonium", "sch"), "CHEMICAL"),
+                (("fasciculations", "fasciculation"), "DISEASE"),
+            ),
+        ),
+    )
+    assert not _fuzzy_cluster_match(pred_rel, gold_rels, threshold=threshold)
+    # Missing an entire cluster
+    pred_rel = (
+        # 0 / 1, NOT over threshold
+        (("arbitrary",), "CHEMICAL"),
+        # 2 / 2, over threshold
+        (("fasciculations", "fasciculation"), "DISEASE"),
+    )
+    assert not _fuzzy_cluster_match(pred_rel, gold_rels, threshold=threshold)
+    # Two additional mentions in each cluster
+    pred_rel = (
+        # 3 / 5, over threshold
+        (("suxamethonium chloride", "suxamethonium", "sch", "wrong", "incorrect"), "CHEMICAL"),
+        # 2 / 4, NOT the threshold
+        (("fasciculations", "fasciculation", "wrong", "incorrect"), "DISEASE"),
+    )
+    assert not _fuzzy_cluster_match(pred_rel, gold_rels, threshold=threshold)
+    # Missing a single mention in each cluster
+    pred_rel = (
+        # 2 / 3, over threshold
+        (("suxamethonium chloride", "suxamethonium"), "CHEMICAL"),
+        # 1 / 1, over threshold
+        (("fasciculations",), "DISEASE"),
+    )
+    assert _fuzzy_cluster_match(pred_rel, gold_rels, threshold=threshold)
+    # One additional mention in each cluster
+    pred_rel = (
+        # 2 / 3, over threshold
+        (("suxamethonium chloride", "suxamethonium", "arbitrary"), "CHEMICAL"),
+        # 2 / 2, over threshold
+        (("fasciculations", "fasciculation", "arbitrary"), "DISEASE"),
+    )
+    assert _fuzzy_cluster_match(pred_rel, gold_rels, threshold=threshold)
 
 
 class FBetaMeasureSeq2RelTestCase:
@@ -17,6 +80,8 @@ class FBetaMeasureSeq2RelTestCase:
             "@PHYSICAL@ atg1 @GGP@ atg1 @GGP@ @EOR@ @PHYSICAL@ atg17 @GGP@ atg1 @GGP@ @EOR@",
             # This prediction is missing a relation
             "@GENETIC@ b-myb @GGP@ cbp @GGP@ @EOR@ @PHYSICAL@ b-myb @GGP@ cbp @GGP@ @EOR@",
+            # This prediction contains coreferent mentions, where one cluster is missing a mention
+            "@PHYSICAL@ insulin @GGP@ peroxiredoxin 4; prdx4 @GGP@ @EOR@",
         ]
         self.targets = [
             "",
@@ -27,16 +92,17 @@ class FBetaMeasureSeq2RelTestCase:
                 " @PHYSICAL@ b-myb @GGP@ cbp @GGP@ @EOR@"
                 " @GENETIC@ myb @GGP@ cbp @GGP@ @EOR@"
             ),
+            "@PHYSICAL@ proinsulin; insulin @GGP@ peroxiredoxin 4; prdx4 @GGP@ @EOR@",
         ]
 
-        # detailed target state
-        self.pred_sum = [4, 1]
-        self.true_sum = [3, 2]
+        # Detailed target state
+        self.pred_sum = [5, 1]
+        self.true_sum = [4, 2]
         self.true_positive_sum = [2, 1]
-        self.total_sum = [3, 2]
+        self.total_sum = [4, 2]
 
-        desired_precisions = [2 / 4, 1.00]
-        desired_recalls = [2 / 3, 1 / 2]
+        desired_precisions = [2 / 5, 1.00]
+        desired_recalls = [2 / 4, 1 / 2]
         desired_fscores = [
             (2 * p * r) / (p + r) if p + r != 0.0 else 0.0
             for p, r in zip(desired_precisions, desired_recalls)
@@ -45,18 +111,30 @@ class FBetaMeasureSeq2RelTestCase:
         self.desired_recalls = desired_recalls
         self.desired_fscores = desired_fscores
 
+        # Threshold used for fuzzy cluster matching
+        self.cluster_threshold = 0.5
+
 
 class TestFBetaMeasureSeq2Rel(FBetaMeasureSeq2RelTestCase):
-    """Tests for FBetaMeasureSeq2Rel. Note that for now, these tests assume
-    that entities in a relation have an inherent order.
-
-    Loosely based on: https://github.com/allenai/allennlp/blob/main/tests/training/metrics/fbeta_measure_test.py
+    """Tests for FBetaMeasureSeq2Rel. Loosely based on:
+    https://github.com/allenai/allennlp/blob/main/tests/training/metrics/fbeta_measure_test.py
     """
 
     def setup_method(self):
         super().setup_method()
 
-    def test_fbeta_seq2rel_raises_value_error(
+    @given(cluster_threshold=st.floats(min_value=-1, max_value=1))
+    def test_fbeta_seq2rel_invalid_cluster_threshold_raises_value_error(
+        self, cluster_threshold: float
+    ):
+        if cluster_threshold <= 0.0 or cluster_threshold > 1.0:
+            with pytest.raises(ValueError):
+                _ = FBetaMeasureSeq2Rel(labels=self.labels, cluster_threshold=cluster_threshold)
+        # Sanity check that valid values don't raise an error.
+        else:
+            _ = FBetaMeasureSeq2Rel(labels=self.labels, cluster_threshold=cluster_threshold)
+
+    def test_fbeta_seq2rel_diff_pred_and_ground_truth_lens_raises_value_error(
         self,
     ):
         fbeta = FBetaMeasureSeq2Rel(labels=self.labels)
@@ -87,6 +165,37 @@ class TestFBetaMeasureSeq2Rel(FBetaMeasureSeq2RelTestCase):
         assert_allclose(precisions, self.desired_precisions)
         assert_allclose(recalls, self.desired_recalls)
         assert_allclose(fscores, self.desired_fscores)
+
+        # check type
+        assert isinstance(precisions, List)
+        assert isinstance(recalls, List)
+        assert isinstance(fscores, List)
+
+    def test_fbeta_seq2rel_multiclass_metric_fuzzy_match(self):
+        fbeta = FBetaMeasureSeq2Rel(labels=self.labels, cluster_threshold=self.cluster_threshold)
+        fbeta(self.predictions, self.targets)
+        metric = fbeta.get_metric()
+        precisions = metric["precision"]
+        recalls = metric["recall"]
+        fscores = metric["fscore"]
+
+        # With fuzzy matching, one of the predictions for the class at index 0 is now correct.
+        # increment the true positives by 1 and recompute the desired values.
+        true_positive_sum = copy.deepcopy(self.true_positive_sum)
+        desired_precisions = copy.deepcopy(self.desired_precisions)
+        desired_recalls = copy.deepcopy(self.desired_recalls)
+        true_positive_sum[0] += 1
+        desired_precisions[0] = (true_positive_sum[0]) / self.pred_sum[0]
+        desired_recalls[0] = (true_positive_sum[0]) / self.true_sum[0]
+        desired_fscores = [
+            (2 * p * r) / (p + r) if p + r != 0.0 else 0.0
+            for p, r in zip(desired_precisions, desired_recalls)
+        ]
+
+        # check value
+        assert_allclose(precisions, desired_precisions)
+        assert_allclose(recalls, desired_recalls)
+        assert_allclose(fscores, desired_fscores)
 
         # check type
         assert isinstance(precisions, List)
@@ -125,8 +234,8 @@ class TestFBetaMeasureSeq2Rel(FBetaMeasureSeq2RelTestCase):
 
         # We keep the expected values in CPU because FBetaMeasure returns them in CPU.
         true_positives = torch.tensor([2, 1], dtype=torch.float32)
-        false_positives = torch.tensor([2, 0], dtype=torch.float32)
-        false_negatives = torch.tensor([1, 1], dtype=torch.float32)
+        false_positives = torch.tensor([3, 0], dtype=torch.float32)
+        false_negatives = torch.tensor([2, 1], dtype=torch.float32)
         mean_true_positive = true_positives.mean()
         mean_false_positive = false_positives.mean()
         mean_false_negative = false_negatives.mean()

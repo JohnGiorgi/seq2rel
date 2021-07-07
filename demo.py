@@ -1,3 +1,5 @@
+from typing import Tuple
+
 import streamlit as st
 import streamlit.components.v1 as components
 from pyvis.network import Network
@@ -64,9 +66,9 @@ def load_model(model_name: str):
     return Seq2Rel(model_name)
 
 
-def process_ent(text: str, ents: str) -> str:
+def process_ent(text: str, ents: Tuple[str, ...]) -> str:
     matched_ents = []
-    for ent in ents.split(f" {util.COREF_SEP_SYMBOL} "):
+    for ent in ents:
         try:
             start = text.lower().index(ent.lower())
             end = start + len(ent)
@@ -125,6 +127,7 @@ if input_text:
     deserialize_annotations = util.deserialize_annotations(output)
     for prediction in deserialize_annotations:
         for rel_type, rels in prediction.items():
+            # TODO: This should be extended to n-ary relations.
             for rel in rels:
                 ent_1_text = process_ent(input_text, rel[0][0])
                 ent_2_text = process_ent(input_text, rel[1][0])

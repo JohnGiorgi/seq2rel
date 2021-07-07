@@ -17,7 +17,6 @@ def _fuzzy_cluster_match(
     that | P ∩ G | / |P| > cluster_threshold. The number of predicted clusters and their predicted
     entity classes must exactly match the ground truth regardless of threshold.
     """
-    matched = False
     for gold_rel in gold_rels:
         # If the number of gold and predicted clusters differ then we don't have a match.
         if len(gold_rel) != len(pred_rel):
@@ -29,12 +28,15 @@ def _fuzzy_cluster_match(
             gold = set(gold_mentions)
             # A predicted cluster (P) matches a gold cluster (G) if:
             #   1. | P ∩ G | / |P| > threshold
-            #   2. The predicted cluster label matches the gold cluster label.
+            #   2. The predicted cluster label matches the gold cluster label
             if (len(pred & gold) / len(pred)) <= threshold or pred_label != gold_label:
                 matched = False
                 break
+        # Found a fuzzy match for all clusters, and therefore the predicted relation is correct.
+        if matched:
+            return True
 
-    return matched
+    return False
 
 
 @Metric.register("fbeta_seq2rel")

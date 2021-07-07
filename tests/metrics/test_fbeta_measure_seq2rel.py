@@ -1,3 +1,4 @@
+import copy
 from typing import List, Set
 
 import hypothesis.strategies as st
@@ -79,6 +80,8 @@ class FBetaMeasureSeq2RelTestCase:
             "@PHYSICAL@ atg1 @GGP@ atg1 @GGP@ @EOR@ @PHYSICAL@ atg17 @GGP@ atg1 @GGP@ @EOR@",
             # This prediction is missing a relation
             "@GENETIC@ b-myb @GGP@ cbp @GGP@ @EOR@ @PHYSICAL@ b-myb @GGP@ cbp @GGP@ @EOR@",
+            # This prediction contains coreferent mentions, where one cluster is missing a mention
+            "@PHYSICAL@ insulin @GGP@ peroxiredoxin 4; prdx4 @GGP@ @EOR@",
         ]
         self.targets = [
             "",
@@ -89,16 +92,17 @@ class FBetaMeasureSeq2RelTestCase:
                 " @PHYSICAL@ b-myb @GGP@ cbp @GGP@ @EOR@"
                 " @GENETIC@ myb @GGP@ cbp @GGP@ @EOR@"
             ),
+            "@PHYSICAL@ proinsulin; insulin @GGP@ peroxiredoxin 4; prdx4 @GGP@ @EOR@",
         ]
 
-        # detailed target state
-        self.pred_sum = [4, 1]
-        self.true_sum = [3, 2]
+        # Detailed target state
+        self.pred_sum = [5, 1]
+        self.true_sum = [4, 2]
         self.true_positive_sum = [2, 1]
-        self.total_sum = [3, 2]
+        self.total_sum = [4, 2]
 
-        desired_precisions = [2 / 4, 1.00]
-        desired_recalls = [2 / 3, 1 / 2]
+        desired_precisions = [2 / 5, 1.00]
+        desired_recalls = [2 / 4, 1 / 2]
         desired_fscores = [
             (2 * p * r) / (p + r) if p + r != 0.0 else 0.0
             for p, r in zip(desired_precisions, desired_recalls)
@@ -107,12 +111,13 @@ class FBetaMeasureSeq2RelTestCase:
         self.desired_recalls = desired_recalls
         self.desired_fscores = desired_fscores
 
+        # Threshold used for fuzzy cluster matching
+        self.cluster_threshold = 0.5
+
 
 class TestFBetaMeasureSeq2Rel(FBetaMeasureSeq2RelTestCase):
-    """Tests for FBetaMeasureSeq2Rel. Note that for now, these tests assume
-    that entities in a relation have an inherent order.
-
-    Loosely based on: https://github.com/allenai/allennlp/blob/main/tests/training/metrics/fbeta_measure_test.py
+    """Tests for FBetaMeasureSeq2Rel. Loosely based on:
+    https://github.com/allenai/allennlp/blob/main/tests/training/metrics/fbeta_measure_test.py
     """
 
     def setup_method(self):
@@ -166,6 +171,37 @@ class TestFBetaMeasureSeq2Rel(FBetaMeasureSeq2RelTestCase):
         assert isinstance(recalls, List)
         assert isinstance(fscores, List)
 
+    def test_fbeta_seq2rel_multiclass_metric_fuzzy_match(self):
+        fbeta = FBetaMeasureSeq2Rel(labels=self.labels, cluster_threshold=self.cluster_threshold)
+        fbeta(self.predictions, self.targets)
+        metric = fbeta.get_metric()
+        precisions = metric["precision"]
+        recalls = metric["recall"]
+        fscores = metric["fscore"]
+
+        # With fuzzy matching, one of the predictions for the class at index 0 is now correct.
+        # increment the true positives by 1 and recompute the desired values.
+        true_positive_sum = copy.deepcopy(self.true_positive_sum)
+        desired_precisions = copy.deepcopy(self.desired_precisions)
+        desired_recalls = copy.deepcopy(self.desired_recalls)
+        true_positive_sum[0] += 1
+        desired_precisions[0] = (true_positive_sum[0]) / self.pred_sum[0]
+        desired_recalls[0] = (true_positive_sum[0]) / self.true_sum[0]
+        desired_fscores = [
+            (2 * p * r) / (p + r) if p + r != 0.0 else 0.0
+            for p, r in zip(desired_precisions, desired_recalls)
+        ]
+
+        # check value
+        assert_allclose(precisions, desired_precisions)
+        assert_allclose(recalls, desired_recalls)
+        assert_allclose(fscores, desired_fscores)
+
+        # check type
+        assert isinstance(precisions, List)
+        assert isinstance(recalls, List)
+        assert isinstance(fscores, List)
+
     def test_fbeta_seq2rel_multiclass_macro_average_metric(self):
         fbeta = FBetaMeasureSeq2Rel(labels=self.labels, average="macro")
         fbeta(self.predictions, self.targets)
@@ -198,8 +234,8 @@ class TestFBetaMeasureSeq2Rel(FBetaMeasureSeq2RelTestCase):
 
         # We keep the expected values in CPU because FBetaMeasure returns them in CPU.
         true_positives = torch.tensor([2, 1], dtype=torch.float32)
-        false_positives = torch.tensor([2, 0], dtype=torch.float32)
-        false_negatives = torch.tensor([1, 1], dtype=torch.float32)
+        false_positives = torch.tensor([3, 0], dtype=torch.float32)
+        false_negatives = torch.tensor([2, 1], dtype=torch.float32)
         mean_true_positive = true_positives.mean()
         mean_false_positive = false_positives.mean()
         mean_false_negative = false_negatives.mean()

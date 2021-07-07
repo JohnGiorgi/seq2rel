@@ -1,10 +1,15 @@
 import re
-from typing import Any, Dict, List, Union, Tuple
+from typing import Dict, List, Tuple, Union
 
 END_OF_REL_SYMBOL = "@EOR@"
 COREF_SEP_SYMBOL = ";"
-ENT_PATTERN = re.compile(r"(?:\s?)(.*?)(?:\s?)@([^\s]*)\b[^@]*@")
 REL_PATTERN = re.compile(fr"@([^\s]*)\b[^@]*@(.*?){END_OF_REL_SYMBOL}")
+CLUSTER_PATTERN = re.compile(r"(?:\s?)(.*?)(?:\s?)@([^\s]*)\b[^@]*@")
+
+# Custom annotation types
+ClusterAnnotation = Tuple[Tuple[str, ...], str]
+EntityAnnotation = Tuple[ClusterAnnotation, ...]
+RelationAnnotation = Dict[str, List[EntityAnnotation]]
 
 
 # Public functions #
@@ -19,8 +24,8 @@ def sanitize_text(text: str, lowercase: bool = False) -> str:
 
 def deserialize_annotations(
     serialized_annotations: Union[str, List[str]],
-) -> List[Dict[str, Any]]:
-    """Returns dictionaries containing the entities and the relations that are present in the
+) -> List[RelationAnnotation]:
+    """Returns dictionaries containing the entities and relations present in
     `serialized_annotations`, the string serialized representation of entities and relations.
 
     # Parameters
@@ -36,41 +41,46 @@ def deserialize_annotations(
     if isinstance(serialized_annotations, str):
         serialized_annotations = [serialized_annotations]
 
-    deserialized: List[Dict[str, Any]] = []
+    deserialized: List[RelationAnnotation] = []
     for annotation in serialized_annotations:
         deserialized.append({})
         rels = REL_PATTERN.findall(annotation)
-        for rel in rels:
-            rel_label, rel_string = rel
-            ents = tuple(ENT_PATTERN.findall(rel_string))
-            # Remove duplicate coreferent mentions. We don't care if the model generated
-            # the same mention twice, only that it generated it at all.
-            ents = _deduplicate_ents(ents)
-            # TODO. We can enforce order by casting the entities as a tuple.
-            # ents = tuple(ents) if self._ordered_ents else set(ents)
+        for rel_label, rel_string in rels:
+            raw_clusters = tuple(CLUSTER_PATTERN.findall(rel_string))
+            # Normalizes clusters so that evaluation is insensitive to order, case and duplicates.
+            clusters = _normalize_clusters(raw_clusters)  # type: ignore
             if rel_label in deserialized[-1]:
                 # Don't retain duplicates
-                if ents not in deserialized[-1][rel_label]:
-                    deserialized[-1][rel_label].append(ents)
+                if clusters not in deserialized[-1][rel_label]:
+                    deserialized[-1][rel_label].append(clusters)
             else:
-                deserialized[-1][rel_label] = [ents]
+                deserialized[-1][rel_label] = [clusters]
     return deserialized
 
 
 # Private functions #
 
 
-def _deduplicate_ents(ents: Tuple[Tuple[str, ...], ...]) -> Tuple[Tuple[str, ...], ...]:
-    # First, remove any duplicate coreferent mentions
-    dedup_coref = tuple(
+def _normalize_clusters(clusters: Tuple[Tuple[str, str], ...]) -> EntityAnnotation:
+    """Normalize clusters (coreferent mentions) by sorting mentions, removing duplicates, and
+    lowercasing the text."""
+    preprocessed_clusters = tuple(
+        # Evaluation is insensitive to...
         (
-            f"{COREF_SEP_SYMBOL} ".join(
-                dict.fromkeys(coref.strip() for coref in ent[0].split(COREF_SEP_SYMBOL))
+            tuple(
+                # ...order
+                sorted(
+                    # ...duplicate mentions
+                    dict.fromkeys(
+                        # ...case
+                        (coref.strip().lower() for coref in mentions.split(COREF_SEP_SYMBOL)),
+                    ),
+                    key=len,
+                    reverse=True,
+                ),
             ),
-            ent[1],
+            label,
         )
-        for ent in ents
+        for mentions, label in clusters
     )
-    # Then remove duplicate entity mentions
-    dedup_ents = tuple(dict.fromkeys(dedup_coref))
-    return dedup_ents
+    return preprocessed_clusters

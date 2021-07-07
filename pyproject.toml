@@ -49,14 +49,14 @@ pytest = "^6.2.3"
 pytest-cov = "^2.11.1"
 coverage = "^5.5"
 codecov = "^2.1.10"
-dephell = {extras = ["full"], version = "^0.8.3"}
+icecream = "^2.1.1"
 # This is required to run the demo. Because streamlit installs
 # all dev dependencies, we stick it here.
 pyvis = "^0.1.9"
-
 # Allows us to automatically generate a setup.py file (with `dephell deps convert`)
 # from this pyproject.toml so people who are not interested in using poetry don't have to.
 # See: https://github.com/dephell/dephell
+dephell = {extras = ["full"], version = "^0.8.3"}
 [tool.dephell.main]
 from = {format = "poetry", path = "pyproject.toml"}
 to = {format = "setuppy", path = "setup.py"}

@@ -1,9 +1,10 @@
-from typing import List
+from typing import List, Set
 
+import hypothesis.strategies as st
 import pytest
 import torch
 from hypothesis import given
-from hypothesis.strategies import floats
+from seq2rel.common.util import EntityAnnotation
 from seq2rel.metrics.fbeta_measure_seq2rel import (
     F1MeasureSeq2Rel,
     FBetaMeasureSeq2Rel,
@@ -14,19 +15,35 @@ from torch.testing import assert_allclose
 
 def test_fuzzy_cluster_match() -> None:
     threshold = 0.5
+    # Wrong entity type
+    pred_rel: EntityAnnotation = (
+        (("suxamethonium chloride", "suxamethonium", "sch"), "ARBITRARY"),
+        (("fasciculations", "fasciculation"), "DISEASE"),
+    )
+    gold_rels: Set[EntityAnnotation] = set(
+        (
+            (
+                (("suxamethonium chloride", "suxamethonium", "sch"), "CHEMICAL"),
+                (("fasciculations", "fasciculation"), "DISEASE"),
+            ),
+        ),
+    )
+    assert not _fuzzy_cluster_match(pred_rel, gold_rels, threshold=threshold)
     # Missing an entire cluster
     pred_rel = (
         # 0 / 1, NOT over threshold
-        (("arbitrary"), "CHEMICAL"),
+        (("arbitrary",), "CHEMICAL"),
         # 2 / 2, over threshold
         (("fasciculations", "fasciculation"), "DISEASE"),
     )
-    gold_rels = [
+    gold_rels = set(
         (
-            (("suxamethonium chloride", "suxamethonium", "sch"), "CHEMICAL"),
-            (("fasciculations", "fasciculation"), "DISEASE"),
-        )
-    ]
+            (
+                (("suxamethonium chloride", "suxamethonium", "sch"), "CHEMICAL"),
+                (("fasciculations", "fasciculation"), "DISEASE"),
+            ),
+        ),
+    )
     assert not _fuzzy_cluster_match(pred_rel, gold_rels, threshold=threshold)
     # Two additional mentions in each cluster
     pred_rel = (
@@ -35,12 +52,14 @@ def test_fuzzy_cluster_match() -> None:
         # 2 / 4, NOT the threshold
         (("fasciculations", "fasciculation", "wrong", "incorrect"), "DISEASE"),
     )
-    gold_rels = [
+    gold_rels = set(
         (
-            (("suxamethonium chloride", "suxamethonium", "sch"), "CHEMICAL"),
-            (("fasciculations", "fasciculation"), "DISEASE"),
-        )
-    ]
+            (
+                (("suxamethonium chloride", "suxamethonium", "sch"), "CHEMICAL"),
+                (("fasciculations", "fasciculation"), "DISEASE"),
+            ),
+        ),
+    )
     assert not _fuzzy_cluster_match(pred_rel, gold_rels, threshold=threshold)
     # Missing a single mention in each cluster
     pred_rel = (
@@ -49,12 +68,14 @@ def test_fuzzy_cluster_match() -> None:
         # 1 / 1, over threshold
         (("fasciculations",), "DISEASE"),
     )
-    gold_rels = [
+    gold_rels = set(
         (
-            (("suxamethonium chloride", "suxamethonium", "sch"), "CHEMICAL"),
-            (("fasciculations", "fasciculation"), "DISEASE"),
-        )
-    ]
+            (
+                (("suxamethonium chloride", "suxamethonium", "sch"), "CHEMICAL"),
+                (("fasciculations", "fasciculation"), "DISEASE"),
+            ),
+        ),
+    )
     assert _fuzzy_cluster_match(pred_rel, gold_rels, threshold=threshold)
     # One additional mention in each cluster
     pred_rel = (
@@ -63,12 +84,15 @@ def test_fuzzy_cluster_match() -> None:
         # 2 / 2, over threshold
         (("fasciculations", "fasciculation", "arbitrary"), "DISEASE"),
     )
-    gold_rels = [
+    gold_rels = set(
         (
-            (("suxamethonium chloride", "suxamethonium", "sch"), "CHEMICAL"),
-            (("fasciculations", "fasciculation"), "DISEASE"),
-        )
-    ]
+            (
+                (("suxamethonium chloride", "suxamethonium", "sch"), "CHEMICAL"),
+                (("fasciculations", "fasciculation"), "DISEASE"),
+            ),
+        ),
+    )
+    gold_rels = set(gold_rels)
     assert _fuzzy_cluster_match(pred_rel, gold_rels, threshold=threshold)
 
 
@@ -122,7 +146,7 @@ class TestFBetaMeasureSeq2Rel(FBetaMeasureSeq2RelTestCase):
     def setup_method(self):
         super().setup_method()
 
-    @given(cluster_threshold=floats(min_value=-1, max_value=1))
+    @given(cluster_threshold=st.floats(min_value=-1, max_value=1))
     def test_fbeta_seq2rel_invalid_cluster_threshold_raises_value_error(
         self, cluster_threshold: float
     ):

@@ -61,7 +61,7 @@ def deserialize_annotations(
 # Private functions #
 
 
-def _normalize_clusters(clusters: ClusterAnnotation) -> EntityAnnotation:
+def _normalize_clusters(clusters: Tuple[Tuple[str, str], ...]) -> EntityAnnotation:
     """Normalize clusters (coreferent mentions) by sorting mentions, removing duplicates, and
     lowercasing the text."""
     preprocessed_clusters = tuple(

@@ -72,7 +72,7 @@ local weight_decay = std.parseJson(std.extVar('weight_decay'));
         "optimizer": {
             "type": "huggingface_adamw",
             "lr": decoder_lr,
-            "weight_decay": 0.0,
+            "weight_decay": 0.01,
             "parameter_groups": [
                 // Apply weight decay to pre-trained params, excluding LayerNorm params and biases
                 // Regex: https://regex101.com/r/6XnPtH/1

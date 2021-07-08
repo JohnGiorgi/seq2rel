@@ -20,7 +20,7 @@ local labels = ["GDA"];
 // Max length of input text and max/min number of decoding steps
 // These should be set based on your dataset
 local max_length = 512;
-local max__steps = 344;
+local max_steps = 344;
 // Usually, this will be the special relation tokens (2) + two enties and their tag tokens (4)
 // Has little to no impact on performance, but it may be worth experimenting with
 local min_steps = null;
@@ -91,6 +91,7 @@ local TARGET_TOKENIZER = {
             },
         },
         "target_tokenizer": TARGET_TOKENIZER,
+        "dropout": 0.1,
         "token_based_metric": {
             "type": "average_length"
         },

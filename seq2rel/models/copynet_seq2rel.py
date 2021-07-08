@@ -32,6 +32,8 @@ class CopyNetSeq2Rel(CopyNetSeq2Seq):
     target_tokenizer : `Tokenizer`, optional (default = `None`)
         The tokenizer used to tokenize the target sequence. If not `None`, this is used to
         un-tokenize the target sequence, otherwise tokens are joined by whitespace.
+    dropout : `float` (default = `0.1`)
+        Dropout probability applied to the target embeddings and decoders inputs.
     sequence_based_metric : `Metric`, optional (default = `None`)
         A metric to track on validation data that takes lists of strings as input. This metric must
         accept two arguments when called, both of type `List[str]`. The first is a predicted
@@ -49,6 +51,7 @@ class CopyNetSeq2Rel(CopyNetSeq2Seq):
         source_embedder: TextFieldEmbedder,
         encoder: Seq2SeqEncoder = None,
         target_tokenizer: Tokenizer = None,
+        dropout: float = 0.1,
         tensor_based_metric: Metric = None,
         sequence_based_metric: Metric = None,
         init_decoder_state_strategy: str = "first",
@@ -67,6 +70,10 @@ class CopyNetSeq2Rel(CopyNetSeq2Seq):
         # Add the two structural tokens we use to denote coreferent mentions and end of relations
         _ = self.vocab.add_token_to_namespace(END_OF_REL_SYMBOL, self._target_namespace)
         _ = self.vocab.add_token_to_namespace(COREF_SEP_SYMBOL, self._target_namespace)
+
+        # Dropout to apply to the target embeddings and decoder inputs
+        self._dropout = torch.nn.Dropout(dropout) if dropout else torch.nn.Identity()
+
         # The strategy to use for initializing the decoders hidden state
         if init_decoder_state_strategy not in ["first", "last", "mean"]:
             raise ValueError(
@@ -193,6 +200,40 @@ class CopyNetSeq2Rel(CopyNetSeq2Seq):
                     )
 
         return output_dict
+
+    @overrides
+    def _decoder_step(
+        self,
+        last_predictions: torch.Tensor,
+        selective_weights: torch.Tensor,
+        state: Dict[str, torch.Tensor],
+    ) -> Dict[str, torch.Tensor]:
+        # shape: (group_size, source_sequence_length, encoder_output_dim)
+        encoder_outputs_mask = state["source_mask"]
+        # shape: (group_size, target_embedding_dim)
+        embedded_input = self._target_embedder(last_predictions)
+        embedded_input = self._dropout(embedded_input)
+        # shape: (group_size, source_sequence_length)
+        attentive_weights = self._attention(
+            state["decoder_hidden"], state["encoder_outputs"], encoder_outputs_mask
+        )
+        # shape: (group_size, encoder_output_dim)
+        attentive_read = util.weighted_sum(state["encoder_outputs"], attentive_weights)
+        # shape: (group_size, encoder_output_dim)
+        selective_read = util.weighted_sum(state["encoder_outputs"], selective_weights)
+        # shape: (group_size, target_embedding_dim + encoder_output_dim * 2)
+        decoder_input = torch.cat((embedded_input, attentive_read, selective_read), -1)
+        # shape: (group_size, decoder_input_dim)
+        projected_decoder_input = self._input_projection_layer(decoder_input)
+        projected_decoder_input = torch.nn.functional.gelu(projected_decoder_input)
+        projected_decoder_input = self._dropout(projected_decoder_input)
+
+        state["decoder_hidden"], state["decoder_context"] = self._decoder_cell(
+            projected_decoder_input.float(),
+            (state["decoder_hidden"].float(), state["decoder_context"].float()),
+        )
+
+        return state
 
     @overrides
     def make_output_human_readable(self, output_dict: Dict[str, Any]) -> Dict[str, Any]:

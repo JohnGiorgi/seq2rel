@@ -89,6 +89,7 @@ local TARGET_TOKENIZER = {
             },
         },
         "target_tokenizer": TARGET_TOKENIZER,
+        "dropout": 0.1,
         "token_based_metric": {
             "type": "average_length"
         },

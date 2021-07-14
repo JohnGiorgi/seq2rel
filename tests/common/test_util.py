@@ -26,6 +26,7 @@ def test_deserialize_annotation() -> None:
     # Test:
     # - the empty string
     # - non-empty string with no relation
+    # - non-empty string with an invalid relation
     # - a single relation string
     # - a multiple relation string
     # - a more complicated relation type with non-alpha-numeric characters in the special tokens
@@ -33,6 +34,7 @@ def test_deserialize_annotation() -> None:
     serialized_annotations = [
         "",
         "I don't contain anything of interest!",
+        "@ADE@ fenoprofen @DRUG@ @EOR@",
         "@ADE@ fenoprofen @DRUG@ pure red cell aplasia @EFFECT@ @EOR@",
         (
             "@ADE@ bimatoprost @DRUG@ cystoid macula edema @EFFECT@ @EOR@"
@@ -47,6 +49,7 @@ def test_deserialize_annotation() -> None:
 
     # Check that we can call the function on a list of strings
     expected = [
+        {},
         {},
         {},
         {"ADE": [((("fenoprofen",), "DRUG"), (("pure red cell aplasia",), "EFFECT"))]},

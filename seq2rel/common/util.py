@@ -49,6 +49,10 @@ def deserialize_annotations(
             raw_clusters = tuple(CLUSTER_PATTERN.findall(rel_string))
             # Normalizes clusters so that evaluation is insensitive to order, case and duplicates.
             clusters = _normalize_clusters(raw_clusters)  # type: ignore
+            # A relation must contain at least to entities. These are easy to detect at training
+            # and at inference, so we purposfully drop them.
+            if len(clusters) < 2:
+                continue
             if rel_label in deserialized[-1]:
                 # Don't retain duplicates
                 if clusters not in deserialized[-1][rel_label]:

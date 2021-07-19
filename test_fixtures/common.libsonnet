@@ -20,8 +20,8 @@ local sorting_keys = [source_namespace];
 
 // These are set using environment variables.
 // This allows us to tune them automatically with Optuna.
-local train_data_path = "test_fixtures/copynet_seq2rel/data/train.tsv";
-local validation_data_path = "test_fixtures/copynet_seq2rel/data/train.tsv";
+local train_data_path = "test_fixtures/data/train.tsv";
+local validation_data_path = "test_fixtures/data/train.tsv";
 // This should be a registered name in the Transformers library (see https://huggingface.co/models) 
 // OR a path on disk to a serialized transformer model.
 local model_name = "distilbert-base-uncased";

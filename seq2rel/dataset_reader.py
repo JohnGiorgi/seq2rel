@@ -1,18 +1,15 @@
 import logging
-from typing import Dict
 
 from allennlp.data.dataset_readers.dataset_reader import DatasetReader
 from allennlp.data.instance import Instance
-from allennlp.data.token_indexers import TokenIndexer
-from allennlp.data.tokenizers import Tokenizer
 from allennlp_models.generation.dataset_readers import CopyNetDatasetReader
 from overrides import overrides
 
 logger = logging.getLogger(__name__)
 
 
-@DatasetReader.register("copynet_seq2rel")
-class CopyNetSeq2RelDatasetReader(CopyNetDatasetReader):
+@DatasetReader.register("seq2rel")
+class Seq2RelDatasetReader(CopyNetDatasetReader):
     """
     This is a thin wrapper around `CopyNetDatasetReader` to provide any of the modifications
     necessary to use the dataset reader for information extraction. The arguments are identical to
@@ -20,21 +17,9 @@ class CopyNetSeq2RelDatasetReader(CopyNetDatasetReader):
     [`CopyNetSeq2Seq`](https://github.com/allenai/allennlp-models/blob/main/allennlp_models/generation/dataset_readers/copynet_seq2seq.py),
     """
 
-    def __init__(
-        self,
-        target_namespace: str,
-        source_tokenizer: Tokenizer = None,
-        target_tokenizer: Tokenizer = None,
-        source_token_indexers: Dict[str, TokenIndexer] = None,
-        **kwargs,
-    ) -> None:
-        super().__init__(
-            target_namespace, source_tokenizer, target_tokenizer, source_token_indexers, **kwargs
-        )
-
     @overrides
     def text_to_instance(
-        self, source_string: str, target_string: str = None
+        self, source_string: str, target_string: str = None, _id: str = None
     ) -> Instance:  # type: ignore
         # We have to add a space in front of the source/target strings in order to achieve
         # consistant tokenization with certain tokenizers, like GPT. Enforce this behavior here.
@@ -42,4 +27,8 @@ class CopyNetSeq2RelDatasetReader(CopyNetDatasetReader):
         source_string = " " + source_string.lstrip()
         if target_string:
             target_string = " " + target_string.lstrip()
-        return super().text_to_instance(source_string, target_string)
+        instance = super().text_to_instance(source_string, target_string)
+        # If an unique ID was provided (optional), add it to the metadata
+        if _id is not None:
+            instance.fields["metadata"].metadata["_id"] = _id
+        return instance

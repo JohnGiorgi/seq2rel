@@ -6,14 +6,13 @@ from allennlp.common.testing import ModelTestCase
 from allennlp.models import Model
 
 
-class TestCopyNetSeq2Rel(ModelTestCase):
+class TestSeq2Rel(ModelTestCase):
     def setup_method(self) -> None:
         super().setup_method()
         # We need to override the path set by AllenNLP
         self.FIXTURES_ROOT = (
-            (pathlib.Path(__file__).parent / ".." / "..").resolve()
-            / "test_fixtures"
-        )
+            pathlib.Path(__file__).parent / ".." / ".."
+        ).resolve() / "test_fixtures"
         self.set_up_model(
             self.FIXTURES_ROOT / "experiment.jsonnet",
             self.FIXTURES_ROOT / "data" / "train.tsv",

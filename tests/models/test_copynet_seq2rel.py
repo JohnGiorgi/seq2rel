@@ -11,9 +11,8 @@ class TestCopyNetSeq2Rel(ModelTestCase):
         super().setup_method()
         # We need to override the path set by AllenNLP
         self.FIXTURES_ROOT = (
-            (pathlib.Path(__file__).parent / ".." / "..").resolve()
-            / "test_fixtures"
-        )
+            pathlib.Path(__file__).parent / ".." / ".."
+        ).resolve() / "test_fixtures"
         self.set_up_model(
             self.FIXTURES_ROOT / "experiment.jsonnet",
             self.FIXTURES_ROOT / "data" / "train.tsv",

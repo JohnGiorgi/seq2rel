@@ -67,7 +67,7 @@ local TARGET_TOKENIZER = {
     "train_data_path": COMMON["train_data_path"],
     "validation_data_path": COMMON["validation_data_path"],
     "dataset_reader": {
-        "type": "copynet_seq2rel",
+        "type": "seq2rel",
         "target_namespace": COMMON["target_namespace"],
         "source_tokenizer": SOURCE_TOKENIZER,
         "target_tokenizer": TARGET_TOKENIZER,

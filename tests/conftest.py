@@ -8,7 +8,7 @@ PRETRAINED_ADE_MODEL = "ade"
 
 @pytest.fixture(scope="module")
 def pretrained_ade_model() -> Seq2Rel:
-    return Seq2Rel(PRETRAINED_ADE_MODEL)
+    return Seq2Rel(PRETRAINED_ADE_MODEL, overrides={"dataset_reader.type": "seq2rel"})
 
 
 @pytest.fixture()

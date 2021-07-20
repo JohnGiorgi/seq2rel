@@ -7,32 +7,29 @@ local ent_hints = [
     "@START_GGP@",
     "@END_GGP@",
 ];
-// A list containing the special tokens in your target vocabulary
-local special_tokens = [
+// Lists containing the special entity/relation tokens in your target vocabulary
+local ent_tokens = [
     "@GGP@",
+];
+local rel_tokens = [
     "@PHYSICAL@",
     "@GENETIC@",
 ];
-// A list of relation labels in your dataset
-local labels = ["GENETIC", "PHYSICAL"];
 // Max length of input text and max/min number of decoding steps
 // These should be set based on your dataset
 local max_length = 16;
 local max_steps = 8;
-// Usually, this will be the special relation tokens (2) + two enties and their tag tokens (4)
-// Has little to no impact on performance, but it may be worth experimenting with
-local min_steps = null;
 
 // Do not modify.
-local tokens_to_add = special_tokens + COMMON["special_tokens"];
+local special_target_tokens = ent_tokens + rel_tokens + COMMON["special_target_tokens"];
 local source_tokenizer_kwargs = {
     // HF tokenizers name this parameter one of two things, including both here.
     "special_tokens": ent_hints,
     "additional_special_tokens": ent_hints
 };
 local target_tokenizer_kwargs = {
-    "special_tokens": tokens_to_add,
-    "additional_special_tokens": tokens_to_add
+    "special_tokens": special_target_tokens,
+    "additional_special_tokens": special_target_tokens
 };
 
 local SOURCE_TOKENIZER = {
@@ -59,7 +56,7 @@ local TARGET_TOKENIZER = {
         },
         "tokens_to_add" : {
             [COMMON["source_namespace"]]: ent_hints,
-            [COMMON["target_namespace"]]: tokens_to_add
+            [COMMON["target_namespace"]]: special_target_tokens
         },
     },
     "train_data_path": COMMON["train_data_path"],
@@ -93,17 +90,21 @@ local TARGET_TOKENIZER = {
         "token_based_metric": {
             "type": "seq2rel.metrics.AverageLength"
         },
-        "sequence_based_metric": {
-            "type": "seq2rel.metrics.F1MeasureSeq2Rel",
-            "labels": labels,
-            "average": "micro"
-        },
+        "sequence_based_metrics": [
+            {
+                "type": "seq2rel.metrics.F1MeasureSeq2Rel",
+                "labels": rel_tokens,
+                "average": "micro"
+            },
+            {
+                "type": "seq2rel.metrics.ValidSequences",
+            },
+        ],
         "attention": {
             "type": "seq2rel.modules.attention.dk_scaled_dot_product_attention.DkScaledDotProductAttention"
         },
         "beam_search": {
             "max_steps": max_steps,
-            "min_steps": min_steps,
             "beam_size": COMMON["beam_size"],
             "final_sequence_scorer": {
                 "type": "length-normalized-sequence-log-prob",

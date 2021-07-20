@@ -5,8 +5,11 @@ class AverageLengthTestCase:
     def setup_method(self):
         self.predictions = ["They may take us, but they’ll never take our freedom!".split()]
         self.targets = ["They may take our lives, but they’ll never take our freedom!".split()]
-        self.decoded_mean_length = len(self.predictions[0]) / len(self.predictions)
-        self.target_mean_length = len(self.targets[0]) / len(self.targets)
+        self.predictions_mean_length = round(len(self.predictions[0]) / len(self.predictions), 2)
+        self.targets_mean_length = round(len(self.targets[0]) / len(self.targets), 2)
+        self.predictions_to_targets_length_ratio = round(
+            self.predictions_mean_length / self.targets_mean_length, 2
+        )
 
 
 class TestAverageLength(AverageLengthTestCase):
@@ -14,12 +17,12 @@ class TestAverageLength(AverageLengthTestCase):
         super().setup_method()
 
     def test_average_length(self):
-        average_length = AverageLength()
-        average_length(self.predictions, self.targets)
+        metric = AverageLength()
+        metric(self.predictions, self.targets)
         expected = {
-            "decoded_mean_length": round(self.decoded_mean_length, 2),
-            "target_mean_length": round(self.target_mean_length, 2),
-            "ratio": round(self.decoded_mean_length / self.target_mean_length, 2),
+            "predictions_mean_length": self.predictions_mean_length,
+            "targets_mean_length": self.targets_mean_length,
+            "predictions_to_targets_length_ratio": self.predictions_to_targets_length_ratio,
         }
-        actual = average_length.get_metric()
+        actual = metric.get_metric()
         assert actual == expected

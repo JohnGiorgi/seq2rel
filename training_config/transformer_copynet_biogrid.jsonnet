@@ -93,11 +93,13 @@ local TARGET_TOKENIZER = {
         "token_based_metric": {
             "type": "average_length"
         },
-        "sequence_based_metric": {
-            "type": "f1_seq2rel",
-            "labels": labels,
-            "average": "micro"
-        },
+        "sequence_based_metrics": [
+            {
+                "type": "f1_seq2rel",
+                "labels": labels,
+                "average": "micro"
+            },
+        ],
         "attention": {
             "type": "dk_scaled_dot_product"
         },

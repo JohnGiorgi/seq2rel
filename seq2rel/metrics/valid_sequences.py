@@ -7,11 +7,10 @@ from seq2rel.common.util import REL_PATTERN, deserialize_annotations
 
 @Metric.register("valid_sequences")
 class ValidSequences(Metric):
-    """Reports the count of predicted relations (valid or not) and valid predicted relations in
-    the decoders outpuut. This is useful as a diagnositic. E.g., if the ratio of predicted relations
-    to valid predicted ratios is much greater than 1.0, it suggests that the model is having trouble
-    generating valid relations. Note that the argument `ground_truths` to `__call__` is ignored and
-    provided only for API consistency.
+    """Compute the count of (valid) relations in the decoded and target sequences. This is useful
+    as a diagnositic. E.g., if the ratio of predicted relations to valid predicted ratios is much
+    greater than 1.0, it suggests that the model is having trouble generating valid relations. Note
+    that the argument `ground_truths` to `__call__` is ignored and provided only for API consistency.
     """
 
     def __init__(self):

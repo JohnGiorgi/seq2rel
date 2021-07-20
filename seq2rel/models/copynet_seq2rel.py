@@ -34,11 +34,11 @@ class CopyNetSeq2Rel(CopyNetSeq2Seq):
         un-tokenize the target sequence, otherwise tokens are joined by whitespace.
     dropout : `float` (default = `0.1`)
         Dropout probability applied to the target embeddings and decoders inputs.
-    sequence_based_metric : `Metric`, optional (default = `None`)
-        A metric to track on validation data that takes lists of strings as input. This metric must
-        accept two arguments when called, both of type `List[str]`. The first is a predicted
-        sequence for each item in the batch and the second is a gold sequence for each item in the
-        batch.
+    sequence_based_metrics : `List[Metric]`, optional (default = `None`)
+        A list of metrics to track on validation data that takes lists of strings as input. These
+        metrics must accept two arguments when called, both of type `List[str]`. The first is a
+        predicted sequence for each item in the batch and the second is a gold sequence for each
+        item in the batch.
     init_decoder_state_strategy: `Optional[str]`, optional (default = `"first"`)
         If `init_decoder_state_strategy` is `"first"`, initialize decoders hidden state with first encoder output
         If `init_decoder_state_strategy` is `"last"`, initialize decoders hidden state with last encoder output
@@ -53,7 +53,7 @@ class CopyNetSeq2Rel(CopyNetSeq2Seq):
         target_tokenizer: Tokenizer = None,
         dropout: float = 0.1,
         tensor_based_metric: Metric = None,
-        sequence_based_metric: Metric = None,
+        sequence_based_metrics: List[Metric] = None,
         init_decoder_state_strategy: str = "first",
         **kwargs,  # type: ignore
     ) -> None:
@@ -66,7 +66,7 @@ class CopyNetSeq2Rel(CopyNetSeq2Seq):
 
         # Any seq2rel specific setup goes here
         self._target_tokenizer: Tokenizer = target_tokenizer
-        self._sequence_based_metric = sequence_based_metric
+        self._sequence_based_metrics = sequence_based_metrics or []
         # Add the two structural tokens we use to denote coreferent mentions and end of relations
         _ = self.vocab.add_token_to_namespace(END_OF_REL_SYMBOL, self._target_namespace)
         _ = self.vocab.add_token_to_namespace(COREF_SEP_SYMBOL, self._target_namespace)
@@ -126,6 +126,7 @@ class CopyNetSeq2Rel(CopyNetSeq2Seq):
         metadata: List[Dict[str, Any]],
         target_tokens: TextFieldTensors = None,
         target_token_ids: torch.Tensor = None,
+        weight: torch.Tensor = None,
     ) -> Dict[str, torch.Tensor]:
         """
         Make foward pass with decoder logic for producing the entire target sequence.
@@ -163,7 +164,7 @@ class CopyNetSeq2Rel(CopyNetSeq2Seq):
 
         if target_tokens:
             state = self._init_decoder_state(state)
-            output_dict = self._forward_loss(target_tokens, target_token_ids, state)
+            output_dict = self._forward_loss(target_tokens, target_token_ids, state, weight=weight)
         else:
             output_dict = {}
 
@@ -193,11 +194,10 @@ class CopyNetSeq2Rel(CopyNetSeq2Seq):
                     self._token_based_metric(  # type: ignore
                         predicted_tokens, [x["target_tokens"] for x in metadata]
                     )
-                if self._sequence_based_metric is not None:
+                if self._sequence_based_metrics:
                     output_dict = self.make_output_human_readable(output_dict)
-                    self._sequence_based_metric(  # type: ignore
-                        output_dict["predicted_strings"], output_dict["target_strings"]
-                    )
+                    for metric in self._sequence_based_metrics:
+                        metric(output_dict["predicted_strings"], output_dict["target_strings"])  # type: ignore
 
         return output_dict
 
@@ -284,6 +284,6 @@ class CopyNetSeq2Rel(CopyNetSeq2Seq):
                 all_metrics.update(self._tensor_based_metric.get_metric(reset=reset))
             if self._token_based_metric is not None:
                 all_metrics.update(self._token_based_metric.get_metric(reset=reset))
-            if self._sequence_based_metric is not None:
-                all_metrics.update(self._sequence_based_metric.get_metric(reset=reset))
+            for metric in self._sequence_based_metrics:
+                all_metrics.update(metric.get_metric(reset=reset))
         return all_metrics

@@ -2,7 +2,6 @@ from typing import List
 
 import torch
 from allennlp.common.util import END_SYMBOL
-
 from allennlp.nn.beam_search import Constraint, ConstraintStateType
 from allennlp.nn.util import min_value_of_dtype
 from overrides import overrides
@@ -63,7 +62,7 @@ class EnforceValidLinearization(Constraint):
                 # all copy indices here.
                 if self._copy_index_start in allowed_indices:
                     allowed_indices.extend(copy_indices)
-                # This is all possible predictions, minus the allowed indices and the end token.
+                # This is all possible predictions, minus the allowed indices and the EOS token.
                 disallowed_indices = list(
                     set(range(num_targets)) - set(allowed_indices) - set((self._end_index,))
                 )

@@ -27,7 +27,8 @@ class ValidSequences(Metric):
         )
         for pred in predictions:
             # Check how many relations we can parse out.
-            self._pred_count += len(REL_PATTERN.findall(pred))
+            # Don't include duplicates as these are easily detected.
+            self._pred_count += len(set(REL_PATTERN.findall(pred)))
             # After these have been considered, check if the string is non-empty.
             # Count this as a prediction if so.
             self._pred_count += int(bool(re.sub(REL_PATTERN, "", pred).strip()))

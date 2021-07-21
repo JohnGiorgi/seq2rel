@@ -36,6 +36,7 @@ allennlp-models = "^2.5.0"
 allennlp-optuna = { version = "^0.1.6", optional = true }
 validators = "^0.18.2"
 more-itertools = "^8.8.0"
+wasabi = "^0.8.2"
 
 [tool.poetry.extras]
 optuna = ["allennlp-optuna"]

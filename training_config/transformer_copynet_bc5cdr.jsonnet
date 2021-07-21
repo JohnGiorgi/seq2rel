@@ -1,29 +1,26 @@
 // This config contains anything that doesn"t change across experiments and datasets
-local COMMON = import "transformer_copynet_common.libsonnet";
+local COMMON = import "common.libsonnet";
 
 // ** THESE MUST BE SET BY THE USER **//
-// Entity hints used in the source text
+// Entity hints used in the text
 local ent_hints = [
-    "@START_GENE@",
-    "@END_GENE@",
+    "@START_CHEMICAL@",
+    "@END_CHEMICAL@",
     "@START_DISEASE@",
     "@END_DISEASE@",
 ];
 // Lists containing the special entity/relation tokens in your target vocabulary
 local ent_tokens = [
-    "@GENE@",
+    "@CHEMICAL@",
     "@DISEASE@",
 ];
 local rel_tokens = [
-    "@GDA@",
+    "@CID@",
 ];
 // Max length of input text and max/min number of decoding steps
 // These should be set based on your dataset
 local max_length = 512;
-local max_steps = 344;
-// Usually, this will be the special relation tokens (2) + two enties and their tag tokens (4)
-// Has little to no impact on performance, but it may be worth experimenting with
-local min_steps = null;
+local max_steps = 256;
 
 // Do not modify.
 local special_target_tokens = ent_tokens + rel_tokens + COMMON["special_target_tokens"];

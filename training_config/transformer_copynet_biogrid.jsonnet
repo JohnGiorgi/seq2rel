@@ -2,37 +2,34 @@
 local COMMON = import "transformer_copynet_common.libsonnet";
 
 // ** THESE MUST BE SET BY THE USER **//
-// Entity hints used in the source text
+// Entity hints used in the text
 local ent_hints = [
-    "@START_GGP@",
-    "@END_GGP@",
+    "@START_GENE@",
+    "@END_GENE@",
 ];
-// A list containing the special tokens in your target vocabulary
-local special_tokens = [
-    "@GGP@",
+// Lists containing the special entity/relation tokens in your target vocabulary
+local ent_tokens = [
+    "@GENE@",
+];
+local rel_tokens = [
     "@PHYSICAL@",
     "@GENETIC@",
 ];
-// A list of relation labels in your dataset
-local labels = ["GENETIC", "PHYSICAL"];
 // Max length of input text and max/min number of decoding steps
 // These should be set based on your dataset
 local max_length = 512;
 local max_steps = 160;
-// Usually, this will be the special relation tokens (2) + two enties and their tag tokens (4)
-// Has little to no impact on performance, but it may be worth experimenting with
-local min_steps = null;
 
 // Do not modify.
-local tokens_to_add = special_tokens + COMMON["special_tokens"];
+local special_target_tokens = ent_tokens + rel_tokens + COMMON["special_target_tokens"];
 local source_tokenizer_kwargs = {
     // HF tokenizers name this parameter one of two things, including both here.
     "special_tokens": ent_hints,
     "additional_special_tokens": ent_hints
 };
 local target_tokenizer_kwargs = {
-    "special_tokens": tokens_to_add,
-    "additional_special_tokens": tokens_to_add
+    "special_tokens": special_target_tokens,
+    "additional_special_tokens": special_target_tokens
 };
 
 local SOURCE_TOKENIZER = {
@@ -59,7 +56,7 @@ local TARGET_TOKENIZER = {
         },
         "tokens_to_add" : {
             [COMMON["source_namespace"]]: ent_hints,
-            [COMMON["target_namespace"]]: tokens_to_add
+            [COMMON["target_namespace"]]: special_target_tokens
         },
     },
     "train_data_path": COMMON["train_data_path"],
@@ -96,24 +93,34 @@ local TARGET_TOKENIZER = {
         "sequence_based_metrics": [
             {
                 "type": "f1_seq2rel",
-                "labels": labels,
+                "labels": rel_tokens,
                 "average": "micro"
+            },
+            {
+                "type": "valid_sequences",
             },
         ],
         "attention": {
             "type": "dk_scaled_dot_product"
         },
+        "target_embedding_dim": COMMON["target_embedding_dim"],
         "beam_search": {
             "max_steps": max_steps,
-            "min_steps": min_steps,
             "beam_size": COMMON["beam_size"],
             "final_sequence_scorer": {
                 "type": "length-normalized-sequence-log-prob",
                 // Larger values favour longer decodings and vice versa
                 "length_penalty": 1.0
             },
+            "constraints": [
+                {
+                    "type": "seq2rel",
+                    "rel_tokens": rel_tokens,
+                    "ent_tokens": ent_tokens,
+                    "target_namespace": COMMON["target_namespace"]
+                },
+            ],
         },
-        "target_embedding_dim": COMMON["target_embedding_dim"],
     },
     "data_loader": COMMON["data_loader"],
     "validation_data_loader": COMMON["validation_data_loader"],

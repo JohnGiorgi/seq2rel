@@ -4,9 +4,13 @@
 // Fields can then be accessed like a dictionary, e.g. COMMON['batch_size']
 
 // These are special tokens used by the decoder
-local special_tokens = [
+local special_target_tokens = [
+    // These are seq2rel specific
     "@EOR@",
-    ";"
+    ";",
+    // These are AllenNLP specific
+    "@start@",
+    "@end@"
 ];
 
 // Define the name spaces of the source and target tokens respectively
@@ -31,7 +35,7 @@ local decoder_lr = std.parseJson(std.extVar('decoder_lr'));
 local weight_decay = std.parseJson(std.extVar('weight_decay'));
 
 {
-    "special_tokens": special_tokens,
+    "special_target_tokens": special_target_tokens,
     "source_namespace": source_namespace,
     "target_namespace": target_namespace,
     "sorting_keys": sorting_keys,

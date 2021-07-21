@@ -264,35 +264,46 @@ local TARGET_TOKENIZER = {
                 "tokens": {
                     "type": "pretrained_transformer",
                     "model_name": COMMON["model_name"],
+                    "tokenizer_kwargs": source_tokenizer_kwargs
                 },
             },
         },
         "target_tokenizer": TARGET_TOKENIZER,
         "dropout": 0.1,
         "token_based_metric": {
-            "type": "seq2rel.metrics.AverageLength"
+            "type": "average_length"
         },
         "sequence_based_metrics": [
             {
                 "type": "f1_seq2rel",
-                "labels": labels,
+                "labels": rel_tokens,
                 "average": "micro"
+            },
+            {
+                "type": "valid_sequences",
             },
         ],
         "attention": {
             "type": "dk_scaled_dot_product"
         },
+        "target_embedding_dim": COMMON["target_embedding_dim"],
         "beam_search": {
             "max_steps": max_steps,
-            "min_steps": min_steps,
             "beam_size": COMMON["beam_size"],
             "final_sequence_scorer": {
                 "type": "length-normalized-sequence-log-prob",
                 // Larger values favour longer decodings and vice versa
                 "length_penalty": 1.0
             },
+            "constraints": [
+                {
+                    "type": "seq2rel",
+                    "rel_tokens": rel_tokens,
+                    "ent_tokens": ent_tokens,
+                    "target_namespace": COMMON["target_namespace"]
+                },
+            ],
         },
-        "target_embedding_dim": COMMON["target_embedding_dim"],
     },
     "data_loader": COMMON["data_loader"],
     "validation_data_loader": COMMON["validation_data_loader"],

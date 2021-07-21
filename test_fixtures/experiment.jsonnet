@@ -4,12 +4,12 @@ local COMMON = import "common.libsonnet";
 // ** THESE MUST BE SET BY THE USER **//
 // Entity hints used in the source text
 local ent_hints = [
-    "@START_GGP@",
-    "@END_GGP@",
+    "@START_GENE@",
+    "@END_GENE@",
 ];
 // Lists containing the special entity/relation tokens in your target vocabulary
 local ent_tokens = [
-    "@GGP@",
+    "@GENE@",
 ];
 local rel_tokens = [
     "@PHYSICAL@",
@@ -103,6 +103,7 @@ local TARGET_TOKENIZER = {
         "attention": {
             "type": "seq2rel.modules.attention.dk_scaled_dot_product_attention.DkScaledDotProductAttention"
         },
+        "target_embedding_dim": COMMON["target_embedding_dim"],
         "beam_search": {
             "max_steps": max_steps,
             "beam_size": COMMON["beam_size"],
@@ -119,8 +120,7 @@ local TARGET_TOKENIZER = {
                     "target_namespace": COMMON["target_namespace"]
                 },
             ],
-        },
-        "target_embedding_dim": COMMON["target_embedding_dim"],
+        },  
     },
     "data_loader": COMMON["data_loader"],
     "validation_data_loader": COMMON["validation_data_loader"],

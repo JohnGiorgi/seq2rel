@@ -74,25 +74,25 @@ class FBetaMeasureSeq2RelTestCase:
         self.labels = ["PHYSICAL", "GENETIC"]
         self.predictions = [
             # This is a false positive
-            "@PHYSICAL@ fgf-2 @GGP@ rps19 @GGP@ @EOR@",
+            "@PHYSICAL@ fgf-2 @GENE@ rps19 @GENE@ @EOR@",
             "I don't contain anything of interest!",
             # This prediction contains a relation with an incorrect order of entities
-            "@PHYSICAL@ atg1 @GGP@ atg1 @GGP@ @EOR@ @PHYSICAL@ atg17 @GGP@ atg1 @GGP@ @EOR@",
+            "@PHYSICAL@ atg1 @GENE@ atg1 @GENE@ @EOR@ @PHYSICAL@ atg17 @GENE@ atg1 @GENE@ @EOR@",
             # This prediction is missing a relation
-            "@GENETIC@ b-myb @GGP@ cbp @GGP@ @EOR@ @PHYSICAL@ b-myb @GGP@ cbp @GGP@ @EOR@",
+            "@GENETIC@ b-myb @GENE@ cbp @GENE@ @EOR@ @PHYSICAL@ b-myb @GENE@ cbp @GENE@ @EOR@",
             # This prediction contains coreferent mentions, where one cluster is missing a mention
-            "@PHYSICAL@ insulin @GGP@ peroxiredoxin 4; prdx4 @GGP@ @EOR@",
+            "@PHYSICAL@ insulin @GENE@ peroxiredoxin 4; prdx4 @GENE@ @EOR@",
         ]
         self.targets = [
             "",
             "I don't contain anything of interest!",
-            "@PHYSICAL@ atg1 @GGP@ atg1 @GGP@ @EOR@ @PHYSICAL@ atg1 @GGP@ atg17 @GGP@ @EOR@",
+            "@PHYSICAL@ atg1 @GENE@ atg1 @GENE@ @EOR@ @PHYSICAL@ atg1 @GENE@ atg17 @GENE@ @EOR@",
             (
-                "@GENETIC@ b-myb @GGP@ cbp @GGP@ @EOR@"
-                " @PHYSICAL@ b-myb @GGP@ cbp @GGP@ @EOR@"
-                " @GENETIC@ myb @GGP@ cbp @GGP@ @EOR@"
+                "@GENETIC@ b-myb @GENE@ cbp @GENE@ @EOR@"
+                " @PHYSICAL@ b-myb @GENE@ cbp @GENE@ @EOR@"
+                " @GENETIC@ myb @GENE@ cbp @GENE@ @EOR@"
             ),
-            "@PHYSICAL@ proinsulin; insulin @GGP@ peroxiredoxin 4; prdx4 @GGP@ @EOR@",
+            "@PHYSICAL@ proinsulin; insulin @GENE@ peroxiredoxin 4; prdx4 @GENE@ @EOR@",
         ]
 
         # Detailed target state

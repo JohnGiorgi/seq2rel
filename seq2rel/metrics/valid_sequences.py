@@ -23,7 +23,9 @@ class ValidSequences(Metric):
     def __call__(self, predictions: List[str], ground_truths: Optional[List[str]] = None) -> None:
 
         self._valid_pred_count += sum(
-            len(deserialized.values()) for deserialized in deserialize_annotations(predictions)
+            len(relations)
+            for deserialized in deserialize_annotations(predictions)
+            for relations in list(deserialized.values())
         )
         for pred in predictions:
             # Check how many relations we can parse out.

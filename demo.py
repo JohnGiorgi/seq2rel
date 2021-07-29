@@ -54,7 +54,7 @@ TEXT_EXAMPLES = {
 }
 
 
-@st.cache(allow_output_mutation=True, max_entries=1)
+@st.cache(allow_output_mutation=True, max_entries=1, ttl=3600)
 def load_model(model_name: str):
     return Seq2Rel(
         model_name,

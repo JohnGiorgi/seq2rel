@@ -54,7 +54,7 @@ TEXT_EXAMPLES = {
 }
 
 
-@st.cache(allow_output_mutation=True)
+@st.cache(allow_output_mutation=True, max_entries=1)
 def load_model(model_name: str):
     return Seq2Rel(
         model_name,
@@ -86,7 +86,7 @@ st.sidebar.write(
 
     Seq2Rel is a sequence-to-sequence based architecture for joint entity and relation extraction.
 
-    1. Select a pretrained model below.
+    1. Select a pretrained model below (it may take a few seconds to load).
     2. Enter some text on the right, and the extracted entity mentions and relations will be visualized
     below.
 

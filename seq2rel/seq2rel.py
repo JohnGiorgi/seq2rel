@@ -15,7 +15,6 @@ PRETRAINED_MODELS = {
     "ade": "https://github.com/JohnGiorgi/seq2rel/releases/download/v0.1.0rc1/ade.tar.gz",
     "bc5cdr": "https://github.com/JohnGiorgi/seq2rel/releases/download/v0.1.0rc1/bc5cdr.tar.gz",
     "biogrid": "https://github.com/JohnGiorgi/seq2rel/releases/download/v0.1.0rc1/biogrid.tar.gz",
-    "docred": "https://github.com/JohnGiorgi/seq2rel/releases/download/v0.1.0rc1/docred.tar.gz",
     "gda": "https://github.com/JohnGiorgi/seq2rel/releases/download/v0.1.0rc1/gda.tar.gz",
 }
 
@@ -62,7 +61,11 @@ class Seq2Rel:
         if pretrained_model_name_or_path in PRETRAINED_MODELS:
             pretrained_model_name_or_path = PRETRAINED_MODELS[pretrained_model_name_or_path]
         common_util.import_module_and_submodules("seq2rel")
-        archive = load_archive(pretrained_model_name_or_path, **kwargs)
+        # Setup any default overrides here. Allow user to update these with kwargs.
+        # E.g., set load_weights to False so we don't load HF pretrained weights.
+        overrides = {"model.token_embedder.load_weights": False}
+        overrides.update(kwargs.pop("overrides"))
+        archive = load_archive(pretrained_model_name_or_path, overrides=overrides, **kwargs)
         self._predictor = Predictor.from_archive(archive, predictor_name="seq2seq")
 
     @torch.no_grad()

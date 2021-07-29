@@ -36,13 +36,6 @@ TEXT_EXAMPLES = {
         " component of DNA-PK is one of the target proteins for CPP32/Yama/apopain in Fas-mediated"
         "apoptosis."
     ),
-    "docred": (
-        "Lark Force was an Australian Army formation established in March 1941 during World War II"
-        " for service in New Britain and New Ireland. Under the command of Lieutenant Colonel John"
-        " Scanlan, it was raised in Australia and deployed to Rabaul and Kavieng, aboard SS"
-        " Katoomba, MV Neptuna and HMAT Zealandia, to defend their strategically important harbours"
-        "and airfields."
-    ),
     "gda": (
         "Functional gene polymorphisms in aggressive and chronic periodontitis. There is strong"
         " evidence that genetic as well as environmental factors affect the development of"
@@ -61,9 +54,12 @@ TEXT_EXAMPLES = {
 }
 
 
-@st.cache(allow_output_mutation=True)
+@st.cache(allow_output_mutation=True, max_entries=1)
 def load_model(model_name: str):
-    return Seq2Rel(model_name)
+    return Seq2Rel(
+        model_name,
+        overrides={"dataset_reader.type": "seq2rel"},
+    )
 
 
 def process_ent(text: str, ents: Tuple[str, ...]) -> str:
@@ -90,17 +86,17 @@ st.sidebar.write(
 
     Seq2Rel is a sequence-to-sequence based architecture for joint entity and relation extraction.
 
-    Enter some text on the right, and the extracted entity mentions and relations will be visualized
-    below. Coreferent mentions will be seperated by `{util.COREF_SEP_SYMBOL}`
+    1. Select a pretrained model below (it may take a few seconds to load).
+    2. Enter some text on the right, and the extracted entity mentions and relations will be visualized
+    below.
+
+    Coreferent mentions will be seperated by a semicolon (`{util.COREF_SEP_SYMBOL}`). Hover over nodes and
+    edges to see their predicted classes.
     """
 )
 
 
-model_name = (
-    st.sidebar.selectbox("Model name", ("ADE", "BC5CDR", "BioGRID", "DocRED", "GDA"))
-    .strip()
-    .lower()
-)
+model_name = st.sidebar.selectbox("Model name", ("ADE", "BC5CDR", "BioGRID", "GDA")).strip().lower()
 
 st.sidebar.subheader("Additional Settings")
 debug = st.sidebar.checkbox("Debug", False)
@@ -129,11 +125,11 @@ if input_text:
         for rel_type, rels in prediction.items():
             # TODO: This should be extended to n-ary relations.
             for rel in rels:
-                ent_1_text = process_ent(input_text, rel[0][0])
-                ent_2_text = process_ent(input_text, rel[1][0])
-                net.add_node(ent_1_text)
-                net.add_node(ent_2_text)
-                net.add_edge(ent_1_text, ent_2_text, title=rel_type)
+                ent_1, ent_1_type = process_ent(input_text, rel[0][0]), rel[0][1]
+                ent_2, ent_2_type = process_ent(input_text, rel[1][0]), rel[1][1]
+                net.add_node(ent_1, title=ent_1_type)
+                net.add_node(ent_2, title=ent_2_type)
+                net.add_edge(ent_1, ent_2, title=rel_type)
     net.show("network.html")
     HtmlFile = open("network.html", "r", encoding="utf-8")
     source_code = HtmlFile.read()

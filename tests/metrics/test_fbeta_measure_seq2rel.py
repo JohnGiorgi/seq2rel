@@ -16,11 +16,6 @@ from torch.testing import assert_allclose
 
 def test_fuzzy_cluster_match() -> None:
     threshold = 0.5
-    # Wrong entity type
-    pred_rel: EntityAnnotation = (
-        (("suxamethonium chloride", "suxamethonium", "sch"), "ARBITRARY"),
-        (("fasciculations", "fasciculation"), "DISEASE"),
-    )
     # The matching gold annotation purposely comes second to ensure that order doesn't matter.
     gold_rels: Set[EntityAnnotation] = set(
         (
@@ -33,6 +28,11 @@ def test_fuzzy_cluster_match() -> None:
                 (("fasciculations", "fasciculation"), "DISEASE"),
             ),
         ),
+    )
+    # Wrong entity type
+    pred_rel: EntityAnnotation = (
+        (("suxamethonium chloride", "suxamethonium", "sch"), "ARBITRARY"),
+        (("fasciculations", "fasciculation"), "DISEASE"),
     )
     assert not _fuzzy_cluster_match(pred_rel, gold_rels, threshold=threshold)
     # Missing an entire cluster
@@ -67,6 +67,30 @@ def test_fuzzy_cluster_match() -> None:
         (("fasciculations", "fasciculation", "arbitrary"), "DISEASE"),
     )
     assert _fuzzy_cluster_match(pred_rel, gold_rels, threshold=threshold)
+    # Mention order differs
+    pred_rel = (
+        # 2 / 3, over threshold
+        (("suxamethonium", "suxamethonium chloride", "sch"), "CHEMICAL"),
+        # 2 / 2, over threshold
+        (("fasciculation", "fasciculations"), "DISEASE"),
+    )
+    assert _fuzzy_cluster_match(pred_rel, gold_rels, threshold=threshold)
+    # Entity order differs but `ordered_ents=False`
+    pred_rel = (
+        # 2 / 3, over threshold
+        (("fasciculations", "fasciculation", "arbitrary"), "DISEASE"),
+        # 2 / 2, over threshold
+        (("suxamethonium", "suxamethonium chloride", "arbitrary"), "CHEMICAL"),
+    )
+    assert _fuzzy_cluster_match(pred_rel, gold_rels, threshold=threshold, ordered_ents=False)
+    # Entity order differs but `ordered_ents=True`
+    pred_rel = (
+        # 2 / 3, over threshold
+        (("fasciculations", "fasciculation", "arbitrary"), "DISEASE"),
+        # 2 / 2, over threshold
+        (("suxamethonium", "suxamethonium chloride", "arbitrary"), "CHEMICAL"),
+    )
+    assert not _fuzzy_cluster_match(pred_rel, gold_rels, threshold=threshold, ordered_ents=True)
 
 
 class FBetaMeasureSeq2RelTestCase:
@@ -98,11 +122,11 @@ class FBetaMeasureSeq2RelTestCase:
         # Detailed target state
         self.pred_sum = [5, 1]
         self.true_sum = [4, 2]
-        self.true_positive_sum = [2, 1]
+        self.true_positive_sum = [3, 1]
         self.total_sum = [4, 2]
 
-        desired_precisions = [2 / 5, 1.00]
-        desired_recalls = [2 / 4, 1 / 2]
+        desired_precisions = [3 / 5, 1.00]
+        desired_recalls = [3 / 4, 1 / 2]
         desired_fscores = [
             (2 * p * r) / (p + r) if p + r != 0.0 else 0.0
             for p, r in zip(desired_precisions, desired_recalls)
@@ -202,6 +226,37 @@ class TestFBetaMeasureSeq2Rel(FBetaMeasureSeq2RelTestCase):
         assert isinstance(recalls, List)
         assert isinstance(fscores, List)
 
+    def test_fbeta_seq2rel_multiclass_metric_ordered_ents(self):
+        fbeta = FBetaMeasureSeq2Rel(labels=self.labels, ordered_ents=True)
+        fbeta(self.predictions, self.targets)
+        metric = fbeta.get_metric()
+        precisions = metric["precision"]
+        recalls = metric["recall"]
+        fscores = metric["fscore"]
+
+        # With `ordered_ents=True`, one of the predictions for the class at index 0 is now incorrect.
+        # decrement the true positives by 1 and recompute the desired values.
+        true_positive_sum = copy.deepcopy(self.true_positive_sum)
+        desired_precisions = copy.deepcopy(self.desired_precisions)
+        desired_recalls = copy.deepcopy(self.desired_recalls)
+        true_positive_sum[0] -= 1
+        desired_precisions[0] = (true_positive_sum[0]) / self.pred_sum[0]
+        desired_recalls[0] = (true_positive_sum[0]) / self.true_sum[0]
+        desired_fscores = [
+            (2 * p * r) / (p + r) if p + r != 0.0 else 0.0
+            for p, r in zip(desired_precisions, desired_recalls)
+        ]
+
+        # check value
+        assert_allclose(precisions, desired_precisions)
+        assert_allclose(recalls, desired_recalls)
+        assert_allclose(fscores, desired_fscores)
+
+        # check type
+        assert isinstance(precisions, List)
+        assert isinstance(recalls, List)
+        assert isinstance(fscores, List)
+
     def test_fbeta_seq2rel_multiclass_macro_average_metric(self):
         fbeta = FBetaMeasureSeq2Rel(labels=self.labels, average="macro")
         fbeta(self.predictions, self.targets)
@@ -233,9 +288,9 @@ class TestFBetaMeasureSeq2Rel(FBetaMeasureSeq2RelTestCase):
         fscores = metric["fscore"]
 
         # We keep the expected values in CPU because FBetaMeasure returns them in CPU.
-        true_positives = torch.tensor([2, 1], dtype=torch.float32)
-        false_positives = torch.tensor([3, 0], dtype=torch.float32)
-        false_negatives = torch.tensor([2, 1], dtype=torch.float32)
+        true_positives = torch.tensor([3, 1], dtype=torch.float32)
+        false_positives = torch.tensor([2, 0], dtype=torch.float32)
+        false_negatives = torch.tensor([1, 1], dtype=torch.float32)
         mean_true_positive = true_positives.mean()
         mean_false_positive = false_positives.mean()
         mean_false_negative = false_negatives.mean()

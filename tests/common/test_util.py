@@ -71,11 +71,12 @@ def test_deserialize_annotation() -> None:
             ],
         },
     ]
-    actual = util.deserialize_annotations(serialized_annotations)
+    # Set `ordered_ents=True` so that mentions aren't sorted (easier to write test cases).
+    actual = util.deserialize_annotations(serialized_annotations, ordered_ents=True)
     assert expected == actual
 
     # Check that we can call the function on a single string
-    actual = util.deserialize_annotations(serialized_annotations[-1])
+    actual = util.deserialize_annotations(serialized_annotations[-1], ordered_ents=True)
     assert [expected[-1]] == actual
 
 

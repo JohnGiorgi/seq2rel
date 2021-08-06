@@ -23,7 +23,7 @@ def sanitize_text(text: str, lowercase: bool = False) -> str:
 
 
 def deserialize_annotations(
-    serialized_annotations: Union[str, List[str]],
+    serialized_annotations: Union[str, List[str]], ordered_ents: bool = False
 ) -> List[RelationAnnotation]:
     """Returns dictionaries containing the entities and relations present in
     `serialized_annotations`, the string serialized representation of entities and relations.
@@ -32,6 +32,9 @@ def deserialize_annotations(
 
     serialized_annotations: `list`
         A list containing the string serialized representation of entities and relations.
+    ordered_ents : `bool`, optional (default = `False`)
+        True if the entities should be considered ordered (e.g. there are distinct head and tail
+        entities). Defaults to False.
 
     # Returns
 
@@ -49,6 +52,9 @@ def deserialize_annotations(
             raw_clusters = tuple(CLUSTER_PATTERN.findall(rel_string))
             # Normalizes clusters so that evaluation is insensitive to order, case and duplicates.
             clusters = _normalize_clusters(raw_clusters)  # type: ignore
+            # Possibly sort the entities to make evaluation insensitive to order.
+            if not ordered_ents:
+                clusters = tuple(sorted(clusters))
             # A relation must contain at least to entities. These are easy to detect at training
             # and at inference, so we purposfully drop them.
             if len(clusters) < 2:

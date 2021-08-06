@@ -10,6 +10,7 @@ def _fuzzy_cluster_match(
     pred_rel: EntityAnnotation,
     gold_rels: Set[EntityAnnotation],
     threshold: float = 0.5,
+    ordered_ents: bool = False,
 ) -> bool:
     """Given some predicted relation `pred_rel`, returns True if there is a fuzzy match to any
     relation in the ground truth relations `gold_rels`. A fuzzy match occurs if there exists a
@@ -21,19 +22,26 @@ def _fuzzy_cluster_match(
         # If the number of gold and predicted clusters differ then we don't have a match.
         if len(gold_rel) != len(pred_rel):
             continue
-        matched = True
-        for (pred_mentions, pred_label), (gold_mentions, gold_label) in zip(pred_rel, gold_rel):
-            # Convert to a set, as we don't care about duplicates or order.
-            pred = set(pred_mentions)
-            gold = set(gold_mentions)
-            # A predicted cluster (P) matches a gold cluster (G) if:
-            #   1. | P ∩ G | / |P| > threshold
-            #   2. The predicted cluster label matches the gold cluster label
-            if (len(pred & gold) / len(pred)) <= threshold or pred_label != gold_label:
-                matched = False
-                break
-        # Found a fuzzy match for all clusters, and therefore the predicted relation is correct.
-        if matched:
+        matched_indices = []
+        for i, (pred_mentions, pred_label) in enumerate(pred_rel):
+            for j, (gold_mentions, gold_label) in enumerate(gold_rel):
+                # If `ordered_ents`, order of predicted clusters must match order of gold clusters.
+                if ordered_ents and i != j:
+                    continue
+                # Avoid matching different predicted clusters to the same gold cluster.
+                if j in matched_indices:
+                    continue
+                # Convert to a set, as we don't care about duplicates or order.
+                pred = set(pred_mentions)
+                gold = set(gold_mentions)
+                # A predicted cluster (P) matches a gold cluster (G) if:
+                #   1. | P ∩ G | / |P| > threshold
+                #   2. The predicted cluster label matches the gold cluster label
+                if (len(pred & gold) / len(pred)) > threshold and pred_label == gold_label:
+                    matched_indices.append(j)
+                    break
+        # Did not find a fuzzy match for all clusters, therefore the predicted relation is incorrect.
+        if len(matched_indices) == len(pred_rel):
             return True
 
     return False
@@ -57,6 +65,9 @@ class FBetaMeasureSeq2Rel(FBetaMeasure):
         If `cluster_threshold`, use fuzzy matching, where a predicted cluster (P) is considered a
         true positive if | P ∩ G | / | P | > `cluster_threshold` for at least one gold cluster (G).
         A reasonable threshold value is `0.5`.
+    ordered_ents : `bool`, optional (default = `False`)
+        True if the entities should be considered ordered (e.g. there are distinct head and tail
+        entities). Defaults to False.
     """
 
     supports_distributed = True
@@ -65,6 +76,7 @@ class FBetaMeasureSeq2Rel(FBetaMeasure):
         self,
         labels: List[str],
         cluster_threshold: Optional[float] = None,
+        ordered_ents: bool = False,
         beta: float = 1.0,
         average: Optional[str] = None,
     ) -> None:
@@ -79,6 +91,7 @@ class FBetaMeasureSeq2Rel(FBetaMeasure):
         if cluster_threshold is not None and (cluster_threshold <= 0 or cluster_threshold > 1):
             raise ValueError(f"cluster_threshold must be between (0, 1]. Got {cluster_threshold}.")
         self._cluster_threshold = cluster_threshold
+        self._ordered_ents = ordered_ents
 
     def __call__(self, predictions: List[str], ground_truths: List[str]) -> None:
         """
@@ -103,8 +116,8 @@ class FBetaMeasureSeq2Rel(FBetaMeasure):
             self._pred_sum = torch.zeros(self._num_classes)
             self._total_sum = torch.zeros(self._num_classes)
 
-        pred_annotations = deserialize_annotations(predictions)
-        gold_annotations = deserialize_annotations(ground_truths)
+        pred_annotations = deserialize_annotations(predictions, ordered_ents=self._ordered_ents)
+        gold_annotations = deserialize_annotations(ground_truths, ordered_ents=self._ordered_ents)
 
         # Predictions and ground truths are contained with equal length lists as they are per-batch.
         for pred_ann, gold_ann in zip(pred_annotations, gold_annotations):
@@ -122,7 +135,12 @@ class FBetaMeasureSeq2Rel(FBetaMeasure):
                     # If cluster_threshold, use fuzzy matching to determine true positives.
                     if self._cluster_threshold:
                         for rel in dedup_pred_rels:
-                            if _fuzzy_cluster_match(rel, dedup_gold_rels, self._cluster_threshold):
+                            if _fuzzy_cluster_match(
+                                rel,
+                                dedup_gold_rels,
+                                threshold=self._cluster_threshold,
+                                ordered_ents=self._ordered_ents,
+                            ):
                                 self._true_positive_sum[class_index] += 1  # type: ignore
                             self._pred_sum[class_index] += 1
                     else:
@@ -151,8 +169,13 @@ class F1MeasureSeq2Rel(FBetaMeasureSeq2Rel):
         self,
         labels: List[str],
         cluster_threshold: Optional[float] = None,
+        ordered_ents: bool = False,
         average: Optional[str] = None,
     ) -> None:
         super().__init__(
-            labels=labels, cluster_threshold=cluster_threshold, beta=1.0, average=average
+            labels=labels,
+            cluster_threshold=cluster_threshold,
+            ordered_ents=ordered_ents,
+            beta=1.0,
+            average=average,
         )

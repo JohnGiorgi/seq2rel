@@ -8,6 +8,8 @@ PRETRAINED_ADE_MODEL = "ade"
 
 @pytest.fixture(scope="module")
 def pretrained_ade_model() -> Seq2Rel:
+    # TODO: The overrides exists because this model was trained before the dataset reader rename.
+    # Remove when this is updated to a newer pretrained model.
     return Seq2Rel(PRETRAINED_ADE_MODEL, overrides={"dataset_reader.type": "seq2rel"})
 
 

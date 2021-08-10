@@ -64,7 +64,8 @@ class Seq2Rel:
         # Setup any default overrides here. Allow user to update these with kwargs.
         # E.g., set load_weights to False so we don't load HF pretrained weights.
         overrides = {"model.token_embedder.load_weights": False}
-        overrides.update(kwargs.pop("overrides"))
+        if "overrides" in kwargs:
+            overrides.update(kwargs.pop("overrides"))
         archive = load_archive(pretrained_model_name_or_path, overrides=overrides, **kwargs)
         self._predictor = Predictor.from_archive(archive, predictor_name="seq2seq")
 

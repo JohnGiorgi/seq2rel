@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import List, Optional, Union
+from typing import Any, List, Optional, Union
 
 import torch
 from allennlp.common import util as common_util
@@ -49,7 +49,7 @@ class Seq2Rel:
     pretrained_model_name_or_path : `str`, required
         Path to a serialized AllenNLP archive or a model name from:
         `list(seq2rel.PRETRAINED_MODELS.keys())`
-    **kwargs : `Dict`, optional
+    **kwargs : `Any`, optional, (default = `{}`)
         Keyword arguments that will be passed to `allennlp.models.archival.load_archive`. This is
         useful, for example, to specify a CUDA device id with `cuda_device`. See:
         https://docs.allennlp.org/main/api/models/archival/#load_archive for more details.
@@ -57,7 +57,7 @@ class Seq2Rel:
 
     _output_dict_field = "predicted_strings"
 
-    def __init__(self, pretrained_model_name_or_path: str, **kwargs) -> None:
+    def __init__(self, pretrained_model_name_or_path: str, **kwargs: Any) -> None:
         if pretrained_model_name_or_path in PRETRAINED_MODELS:
             pretrained_model_name_or_path = PRETRAINED_MODELS[pretrained_model_name_or_path]
         common_util.import_module_and_submodules("seq2rel")

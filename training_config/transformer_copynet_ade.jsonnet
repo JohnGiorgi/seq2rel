@@ -106,7 +106,8 @@ local TARGET_TOKENIZER = {
             },
         ],
         "attention": {
-            "type": "dk_scaled_dot_product"
+            "type": "multihead_attention",
+            "num_heads": 6,
         },
         "target_embedding_dim": COMMON["target_embedding_dim"],
         "beam_search": {

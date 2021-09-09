@@ -2,10 +2,11 @@ import logging
 from typing import Any, Dict, List
 
 import torch
+from allennlp.common.lazy import Lazy
 from allennlp.data import TextFieldTensors, Tokenizer
 from allennlp.data.tokenizers import PretrainedTransformerTokenizer
 from allennlp.models import Model
-from allennlp.modules import Seq2SeqEncoder, TextFieldEmbedder
+from allennlp.modules import Attention, Seq2SeqEncoder, TextFieldEmbedder
 from allennlp.modules.seq2seq_encoders import PassThroughEncoder
 from allennlp.nn import util
 from allennlp.training.metrics import Metric
@@ -29,6 +30,9 @@ class CopyNetSeq2Rel(CopyNetSeq2Seq):
         Embedder for source side sequences
     encoder : `Seq2SeqEncoder`, optional (default = `None`)
         The encoder of the "encoder/decoder" model. If None, a `PassThroughEncoder` is used.
+    attention : `Attention`, required
+        This is used to get a dynamic summary of encoder outputs at each timestep
+        when producing the "generation" scores for the target vocab.
     target_tokenizer : `Tokenizer`, optional (default = `None`)
         The tokenizer used to tokenize the target sequence. If not `None`, this is used to
         un-tokenize the target sequence, otherwise tokens are joined by whitespace.
@@ -49,20 +53,25 @@ class CopyNetSeq2Rel(CopyNetSeq2Seq):
     def __init__(
         self,
         source_embedder: TextFieldEmbedder,
+        attention: Lazy[Attention],
         encoder: Seq2SeqEncoder = None,
         target_tokenizer: Tokenizer = None,
         dropout: float = 0.1,
         tensor_based_metric: Metric = None,
         sequence_based_metrics: List[Metric] = None,
         init_decoder_state_strategy: str = "first",
-        **kwargs,  # type: ignore
+        **kwargs: Any,  # type: ignore
     ) -> None:
         # I am expecting most users to use a PretrainedTransformerEmbedder as source_embedder,
         # in which case we don't need an encoder and it is annoying to have to specify an input_dim.
         # Assume, if the user does not specify an encoder, that they want a PassThroughEncoder.
         encoder = encoder or PassThroughEncoder(source_embedder.get_output_dim())
-
-        super().__init__(source_embedder=source_embedder, encoder=encoder, **kwargs)
+        # We construct this lazily so that the user doesn't have to provide the `embed_dim`
+        # in the config file for `MultiheadAttention`.
+        attention = attention.construct(embed_dim=encoder.get_output_dim())
+        super().__init__(
+            source_embedder=source_embedder, encoder=encoder, attention=attention, **kwargs
+        )
 
         # Any seq2rel specific setup goes here
         self._target_tokenizer: Tokenizer = target_tokenizer

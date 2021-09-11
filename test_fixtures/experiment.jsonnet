@@ -101,7 +101,8 @@ local TARGET_TOKENIZER = {
             },
         ],
         "attention": {
-            "type": "seq2rel.modules.attention.dk_scaled_dot_product_attention.DkScaledDotProductAttention"
+            "type": "seq2rel.modules.attention.multihead_attention.MultiheadAttention",
+            "num_heads": 2,
         },
         "beam_search": {
             "max_steps": max_steps,

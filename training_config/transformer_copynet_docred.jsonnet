@@ -280,11 +280,11 @@ local TARGET_TOKENIZER = {
             },
         ],
         "attention": {
-            "type": "dk_scaled_dot_product"
+            "type": "multihead_attention",
+            "num_heads": 6,
         },
         "beam_search": {
             "max_steps": max_steps,
-            "min_steps": min_steps,
             "beam_size": COMMON["beam_size"],
             "final_sequence_scorer": {
                 "type": "length-normalized-sequence-log-prob",

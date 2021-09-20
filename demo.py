@@ -74,7 +74,7 @@ def process_ent(text: str, ents: Tuple[str, ...]) -> str:
 
     ent_text = f"{matched_ents[0]}"
     if matched_ents[1:]:
-        ent_text += f"{util.COREF_SEP_SYMBOL} {util.COREF_SEP_SYMBOL.join(matched_ents[1:])}"
+        ent_text += f"{util.COREF_SEP_SYMBOL} {f'{util.COREF_SEP_SYMBOL} '.join(matched_ents[1:])}"
     return ent_text
 
 

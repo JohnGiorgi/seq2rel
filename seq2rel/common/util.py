@@ -27,9 +27,7 @@ def deserialize_annotations(
 ) -> List[RelationAnnotation]:
     """Returns dictionaries containing the entities and relations present in
     `serialized_annotations`, the string serialized representation of entities and relations.
-
     # Parameters
-
     serialized_annotations: `list`
         A list containing the string serialized representation of entities and relations.
     ordered_ents : `bool`, optional (default = `False`)
@@ -37,7 +35,6 @@ def deserialize_annotations(
         entities). Defaults to False.
 
     # Returns
-
     A list of dictionaries, keyed by class name, containing the relations of the string
     serialized representations `serialized_strings`.
     """
@@ -83,7 +80,11 @@ def _normalize_clusters(clusters: Tuple[Tuple[str, str], ...]) -> EntityAnnotati
                     # ...duplicate mentions
                     dict.fromkeys(
                         # ...case
-                        (coref.strip().lower() for coref in mentions.split(COREF_SEP_SYMBOL)),
+                        (
+                            coref.strip().lower()
+                            for coref in mentions.split(COREF_SEP_SYMBOL)
+                            if coref.strip()
+                        )
                     ),
                     key=len,
                     reverse=True,
@@ -92,5 +93,9 @@ def _normalize_clusters(clusters: Tuple[Tuple[str, str], ...]) -> EntityAnnotati
             label,
         )
         for mentions, label in clusters
+    )
+    # Drop clusters with no predicted mentions
+    preprocessed_clusters = tuple(
+        (mentions, label) for mentions, label in preprocessed_clusters if mentions
     )
     return preprocessed_clusters

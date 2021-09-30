@@ -30,12 +30,12 @@ exclude = ["tests", "training_config"]
 
 [tool.poetry.dependencies]
 python = "^3.7.1"
-typer = {extras = ["all"], version = "^0.3.2"}
-allennlp = "^2.5.0"
-allennlp-models = "^2.5.0"
+typer = {extras = ["all"], version = "^0.4.0"}
+allennlp = ">=2.6.0, <2.7.0"
+allennlp-models = ">=2.6.0, <2.7.0"
 allennlp-optuna = { version = "^0.1.6", optional = true }
 validators = "^0.18.2"
-more-itertools = "^8.8.0"
+more-itertools = "^8.10.0"
 
 [tool.poetry.extras]
 optuna = ["allennlp-optuna"]
@@ -49,7 +49,6 @@ pytest = "^6.2.3"
 pytest-cov = "^2.11.1"
 coverage = "^5.5"
 codecov = "^2.1.12"
-icecream = "^2.1.1"
 # This is required to run the demo. Because streamlit installs
 # all dev dependencies, we stick it here.
 pyvis = "^0.1.9"
@@ -83,5 +82,5 @@ exclude = '''
 '''
 
 [build-system]
-requires = ["poetry-core>=1.0.0"]
+requires = ["poetry-core>=1.1.9"]
 build-backend = "poetry.core.masonry.api"

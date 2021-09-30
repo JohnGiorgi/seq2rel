@@ -1,7 +1,9 @@
+from pathlib import Path
 from typing import List, Tuple
 
 import pytest
 from seq2rel import Seq2Rel
+from seq2rel.training.callbacks.concatenation_augmentation import ConcatenationAugmentationCallback
 
 PRETRAINED_ADE_MODEL = "ade"
 
@@ -29,3 +31,17 @@ def ade_examples() -> Tuple[List[str], List[str]]:
         ),
     ]
     return texts, annotations
+
+
+@pytest.fixture()
+def concatenation_augmentation(tmp_path: Path) -> ConcatenationAugmentationCallback:
+    train_data_path = tmp_path / "train.tsv"
+    train_data = ["first source\tfirst target", "second source\tsecond target"]
+    train_data_path.write_text("\n".join(train_data).strip())
+    callback = ConcatenationAugmentationCallback(
+        # There are two training examples, so and aug_frac of 1 this gives us 1 augmented example.
+        serialization_dir="",
+        train_data_path=str(train_data_path),
+        aug_frac=1.0,
+    )
+    return callback

@@ -19,7 +19,7 @@ class ConcatenationAugmentationCallback(TrainerCallback):
         self,
         serialization_dir: str,
         train_data_path: str,
-        aug_frac: float = 0.20,
+        aug_frac: float = 0.25,
         sep_token: Optional[str] = None,
     ) -> None:
         """

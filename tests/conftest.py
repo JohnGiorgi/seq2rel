@@ -23,11 +23,11 @@ def ade_examples() -> Tuple[List[str], List[str]]:
         "Acute myocardial infarction due to coronary spasm associated with L-thyroxine therapy.",
     ]
     annotations = [
-        "@ADE@ vincristine @DRUG@ cranial polyneuropathy @EFFECT@ @EOR@",
-        "@ADE@ diazepam @DRUG@ seizures @EFFECT@ @EOR@",
+        "vincristine @DRUG@ cranial polyneuropathy @EFFECT@ @ADE@",
+        "diazepam @DRUG@ seizures @EFFECT@ @ADE@",
         (
-            "@ADE@ l - thyroxine @DRUG@ acute myocardial infarction @EFFECT@ @EOR@"
-            " @ADE@ l - thyroxine @DRUG@ coronary spasm @EFFECT@ @EOR@"
+            "l - thyroxine @DRUG@ acute myocardial infarction @EFFECT@ @ADE@"
+            " l - thyroxine @DRUG@ coronary spasm @EFFECT@ @ADE@"
         ),
     ]
     return texts, annotations

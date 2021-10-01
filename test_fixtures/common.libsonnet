@@ -6,7 +6,6 @@
 // These are special tokens used by the decoder
 local special_target_tokens = [
     // These are seq2rel specific
-    "@EOR@",
     ";",
     // These are AllenNLP specific
     "@start@",

@@ -34,17 +34,17 @@ def test_deserialize_annotation() -> None:
     serialized_annotations = [
         "",
         "I don't contain anything of interest!",
-        "@ADE@ fenoprofen @DRUG@ @EOR@",
-        "@ADE@ fenoprofen @DRUG@ pure red cell aplasia @EFFECT@ @EOR@",
+        "fenoprofen @DRUG@ @ADE@",
+        "fenoprofen @DRUG@ pure red cell aplasia @EFFECT@ @ADE@",
         (
-            "@ADE@ bimatoprost @DRUG@ cystoid macula edema @EFFECT@ @EOR@"
+            "bimatoprost @DRUG@ cystoid macula edema @EFFECT@ @ADE@"
             # A duplicate relation that should not be included in the deserialized annotation
-            " @ADE@ bimatoprost @DRUG@ cystoid macula edema @EFFECT@ @EOR@"
-            " @ADE@ latanoprost @DRUG@ cystoid macula edema @EFFECT@ @EOR@"
+            " bimatoprost @DRUG@ cystoid macula edema @EFFECT@ @ADE@"
+            " latanoprost @DRUG@ cystoid macula edema @EFFECT@ @ADE@"
             # A duplicate mention that should not be included in the deserialized annotation
-            " @CID@ methamphetamine ; meth ; meth @CHEMICAL@ psychosis ; psychotic disorders @DISEASE@ @EOR@"
+            " methamphetamine ; meth ; meth @CHEMICAL@ psychosis ; psychotic disorders @DISEASE@ @CID@"
         ),
-        "@LOCATED_IN_THE_ADMINISTRATIVE_TERRITORIAL_ENTITY@ pasay city @LOC@ metro manila @LOC@ @EOR@",
+        "pasay city @LOC@ metro manila @LOC@ @LOCATED_IN_THE_ADMINISTRATIVE_TERRITORIAL_ENTITY@",
     ]
 
     # Check that we can call the function on a list of strings

@@ -5,11 +5,11 @@ class ValidSequencesTestCase:
     def setup_method(self):
         self.predictions = [
             # Valid
-            "@CID@ lithium carbonate @CHEMICAL@ neurologic depression @DISEASE@ @EOR@",
+            "lithium carbonate @CHEMICAL@ neurologic depression @DISEASE@ @CID@",
             # Invalid: missing a second entity
-            "@CID@ lithium carbonate @CHEMICAL@ @EOR@",
+            "lithium carbonate @CHEMICAL@ @CID@",
             # Invalid: contains no entities
-            "@CID@ @EOR@",
+            "@CID@",
             # Invalid: does not contain any of the special tokens
             "this is arbitrary",
         ]

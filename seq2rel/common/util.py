@@ -1,9 +1,8 @@
 import re
 from typing import Dict, List, Tuple, Union
 
-END_OF_REL_SYMBOL = "@EOR@"
 COREF_SEP_SYMBOL = ";"
-REL_PATTERN = re.compile(fr"@([^\s]*)\b[^@]*@(.*?){END_OF_REL_SYMBOL}")
+REL_PATTERN = re.compile(r"(.*?@)\s*(?:@)([^\s]*)\b[^@]*@")
 CLUSTER_PATTERN = re.compile(r"(?:\s?)(.*?)(?:\s?)@([^\s]*)\b[^@]*@")
 
 # Custom annotation types
@@ -27,7 +26,9 @@ def deserialize_annotations(
 ) -> List[RelationAnnotation]:
     """Returns dictionaries containing the entities and relations present in
     `serialized_annotations`, the string serialized representation of entities and relations.
+
     # Parameters
+
     serialized_annotations: `list`
         A list containing the string serialized representation of entities and relations.
     ordered_ents : `bool`, optional (default = `False`)
@@ -45,7 +46,7 @@ def deserialize_annotations(
     for annotation in serialized_annotations:
         deserialized.append({})
         rels = REL_PATTERN.findall(annotation)
-        for rel_label, rel_string in rels:
+        for rel_string, rel_label in rels:
             raw_clusters = tuple(CLUSTER_PATTERN.findall(rel_string))
             # Normalizes clusters so that evaluation is insensitive to order, case and duplicates.
             clusters = _normalize_clusters(raw_clusters)  # type: ignore

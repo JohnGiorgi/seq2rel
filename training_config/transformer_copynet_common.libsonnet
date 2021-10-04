@@ -5,7 +5,6 @@
 
 // These are special tokens used by the decoder
 local special_tokens = [
-    "@EOR@",
     ";"
 ];
 

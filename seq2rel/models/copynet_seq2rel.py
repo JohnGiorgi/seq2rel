@@ -12,7 +12,7 @@ from allennlp.nn import util
 from allennlp.training.metrics import Metric
 from allennlp_models.generation.models import CopyNetSeq2Seq
 from overrides import overrides
-from seq2rel.common.util import COREF_SEP_SYMBOL, END_OF_REL_SYMBOL, sanitize_text
+from seq2rel.common.util import COREF_SEP_SYMBOL, sanitize_text
 
 logger = logging.getLogger(__name__)
 
@@ -76,8 +76,7 @@ class CopyNetSeq2Rel(CopyNetSeq2Seq):
         # Any seq2rel specific setup goes here
         self._target_tokenizer: Tokenizer = target_tokenizer
         self._sequence_based_metrics = sequence_based_metrics or []
-        # Add the two structural tokens we use to denote coreferent mentions and end of relations
-        _ = self.vocab.add_token_to_namespace(END_OF_REL_SYMBOL, self._target_namespace)
+        # TODO: I do not think this has any effect. Double check and drop if not needed.
         _ = self.vocab.add_token_to_namespace(COREF_SEP_SYMBOL, self._target_namespace)
 
         # Dropout to apply to the target embeddings and decoder inputs

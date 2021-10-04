@@ -41,7 +41,7 @@ class Seq2Rel:
     input_text = "Ciprofloxacin-induced renal insufficiency in cystic fibrosis."
 
     seq2rel(input_text)
-    >>> ['@ADE@ ciprofloxacin @DRUG@ renal insufficiency @EFFECT@ @EOR@']
+    >>> ['ciprofloxacin @DRUG@ renal insufficiency @EFFECT@ @ADE@']
     ```
 
     # Parameters

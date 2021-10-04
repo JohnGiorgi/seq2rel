@@ -102,7 +102,7 @@ seq2rel = Seq2Rel(pretrained_model)
 input_text = "Ciprofloxacin-induced renal insufficiency in cystic fibrosis."
 
 seq2rel(input_text)
->>> ['@ADE@ ciprofloxacin @DRUG@ renal insufficiency @EFFECT@ @EOR@']
+>>> ['ciprofloxacin @DRUG@ renal insufficiency @EFFECT@ @ADE@']
 ```
 
 See the list of available `PRETRAINED_MODELS` in [seq2rel/seq2rel.py](seq2rel/seq2rel.py)

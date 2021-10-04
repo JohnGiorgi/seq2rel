@@ -46,7 +46,7 @@ flake8 = "^3.9.2"
 hypothesis = "^6.14.2"
 mypy = "^0.910"
 pytest = "^6.2.3"
-pytest-cov = "^2.11.1"
+pytest-cov = "^3.0.0"
 coverage = "^5.5"
 codecov = "^2.1.12"
 # This is required to run the demo. Because streamlit installs

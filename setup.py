@@ -68,7 +68,7 @@ setup(
         "dev": [
             "black==21.*,>=21.4.0.b2",
             "codecov==2.*,>=2.1.10",
-            "coverage==5.*,>=5.5.0",
+            "coverage>=5,<7",
             "dephell[full]==0.*,>=0.8.3",
             "flake8==3.*,>=3.9.2",
             "hypothesis==6.*,>=6.10.0",

@@ -43,7 +43,7 @@ optuna = ["allennlp-optuna"]
 [tool.poetry.dev-dependencies]
 black = "^21.4b2"
 flake8 = "^3.9.2"
-hypothesis = "^6.14.2"
+hypothesis = "^6.23.2"
 mypy = "^0.910"
 pytest = "^6.2.3"
 pytest-cov = "^3.0.0"

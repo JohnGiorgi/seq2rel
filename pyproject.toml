@@ -7,6 +7,7 @@ authors = ["johngiorgi <johnmgiorgi@gmail.com>"]
 readme = "README.md"
 homepage = "https://github.com/johngiorgi/seq2rel"
 repository = "https://github.com/johngiorgi/seq2rel"
+documentation = "https://github.com/johngiorgi/seq2rel"
 keywords = [
     "named entity recognition",
     "relation extraction",
@@ -26,13 +27,13 @@ classifiers = [
     "Topic :: Software Development :: Libraries :: Python Modules",
     "Typing :: Typed",
 ]
-exclude = ["tests", "training_config"]
+exclude = ["tests", "test_fixtures", "training_config"]
 
 [tool.poetry.dependencies]
 python = "^3.7.1"
 typer = {extras = ["all"], version = "^0.4.0"}
-allennlp = ">=2.6.0, <2.7.0"
-allennlp-models = ">=2.6.0, <2.7.0"
+allennlp = "^2.6.0"
+allennlp-models = "^2.6.0"
 allennlp-optuna = { version = "^0.1.6", optional = true }
 validators = "^0.18.2"
 more-itertools = "^8.10.0"
@@ -52,13 +53,6 @@ codecov = "^2.1.12"
 # This is required to run the demo. Because streamlit installs
 # all dev dependencies, we stick it here.
 pyvis = "^0.1.9"
-# Allows us to automatically generate a setup.py file (with `dephell deps convert`)
-# from this pyproject.toml so people who are not interested in using poetry don't have to.
-# See: https://github.com/dephell/dephell
-dephell = {extras = ["full"], version = "^0.8.3"}
-[tool.dephell.main]
-from = {format = "poetry", path = "pyproject.toml"}
-to = {format = "setuppy", path = "setup.py"}
 
 # This configuration is borrowed from: https://github.com/allenai/allennlp/blob/main/pyproject.toml
 [tool.black]

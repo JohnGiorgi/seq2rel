@@ -112,6 +112,14 @@ local TARGET_TOKENIZER = {
                 // Larger values favour longer decodings and vice versa
                 "length_penalty": 1.0
             },
+            "constraints": [
+                {
+                    "type": "seq2rel.nn.constraints.EnforceValidLinearization",
+                    "ent_tokens": ent_tokens,
+                    "rel_tokens": rel_tokens,
+                    "target_namespace": COMMON["target_namespace"]
+                },
+            ],
         },
         "target_embedding_dim": COMMON["target_embedding_dim"],
     },

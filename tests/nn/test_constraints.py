@@ -23,10 +23,7 @@ class TestEnforceValidLinearization:
             assert len(beam_states) == 1
             beam_state = beam_states[0]
             assert len(beam_state.keys()) == 2
-            assert beam_state["allowed_indices"] == [
-                constraint._copy_index_start,
-                constraint._end_index,
-            ]
+            assert beam_state["allowed_indices"] == [constraint._target_vocab_size]
             assert beam_state["predicted_ents"] == 0
 
     def test_enforce_valid_linearization_constraint_apply(
@@ -35,9 +32,9 @@ class TestEnforceValidLinearization:
         batch_size = 4
         constraint_params = params.pop("model").pop("beam_search").pop("constraints")[0]
         constraint = Constraint.from_params(constraint_params, vocab=vocab(instances=[]))
-        # Arbitrarily set the number of classes to the vocab size + 2.
-        # This ensures we have some copy indices to test, without being a burden.
-        num_targets = constraint._copy_index_start + 2
+        # Arbitrarily set the number of classes to the vocab size + 4.
+        # This ensures we have some copy indices to test.
+        num_targets = constraint._target_vocab_size + 4
 
         # Create all unique states here, so that we cant test applying them.
         beam_size = 1
@@ -46,7 +43,7 @@ class TestEnforceValidLinearization:
                 # We have just predicted a relation token.
                 # The only valid next moves are to copy or to terminate.
                 {
-                    "allowed_indices": [constraint._copy_index_start, constraint._end_index],
+                    "allowed_indices": [constraint._target_vocab_size],
                     "predicted_ents": 0,
                 },
             ],
@@ -54,7 +51,7 @@ class TestEnforceValidLinearization:
                 # We have just predicted an entity token, but we have not yet predicted at least
                 # `constraint._n_ary` entities. The only valid next move is to copy.
                 {
-                    "allowed_indices": [constraint._copy_index_start],
+                    "allowed_indices": [constraint._target_vocab_size],
                     "predicted_ents": constraint._n_ary - 1,
                 },
             ],
@@ -71,7 +68,7 @@ class TestEnforceValidLinearization:
                 # The only thing we can't do is generate a relation token.
                 {
                     "allowed_indices": constraint._ent_indices
-                    + [constraint._coref_index, constraint._copy_index_start],
+                    + [constraint._coref_index, constraint._target_vocab_size],
                     "predicted_ents": 0,
                 },
             ],
@@ -79,22 +76,27 @@ class TestEnforceValidLinearization:
 
         # Build up the expected disallowed indices for each item in the batch.
         expected_disallowed_indices = []
-        copy_indices = list(range(constraint._copy_index_start, num_targets))
+        all_indices = set(range(num_targets))
+        copy_indices = list(range(constraint._target_vocab_size, num_targets))
         # Batch index 0
         allowed_indices = copy_indices + [constraint._end_index]
-        disallowed_indices = list(set(range(num_targets)) - set(allowed_indices))
+        disallowed_indices = list(all_indices - set(allowed_indices))
         expected_disallowed_indices.extend([[0, 0, index] for index in disallowed_indices])
         # Batch index 1
-        allowed_indices = copy_indices
-        disallowed_indices = list(set(range(num_targets)) - set(allowed_indices))
+        allowed_indices = copy_indices + [constraint._end_index]
+        disallowed_indices = list(all_indices - set(allowed_indices))
         expected_disallowed_indices.extend([[1, 0, index] for index in disallowed_indices])
         # Batch index 2
-        allowed_indices = constraint._rel_indices
-        disallowed_indices = list(set(range(num_targets)) - set(allowed_indices))
+        allowed_indices = constraint._rel_indices + [constraint._end_index]
+        disallowed_indices = list(all_indices - set(allowed_indices))
         expected_disallowed_indices.extend([[2, 0, index] for index in disallowed_indices])
         # Batch index 3
-        allowed_indices = constraint._ent_indices + copy_indices + [constraint._coref_index]
-        disallowed_indices = list(set(range(num_targets)) - set(allowed_indices))
+        allowed_indices = (
+            constraint._ent_indices
+            + copy_indices
+            + [constraint._coref_index, constraint._end_index]
+        )
+        disallowed_indices = list(all_indices - set(allowed_indices))
         expected_disallowed_indices.extend([[3, 0, index] for index in disallowed_indices])
 
         # Create some random log probabilities and apply the constraints to them.
@@ -106,6 +108,7 @@ class TestEnforceValidLinearization:
 
         assert len(actual_disallowed_indices) == len(expected_disallowed_indices)
         assert all(indices in actual_disallowed_indices for indices in expected_disallowed_indices)
+        assert all(indices in expected_disallowed_indices for indices in actual_disallowed_indices)
 
     def test_enforce_valid_linearization_constraint_update_state(
         self, params: Params, vocab: Callable
@@ -145,7 +148,7 @@ class TestEnforceValidLinearization:
                 ],
                 [
                     constraint._coref_index,
-                    constraint._copy_index_start,
+                    constraint._target_vocab_size,
                 ],
             ]
         )
@@ -154,17 +157,17 @@ class TestEnforceValidLinearization:
         expected_state = [
             [
                 {
-                    "allowed_indices": [constraint._copy_index_start, constraint._end_index],
+                    "allowed_indices": [constraint._target_vocab_size],
                     "predicted_ents": 0,
                 },
                 {
-                    "allowed_indices": [constraint._copy_index_start, constraint._end_index],
+                    "allowed_indices": [constraint._target_vocab_size],
                     "predicted_ents": 0,
                 },
             ],
             [
                 {
-                    "allowed_indices": [constraint._copy_index_start],
+                    "allowed_indices": [constraint._target_vocab_size],
                     "predicted_ents": constraint._n_ary - 1,
                 },
                 {
@@ -173,11 +176,11 @@ class TestEnforceValidLinearization:
                 },
             ],
             [
-                {"allowed_indices": [constraint._copy_index_start], "predicted_ents": 0},
+                {"allowed_indices": [constraint._target_vocab_size], "predicted_ents": 0},
                 # Previously prediction == `copy_index_start`
                 {
                     "allowed_indices": constraint._ent_indices
-                    + [constraint._coref_index, constraint._copy_index_start],
+                    + [constraint._coref_index, constraint._target_vocab_size],
                     "predicted_ents": 0,
                 },
             ],

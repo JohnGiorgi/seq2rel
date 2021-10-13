@@ -35,16 +35,18 @@ class EnforceValidLinearization(Constraint):
     ) -> None:
         super().__init__(**kwargs)
 
-        self._end_index = self.vocab.get_token_index(END_SYMBOL, target_namespace)
-        self._coref_index: int = self.vocab.get_token_index(COREF_SEP_SYMBOL, target_namespace)
-        self._copy_index_start: int = self.vocab.get_vocab_size(target_namespace)
+        self._target_namespace = target_namespace
+        self._target_vocab_size = self.vocab.get_vocab_size(self._target_namespace)
 
-        self._ent_indices: List[int] = [
-            self.vocab.get_token_index(token, target_namespace) for token in ent_tokens
+        self._ent_indices = [
+            self.vocab.get_token_index(token, self._target_namespace) for token in ent_tokens
         ]
-        self._rel_indices: List[int] = [
-            self.vocab.get_token_index(token, target_namespace) for token in rel_tokens
+        self._rel_indices = [
+            self.vocab.get_token_index(token, self._target_namespace) for token in rel_tokens
         ]
+
+        self._end_index = self.vocab.get_token_index(END_SYMBOL, self._target_namespace)
+        self._coref_index = self.vocab.get_token_index(COREF_SEP_SYMBOL, self._target_namespace)
 
         self._n_ary = n_ary
 
@@ -56,7 +58,7 @@ class EnforceValidLinearization(Constraint):
         return [
             [
                 {  # At the first timestep, the only valid move is to copy or predict the EOS token.
-                    "allowed_indices": [self._copy_index_start, self._end_index],
+                    "allowed_indices": [self._target_vocab_size],
                     "predicted_ents": 0,
                 }
             ]
@@ -69,18 +71,19 @@ class EnforceValidLinearization(Constraint):
         state: ConstraintStateType,
         class_log_probabilities: torch.Tensor,
     ) -> torch.Tensor:
-        # Compute these once up front to avoid computing them in a loop repeatedly.
         num_targets = class_log_probabilities.shape[-1]
-        copy_indices = range(self._copy_index_start, num_targets)
+        all_indices = set(range(num_targets))
+        # Copied indices are any index greater than the target vocabulary size.
+        copy_indices = range(self._target_vocab_size, num_targets)
         for i, batch in enumerate(state):
             for j, beam in enumerate(batch):
-                allowed_indices = beam["allowed_indices"]
-                # In `_update_state`, we use `self._copy_index_start` to denote that copying any
+                allowed_indices = set(beam["allowed_indices"])
+                # In `_update_state`, we use `self._target_vocab_size` to denote that copying any
                 # token from the input is valid, so we need to extend to all copy indices here.
-                if self._copy_index_start in allowed_indices:
-                    allowed_indices.extend(copy_indices)
-                # This is all possible predictions, minus the allowed indices.
-                disallowed_indices = list(set(range(num_targets)) - set(allowed_indices))
+                if self._target_vocab_size in allowed_indices:
+                    allowed_indices.update(copy_indices)
+                # This is all possible predictions, minus the allowed indices and the EOS token.
+                disallowed_indices = list(all_indices - allowed_indices - set((self._end_index,)))
                 class_log_probabilities[i, j, disallowed_indices] = min_value_of_dtype(
                     class_log_probabilities.dtype
                 )
@@ -98,8 +101,8 @@ class EnforceValidLinearization(Constraint):
                 # We have just predicted a relation token.
                 # The only valid next moves are to copy or to terminate.
                 if prediction in self._rel_indices:
-                    beam["allowed_indices"] = [self._copy_index_start, self._end_index]
                     beam["predicted_ents"] = 0
+                    beam["allowed_indices"] = [self._target_vocab_size]
                 # We have just predicted an entity token. The only valid next move is to copy and,
                 # if `self._n_ary` entities have been decoded, predict a relation token.
                 elif prediction in self._ent_indices:
@@ -107,17 +110,17 @@ class EnforceValidLinearization(Constraint):
                     if beam["predicted_ents"] == self._n_ary:
                         beam["allowed_indices"] = self._rel_indices
                     else:
-                        beam["allowed_indices"] = [self._copy_index_start]
+                        beam["allowed_indices"] = [self._target_vocab_size]
                 # We have just predicted a coref token.
                 # The only valid next move is to copy.
                 elif prediction == self._coref_index:
-                    beam["allowed_indices"] = [self._copy_index_start]
+                    beam["allowed_indices"] = [self._target_vocab_size]
                 # We have just copied a token.
                 # The only thing we can't do is generate a relation token.
-                elif prediction >= self._copy_index_start:
+                elif prediction >= self._target_vocab_size:
                     beam["allowed_indices"] = self._ent_indices + [
                         self._coref_index,
-                        self._copy_index_start,
+                        self._target_vocab_size,
                     ]
 
         return state

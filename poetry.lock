@@ -275,14 +275,14 @@ numpy = ">=1.15.0"
 
 [[package]]
 name = "boto3"
-version = "1.18.59"
+version = "1.18.60"
 description = "The AWS SDK for Python"
 category = "main"
 optional = false
 python-versions = ">= 3.6"
 
 [package.dependencies]
-botocore = ">=1.21.59,<1.22.0"
+botocore = ">=1.21.60,<1.22.0"
 jmespath = ">=0.7.1,<1.0.0"
 s3transfer = ">=0.5.0,<0.6.0"
 
@@ -291,7 +291,7 @@ crt = ["botocore[crt] (>=1.21.0,<2.0a0)"]
 
 [[package]]
 name = "botocore"
-version = "1.21.59"
+version = "1.21.60"
 description = "Low-level, data-driven core of boto 3."
 category = "main"
 optional = false
@@ -592,8 +592,8 @@ python-versions = "*"
 
 [[package]]
 name = "datasets"
-version = "1.12.1"
-description = "HuggingFace/Datasets is an open library of NLP datasets."
+version = "1.13.0"
+description = "HuggingFace/Datasets is an open library of datasets."
 category = "main"
 optional = false
 python-versions = "*"
@@ -602,7 +602,7 @@ python-versions = "*"
 aiohttp = "*"
 dill = "*"
 fsspec = {version = ">=2021.05.0", extras = ["http"]}
-huggingface-hub = ">=0.0.14,<0.1.0"
+huggingface-hub = ">=0.0.18,<0.1.0"
 importlib-metadata = {version = "*", markers = "python_version < \"3.8\""}
 multiprocess = "*"
 numpy = ">=1.17"
@@ -615,14 +615,15 @@ xxhash = "*"
 
 [package.extras]
 apache-beam = ["apache-beam (>=2.26.0)"]
+audio = ["librosa"]
 benchmarks = ["numpy (==1.18.5)", "tensorflow (==2.3.0)", "torch (==1.6.0)", "transformers (==3.0.2)"]
-dev = ["absl-py", "pytest", "pytest-xdist", "apache-beam (>=2.26.0)", "elasticsearch", "aiobotocore", "boto3", "botocore", "faiss-cpu", "fsspec", "moto[s3,server] (==2.0.4)", "rarfile (>=4.0)", "s3fs (==2021.08.1)", "tensorflow (>=2.3)", "torch", "transformers", "bs4", "conllu", "langdetect", "lxml", "mwparserfromhell", "nltk", "openpyxl", "py7zr", "tldextract", "zstandard", "bert-score (>=0.3.6)", "rouge-score", "sacrebleu", "scipy", "seqeval", "scikit-learn", "jiwer", "sentencepiece", "toml (>=0.10.1)", "requests-file (>=1.5.1)", "tldextract (>=3.1.0)", "texttable (>=1.6.3)", "Werkzeug (>=1.0.1)", "six (>=1.15.0,<1.16.0)", "wget (>=3.2)", "pytorch-nlp (==0.5.0)", "pytorch-lightning", "fastBPE (==0.1.0)", "fairseq", "black (==21.4b0)", "flake8 (==3.7.9)", "isort", "pyyaml (>=5.3.1)", "importlib-resources"]
-docs = ["docutils (==0.16.0)", "recommonmark", "sphinx (==3.1.2)", "sphinx-markdown-tables", "sphinx-rtd-theme (==0.4.3)", "sphinxext-opengraph (==0.4.1)", "sphinx-copybutton", "fsspec", "s3fs", "sphinx-panels", "sphinx-inline-tabs", "myst-parser"]
+dev = ["Werkzeug (>=1.0.1)", "absl-py", "aiobotocore", "apache-beam (>=2.26.0)", "bert-score (>=0.3.6)", "black (==21.4b0)", "boto3", "botocore", "bs4", "conllu", "elasticsearch", "fairseq", "faiss-cpu", "fastBPE (==0.1.0)", "flake8 (==3.7.9)", "fsspec", "isort", "jiwer", "langdetect", "lxml", "moto[s3,server] (==2.0.4)", "mwparserfromhell", "nltk", "openpyxl", "py7zr", "pytest", "pytest-datadir", "pytest-xdist", "pytorch-nlp (==0.5.0)", "pytorch-lightning", "pyyaml (>=5.3.1)", "rarfile (>=4.0)", "requests-file (>=1.5.1)", "rouge-score", "s3fs (==2021.08.1)", "sacrebleu", "scikit-learn", "scipy", "sentencepiece", "seqeval", "six (>=1.15.0,<1.16.0)", "tensorflow (>=2.3)", "texttable (>=1.6.3)", "tldextract", "tldextract (>=3.1.0)", "toml (>=0.10.1)", "torch", "torchaudio", "transformers", "wget (>=3.2)", "zstandard", "importlib-resources"]
+docs = ["docutils (==0.16.0)", "fsspec (<2021.9.0)", "myst-parser", "recommonmark", "s3fs", "sphinx-copybutton", "sphinx-inline-tabs", "sphinx-markdown-tables", "sphinx-panels", "sphinx-rtd-theme (==0.4.3)", "sphinx (==3.1.2)", "sphinxext-opengraph (==0.4.1)"]
 quality = ["black (==21.4b0)", "flake8 (==3.7.9)", "isort", "pyyaml (>=5.3.1)"]
-s3 = ["fsspec", "boto3", "botocore", "s3fs"]
+s3 = ["boto3", "botocore", "fsspec", "s3fs"]
 tensorflow = ["tensorflow (>=2.2.0)"]
 tensorflow_gpu = ["tensorflow-gpu (>=2.2.0)"]
-tests = ["absl-py", "pytest", "pytest-xdist", "apache-beam (>=2.26.0)", "elasticsearch", "aiobotocore", "boto3", "botocore", "faiss-cpu", "fsspec", "moto[s3,server] (==2.0.4)", "rarfile (>=4.0)", "s3fs (==2021.08.1)", "tensorflow (>=2.3)", "torch", "transformers", "bs4", "conllu", "langdetect", "lxml", "mwparserfromhell", "nltk", "openpyxl", "py7zr", "tldextract", "zstandard", "bert-score (>=0.3.6)", "rouge-score", "sacrebleu", "scipy", "seqeval", "scikit-learn", "jiwer", "sentencepiece", "toml (>=0.10.1)", "requests-file (>=1.5.1)", "tldextract (>=3.1.0)", "texttable (>=1.6.3)", "Werkzeug (>=1.0.1)", "six (>=1.15.0,<1.16.0)", "wget (>=3.2)", "pytorch-nlp (==0.5.0)", "pytorch-lightning", "fastBPE (==0.1.0)", "fairseq", "importlib-resources"]
+tests = ["Werkzeug (>=1.0.1)", "absl-py", "aiobotocore", "apache-beam (>=2.26.0)", "bert-score (>=0.3.6)", "boto3", "botocore", "bs4", "conllu", "elasticsearch", "fairseq", "faiss-cpu", "fastBPE (==0.1.0)", "fsspec", "jiwer", "langdetect", "lxml", "moto[s3,server] (==2.0.4)", "mwparserfromhell", "nltk", "openpyxl", "py7zr", "pytest", "pytest-datadir", "pytest-xdist", "pytorch-nlp (==0.5.0)", "pytorch-lightning", "rarfile (>=4.0)", "requests-file (>=1.5.1)", "rouge-score", "s3fs (==2021.08.1)", "sacrebleu", "scikit-learn", "scipy", "sentencepiece", "seqeval", "six (>=1.15.0,<1.16.0)", "tensorflow (>=2.3)", "texttable (>=1.6.3)", "tldextract", "tldextract (>=3.1.0)", "toml (>=0.10.1)", "torch", "torchaudio", "transformers", "wget (>=3.2)", "zstandard", "importlib-resources"]
 torch = ["torch"]
 
 [[package]]
@@ -993,7 +994,7 @@ zoneinfo = ["importlib-resources (>=3.3.0)", "backports.zoneinfo (>=0.2.1)", "tz
 
 [[package]]
 name = "idna"
-version = "3.2"
+version = "3.3"
 description = "Internationalized Domain Names in Applications (IDNA)"
 category = "main"
 optional = false
@@ -1816,19 +1817,18 @@ python-versions = ">=2.6"
 
 [[package]]
 name = "pdfminer.six"
-version = "20201018"
+version = "20211012"
 description = "PDF parser and analyzer"
 category = "main"
 optional = false
-python-versions = ">=3.4"
+python-versions = ">=3.6"
 
 [package.dependencies]
 chardet = {version = "*", markers = "python_version > \"3.0\""}
 cryptography = "*"
-sortedcontainers = "*"
 
 [package.extras]
-dev = ["nose", "tox"]
+dev = ["nose", "tox", "mypy (==0.910)"]
 docs = ["sphinx", "sphinx-argparse"]
 
 [[package]]
@@ -2478,7 +2478,7 @@ python-versions = ">=3.5"
 name = "sortedcontainers"
 version = "2.4.0"
 description = "Sorted Containers -- Sorted List, Sorted Dict, Sorted Set"
-category = "main"
+category = "dev"
 optional = false
 python-versions = "*"
 
@@ -3193,12 +3193,12 @@ blis = [
     {file = "blis-0.7.4.tar.gz", hash = "sha256:7daa615a97d4f28db0f332b710bfe1900b15d0c25841c6d727965e4fd91e09cf"},
 ]
 boto3 = [
-    {file = "boto3-1.18.59-py3-none-any.whl", hash = "sha256:daa721ccad79ed8e23a4b662eedce59ba0585e5b336bd6a9cd8e4fec40cd2db6"},
-    {file = "boto3-1.18.59.tar.gz", hash = "sha256:40e948276010e5eb23f0625afe9b323146e16a45dbeade0acd558eababd8b8ce"},
+    {file = "boto3-1.18.60-py3-none-any.whl", hash = "sha256:8f3face72d2ac6ad36bd7724410548891ce338b350e6f98574890a7b1d425d78"},
+    {file = "boto3-1.18.60.tar.gz", hash = "sha256:45709a04ec5fb67ce5a8eaade3eb0ab24d6eb08d9a9ca6bdb2153047896197fc"},
 ]
 botocore = [
-    {file = "botocore-1.21.59-py3-none-any.whl", hash = "sha256:ebcb8f0b0e9b56d275073746ea9bb8b60597517b2bfa4d6ebdc64b9bcf4422e0"},
-    {file = "botocore-1.21.59.tar.gz", hash = "sha256:c947215f45653609682dc448195a3bfcf0f7da193fd7b17b739656db5442221a"},
+    {file = "botocore-1.21.60-py3-none-any.whl", hash = "sha256:890a5835ac00415ff78f1c7118a774aae83c0c70742284b68abd1176f9d05761"},
+    {file = "botocore-1.21.60.tar.gz", hash = "sha256:3e746ca75fb7539ba3f001169264fa54dfaded2477ffc8bd979ce1e1df200620"},
 ]
 cached-property = [
     {file = "cached-property-1.5.2.tar.gz", hash = "sha256:9fa5755838eecbb2d234c3aa390bd80fbd3ac6b6869109bfc1b499f7bd89a130"},
@@ -3392,8 +3392,8 @@ cymem = [
     {file = "cymem-2.0.5.tar.gz", hash = "sha256:190e15d9cf2c3bde60ae37bddbae6568a36044dc4a326d84081a5fa08818eee0"},
 ]
 datasets = [
-    {file = "datasets-1.12.1-py3-none-any.whl", hash = "sha256:8e4b3a1bf825c17d3a29244ef7670cb26066d5df98f57098cdf6db0853738178"},
-    {file = "datasets-1.12.1.tar.gz", hash = "sha256:2f3c15323dd5358184cc73e5b11e90e1e67f30c680dfc685d04903297cc09432"},
+    {file = "datasets-1.13.0-py3-none-any.whl", hash = "sha256:f5a0f16ffb271ed4cbf94228059b55793083fafce5266ae4952e79c160e17250"},
+    {file = "datasets-1.13.0.tar.gz", hash = "sha256:f7bbb018bcea08a13f7723a9badffcdfd0bb643c86ba67d43dc0682f0ce9e514"},
 ]
 debugpy = [
     {file = "debugpy-1.5.0-cp310-cp310-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_12_x86_64.manylinux2010_x86_64.whl", hash = "sha256:098753d30232d1e4264eee37e1ddd5d106dc5c4bc6d8d7f4dadad9e44736cd48"},
@@ -3613,8 +3613,8 @@ hypothesis = [
     {file = "hypothesis-6.23.2.tar.gz", hash = "sha256:b71b257916c91484716a10220ed2b9a0cf82acc3ed8ef421bb2aa0a671761053"},
 ]
 idna = [
-    {file = "idna-3.2-py3-none-any.whl", hash = "sha256:14475042e284991034cb48e06f6851428fb14c4dc953acd9be9a5e95c7b6dd7a"},
-    {file = "idna-3.2.tar.gz", hash = "sha256:467fbad99067910785144ce333826c71fb0e63a425657295239737f7ecd125f3"},
+    {file = "idna-3.3-py3-none-any.whl", hash = "sha256:84d9dd047ffa80596e0f246e2eab0b391788b0503584e8945f2368256d2735ff"},
+    {file = "idna-3.3.tar.gz", hash = "sha256:9d643ff0a55b762d5cdb124b8eaa99c66322e2157b69160bc32796e824360e6d"},
 ]
 importlib-metadata = [
     {file = "importlib_metadata-4.8.1-py3-none-any.whl", hash = "sha256:b618b6d2d5ffa2f16add5697cf57a46c76a56229b0ed1c438322e4e95645bd15"},
@@ -4125,8 +4125,8 @@ pbr = [
     {file = "pbr-5.6.0.tar.gz", hash = "sha256:42df03e7797b796625b1029c0400279c7c34fd7df24a7d7818a1abb5b38710dd"},
 ]
 "pdfminer.six" = [
-    {file = "pdfminer.six-20201018-py3-none-any.whl", hash = "sha256:d78877ba8d8bf957f3bb636c4f73f4f6f30f56c461993877ac22c39c20837509"},
-    {file = "pdfminer.six-20201018.tar.gz", hash = "sha256:b9aac0ebeafb21c08bf65f2039f4b2c5f78a3449d0a41df711d72445649e952a"},
+    {file = "pdfminer.six-20211012-py3-none-any.whl", hash = "sha256:d3efb75c0249b51c1bf795e3a8bddf1726b276c77bf75fb136adea471ee2825b"},
+    {file = "pdfminer.six-20211012.tar.gz", hash = "sha256:0351f17d362ee2d48b158be52bcde6576d96460efd038a3e89a043fba6d634d7"},
 ]
 pexpect = [
     {file = "pexpect-4.8.0-py2.py3-none-any.whl", hash = "sha256:0b48a55dcb3c05f3329815901ea4fc1537514d6ba867a152b581d69ae3710937"},

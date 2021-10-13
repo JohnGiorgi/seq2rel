@@ -1,7 +1,9 @@
 from pathlib import Path
-from typing import List, Tuple
+from typing import Callable, List, Tuple
 
 import pytest
+from allennlp.common import Params
+from allennlp.data import Vocabulary
 from seq2rel import Seq2Rel
 from seq2rel.training.callbacks.concatenation_augmentation import ConcatenationAugmentationCallback
 
@@ -45,3 +47,21 @@ def concatenation_augmentation(tmp_path: Path) -> ConcatenationAugmentationCallb
         aug_frac=1.0,
     )
     return callback
+
+
+@pytest.fixture()
+def params():
+    return Params.from_file("test_fixtures/experiment.jsonnet")
+
+
+@pytest.fixture
+def vocab(params: Params) -> Callable:
+    """This is a fixture factory. It returns a function that you can use
+    to create an AllenNLP `Vocabulary` object. It accepts optional `**extras`
+    which will be used along with `params` to create the `Vocabulary` object.
+    """
+
+    def _vocab(**extras) -> Vocabulary:
+        return Vocabulary.from_params(params.pop("vocabulary"), **extras)
+
+    return _vocab

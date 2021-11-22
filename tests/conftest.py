@@ -37,7 +37,9 @@ def ade_examples() -> Tuple[List[str], List[str]]:
 
 
 @pytest.fixture()
-def concatenation_augmentation(tmp_path: Path) -> ConcatenationAugmentationCallback:
+def concatenation_augmentation(
+    tmp_path: Path,
+) -> Callable[[bool], ConcatenationAugmentationCallback]:
     train_data_without_hints = ["first source\tfirst target", "second source\tsecond target"]
     train_data_with_hints = [
         f"A @ENT@ B @ENT@ {HINT_SEP_SYMBOL} first source\tfirst target",

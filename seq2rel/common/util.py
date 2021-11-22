@@ -1,7 +1,10 @@
 import re
 from typing import Dict, List, Tuple, Union
 
+# Used to separate coreferent mentions in a linearized relation string.
 COREF_SEP_SYMBOL = ";"
+# Used to separate entity hints from input text in the source string.
+HINT_SEP_SYMBOL = "@HINTS@"
 REL_PATTERN = re.compile(r"(.*?@)\s*(?:@)([^\s]*)\b[^@]*@")
 CLUSTER_PATTERN = re.compile(r"(?:\s?)(.*?)(?:\s?)@([^\s]*)\b[^@]*@")
 

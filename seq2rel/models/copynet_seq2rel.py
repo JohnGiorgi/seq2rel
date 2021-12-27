@@ -117,7 +117,7 @@ class CopyNetSeq2Rel(CopyNetSeq2Seq):
             ) / torch.clamp(torch.sum(state["source_mask"], dim=1, keepdims=True), min=1e-9)
         else:
             raise ValueError(
-                f"An invalid init_decoder_state_strategy: '{self._init_decoder_state_strategy}'"
+                f"An invalid 'init_decoder_state_strategy': '{self._init_decoder_state_strategy}'"
                 " was provided to 'seq2rel.models.copynet_seq2rel.CopyNetSeq2Rel'. Expected one of"
                 " 'first', 'last', or 'mean'."
             )

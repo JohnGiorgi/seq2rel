@@ -105,9 +105,9 @@ class CopyNetSeq2Rel(CopyNetSeq2Seq):
                 state["encoder_outputs"], state["source_mask"], self._encoder.is_bidirectional()
             )
         elif self._init_decoder_state_strategy == "mean":
-            final_encoder_output = torch.sum(
-                state["encoder_outputs"] * state["source_mask"].unsqueeze(-1), dim=1
-            ) / torch.clamp(torch.sum(state["source_mask"], dim=1, keepdims=True), min=1e-9)
+            final_encoder_output = util.masked_mean(
+                state["encoder_outputs"], state["source_mask"].unsqueeze(-1), dim=1
+            )
         else:
             raise ValueError(
                 f"An invalid 'init_decoder_state_strategy': '{self._init_decoder_state_strategy}'"

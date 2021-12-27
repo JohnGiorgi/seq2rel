@@ -83,13 +83,6 @@ class CopyNetSeq2Rel(CopyNetSeq2Seq):
         self._dropout = torch.nn.Dropout(dropout) if dropout else torch.nn.Identity()
 
         # The strategy to use for initializing the decoders hidden state
-        if init_decoder_state_strategy not in ["first", "last", "mean"]:
-            raise ValueError(
-                (
-                    f'init_decoder_state_strategy must be one of "first", "last" or "mean".'
-                    f"Got: {init_decoder_state_strategy}"
-                )
-            )
         self._init_decoder_state_strategy = init_decoder_state_strategy
         # The parent class initializes this to BLEU, but we aren't interested
         # in "tensor based metrics", so revert it to the users input.

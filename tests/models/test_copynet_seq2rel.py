@@ -1,6 +1,7 @@
 import pathlib
 
 import pytest
+import torch
 from allennlp.common.params import Params
 from allennlp.common.testing import ModelTestCase
 from allennlp.models import Model
@@ -24,5 +25,7 @@ class TestCopyNetSeq2Rel(ModelTestCase):
     def test_invalid_init_decoder_state_strategy(self):
         params = Params.from_file(self.param_file)
         params["model"]["init_decoder_state_strategy"] = "blahblah"
+        model = Model.from_params(vocab=self.vocab, params=params.get("model"))
+        state = {"source_mask": torch.randn(2, 4)}
         with pytest.raises(ValueError):
-            Model.from_params(vocab=self.vocab, params=params.get("model"))
+            _ = model._init_decoder_state(state=state)

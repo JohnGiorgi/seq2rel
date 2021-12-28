@@ -43,11 +43,11 @@ class CopyNetSeq2Rel(CopyNetSeq2Seq):
         metrics must accept two arguments when called, both of type `List[str]`. The first is a
         predicted sequence for each item in the batch and the second is a gold sequence for each
         item in the batch.
-    init_decoder_state_strategy: `Optional[str]`, optional (default = `"first"`)
-        If `init_decoder_state_strategy` is `"first"`, initialize decoders hidden state with first encoder output
-        If `init_decoder_state_strategy` is `"last"`, initialize decoders hidden state with last encoder output
-        If `init_decoder_state_strategy` is `"mean"`, initialize decoders hidden state with mean of encoder outputs
-        If invalid `init_decoder_state_strategy` is provided, throw `ValueError`
+    init_decoder_state_strategy: `str` (default = `"mean"`)
+        If `"first"`, initialize decoders hidden state with first encoder output embedding (e.g.
+        [CLS] token). If `"last"`, initialize decoders hidden state with last encoder output
+        embedding (excluding padding). If `"mean"`, initialize decoders hidden state with mean of
+        encoder output embeddings (excluding padding).
     """
 
     def __init__(
@@ -59,7 +59,7 @@ class CopyNetSeq2Rel(CopyNetSeq2Seq):
         dropout: float = 0.1,
         tensor_based_metric: Metric = None,
         sequence_based_metrics: List[Metric] = None,
-        init_decoder_state_strategy: str = "first",
+        init_decoder_state_strategy: str = "mean",
         **kwargs: Any,  # type: ignore
     ) -> None:
         # I am expecting most users to use a PretrainedTransformerEmbedder as source_embedder,

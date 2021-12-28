@@ -43,11 +43,11 @@ class CopyNetSeq2Rel(CopyNetSeq2Seq):
         metrics must accept two arguments when called, both of type `List[str]`. The first is a
         predicted sequence for each item in the batch and the second is a gold sequence for each
         item in the batch.
-    init_decoder_state_strategy: `Optional[str]`, optional (default = `"first"`)
-        If `init_decoder_state_strategy` is `"first"`, initialize decoders hidden state with first encoder output
-        If `init_decoder_state_strategy` is `"last"`, initialize decoders hidden state with last encoder output
-        If `init_decoder_state_strategy` is `"mean"`, initialize decoders hidden state with mean of encoder outputs
-        If invalid `init_decoder_state_strategy` is provided, throw `ValueError`
+    init_decoder_state_strategy: `str` (default = `"mean"`)
+        If `"first"`, initialize decoders hidden state with first encoder output embedding (e.g.
+        [CLS] token). If `"last"`, initialize decoders hidden state with last encoder output
+        embedding (excluding padding). If `"mean"`, initialize decoders hidden state with mean of
+        encoder output embeddings (excluding padding).
     """
 
     def __init__(
@@ -59,7 +59,7 @@ class CopyNetSeq2Rel(CopyNetSeq2Seq):
         dropout: float = 0.1,
         tensor_based_metric: Metric = None,
         sequence_based_metrics: List[Metric] = None,
-        init_decoder_state_strategy: str = "first",
+        init_decoder_state_strategy: str = "mean",
         **kwargs: Any,  # type: ignore
     ) -> None:
         # I am expecting most users to use a PretrainedTransformerEmbedder as source_embedder,
@@ -83,13 +83,6 @@ class CopyNetSeq2Rel(CopyNetSeq2Seq):
         self._dropout = torch.nn.Dropout(dropout) if dropout else torch.nn.Identity()
 
         # The strategy to use for initializing the decoders hidden state
-        if init_decoder_state_strategy not in ["first", "last", "mean"]:
-            raise ValueError(
-                (
-                    f'init_decoder_state_strategy must be one of "first", "last" or "mean".'
-                    f"Got: {init_decoder_state_strategy}"
-                )
-            )
         self._init_decoder_state_strategy = init_decoder_state_strategy
         # The parent class initializes this to BLEU, but we aren't interested
         # in "tensor based metrics", so revert it to the users input.
@@ -111,10 +104,16 @@ class CopyNetSeq2Rel(CopyNetSeq2Seq):
             final_encoder_output = util.get_final_encoder_states(
                 state["encoder_outputs"], state["source_mask"], self._encoder.is_bidirectional()
             )
+        elif self._init_decoder_state_strategy == "mean":
+            final_encoder_output = util.masked_mean(
+                state["encoder_outputs"], state["source_mask"].unsqueeze(-1), dim=1
+            )
         else:
-            final_encoder_output = torch.sum(
-                state["encoder_outputs"] * state["source_mask"].unsqueeze(-1), dim=1
-            ) / torch.clamp(torch.sum(state["source_mask"], dim=1, keepdims=True), min=1e-9)
+            raise ValueError(
+                f"An invalid 'init_decoder_state_strategy': '{self._init_decoder_state_strategy}'"
+                " was provided to 'seq2rel.models.copynet_seq2rel.CopyNetSeq2Rel'. Expected one of"
+                " 'first', 'last', or 'mean'."
+            )
 
         # shape: (batch_size, decoder_output_dim)
         state["decoder_hidden"] = final_encoder_output

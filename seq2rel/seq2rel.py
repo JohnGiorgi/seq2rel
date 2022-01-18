@@ -12,10 +12,9 @@ from validators.url import url
 from seq2rel.common.util import sanitize_text
 
 PRETRAINED_MODELS = {
-    "ade": "https://github.com/JohnGiorgi/seq2rel/releases/download/v0.1.0rc1/ade.tar.gz",
     "bc5cdr": "https://github.com/JohnGiorgi/seq2rel/releases/download/v0.1.0rc1/bc5cdr.tar.gz",
-    "biogrid": "https://github.com/JohnGiorgi/seq2rel/releases/download/v0.1.0rc1/biogrid.tar.gz",
     "gda": "https://github.com/JohnGiorgi/seq2rel/releases/download/v0.1.0rc1/gda.tar.gz",
+    "docred": "https://github.com/JohnGiorgi/seq2rel/releases/download/v0.1.0rc1/docred.tar.gz",
 }
 
 
@@ -63,7 +62,7 @@ class Seq2Rel:
         common_util.import_module_and_submodules("seq2rel")
         # Setup any default overrides here. Allow user to update these with kwargs.
         # E.g., set load_weights to False so we don't load HF pretrained weights.
-        overrides = {"model.token_embedder.load_weights": False}
+        overrides = {"model.source_embedder.token_embedders.tokens.load_weights": False}
         if "overrides" in kwargs:
             overrides.update(kwargs.pop("overrides"))
         archive = load_archive(pretrained_model_name_or_path, overrides=overrides, **kwargs)

@@ -8,10 +8,6 @@ from seq2rel import Seq2Rel
 from seq2rel.common import util
 
 TEXT_EXAMPLES = {
-    "ade": (
-        "Hydroxyurea is a cytostatic agent used to treat myeloproliferative disorders and"
-        " long-term treatment is associated with mucocutaneous adverse events and nail hyperpigmentation"
-    ),
     "bc5cdr": (
         "Neuroleptic malignant syndrome induced by ziprasidone on the second day of"
         " treatment. Neuroleptic malignant syndrome (NMS) is the rarest and most serious of the"
@@ -50,6 +46,20 @@ TEXT_EXAMPLES = {
         " and periodontitis as a whole and controls (VDR -1056, TLR-4 399 _ IL-6 -174). These"
         " results suggest that there are in fact both shared and unique genetic associations in"
         " aggressive and chronic periodontitis."
+    ),
+    "docred": (
+        "'Satellite' is a song recorded by Canadian rock group Nickelback for their eighth"
+        " studio album, No Fixed Address (2014). A pop rock 'power ballad' about an"
+        " all-encompassing love, the song was written by group members Chad Kroeger and Ryan Peake"
+        " with Josh Ramsay and David Hodges. Nickelback co-produced the track with Chris Baseford."
+        " 'Satellite' was released March 23, 2015 as the album's sixth single and serves as the"
+        " second pop single in continental Europe. The song was later serviced to hot adult"
+        " contemporary radio stations in the United States on May 11, 2015 as the album's third pop"
+        " single in North America. An accompanying music video for the song, directed by Nigel Dick"
+        ", serves as the second half of a two-part story started in the video for 'Get' Em Up'."
+        " Music critics were divided on their opinion of 'Satellite', with some praising the ballad"
+        " form and others labelling the song as cliché. The song only charted in Canada, where it"
+        " peaked outside the top 40 on the national adult contemporary chart."
     ),
 }
 
@@ -96,10 +106,10 @@ st.sidebar.write(
 )
 
 
-model_name = st.sidebar.selectbox("Model name", ("ADE", "BC5CDR", "BioGRID", "GDA")).strip().lower()
+model_name = st.sidebar.selectbox("Model name", ("BC5CDR", "GDA", "DocRED")).strip().lower()
 
 st.sidebar.subheader("Additional Settings")
-debug = st.sidebar.checkbox("Debug", False)
+verbose = st.sidebar.checkbox("Verbose", False)
 
 if model_name:
     model = load_model(model_name)
@@ -110,17 +120,25 @@ input_text = st.text_area(
     help="Enter some text here. This will be auto-filled with a model-specific example.",
 )
 if input_text:
-    net = Network(notebook=True)
+    # Run the model and parse the output
     output = model(input_text)
+    deserialize_annotations = util.deserialize_annotations(output)
+
+    # Display the input text
     st.subheader("Input text")
     st.write(input_text)
 
-    if debug:
+    # Optiionally, displaty the verbose output
+    if verbose:
         st.subheader("Raw output")
         st.write(output)
 
+        st.subheader("Parsed output")
+        st.write(deserialize_annotations)
+
+    # Visualize output as a graph
+    net = Network(notebook=True)
     st.subheader("Extracted relations")
-    deserialize_annotations = util.deserialize_annotations(output)
     for prediction in deserialize_annotations:
         for rel_type, rels in prediction.items():
             # TODO: This should be extended to n-ary relations.

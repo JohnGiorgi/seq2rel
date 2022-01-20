@@ -5,6 +5,7 @@ from typing import Dict, List, Tuple, Union
 COREF_SEP_SYMBOL = ";"
 # Used to separate entity hints from input text in the source string.
 HINT_SEP_SYMBOL = "@HINTS@"
+# Regex patterns used to parse the string serialized representation of entities and relations.
 REL_PATTERN = re.compile(r"(.*?@)\s*(?:@)([^\s]*)\b[^@]*@")
 CLUSTER_PATTERN = re.compile(r"(?:\s?)(.*?)(?:\s?)@([^\s]*)\b[^@]*@")
 
@@ -25,7 +26,9 @@ def sanitize_text(text: str, lowercase: bool = False) -> str:
 
 
 def deserialize_annotations(
-    serialized_annotations: Union[str, List[str]], ordered_ents: bool = False
+    serialized_annotations: Union[str, List[str]],
+    ordered_ents: bool = False,
+    remove_duplicate_ents: bool = False,
 ) -> List[RelationAnnotation]:
     """Returns dictionaries containing the entities and relations present in
     `serialized_annotations`, the string serialized representation of entities and relations.
@@ -37,9 +40,14 @@ def deserialize_annotations(
     ordered_ents : `bool`, optional (default = `False`)
         True if the entities should be considered ordered (e.g. there are distinct head and tail
         entities). Defaults to False.
+    remove_duplicate_ents : `bool`, optional (default = `False`)
+        True if non-unique entities within a relation should be removed. These are not common so
+        removing them can improve performance. However, in some domains they are possible
+        (e.g. homodimers in protein-protein interactions). Defaults to False.
 
     # Returns
-    A list of dictionaries, keyed by class name, containing the relations of the string
+
+    A list of dictionaries, keyed by relation class name, containing the relations of the string
     serialized representations `serialized_strings`.
     """
     if isinstance(serialized_annotations, str):
@@ -51,17 +59,19 @@ def deserialize_annotations(
         rels = REL_PATTERN.findall(annotation)
         for rel_string, rel_label in rels:
             raw_clusters = tuple(CLUSTER_PATTERN.findall(rel_string))
-            # Normalizes clusters so that evaluation is insensitive to order, case and duplicates.
-            clusters = _normalize_clusters(raw_clusters)  # type: ignore
-            # Possibly sort the entities to make evaluation insensitive to order.
+            # Normalizes entity mentions so that evaluation is insensitive to order, case and duplicates.
+            clusters = _normalize_clusters(
+                raw_clusters, remove_duplicate_ents=remove_duplicate_ents
+            )  # type: ignore
+            # Optional sort the entities to make evaluation insensitive to order.
             if not ordered_ents:
                 clusters = tuple(sorted(clusters))
-            # A relation must contain at least to entities. These are easy to detect at training
+            # A relation must contain at least two entities. These are easy to detect at training
             # and at inference, so we purposfully drop them.
             if len(clusters) < 2:
                 continue
             if rel_label in deserialized[-1]:
-                # Don't retain duplicates
+                # Don't retain duplicate relations
                 if clusters not in deserialized[-1][rel_label]:
                     deserialized[-1][rel_label].append(clusters)
             else:
@@ -72,7 +82,9 @@ def deserialize_annotations(
 # Private functions #
 
 
-def _normalize_clusters(clusters: Tuple[Tuple[str, str], ...]) -> EntityAnnotation:
+def _normalize_clusters(
+    clusters: Tuple[Tuple[str, str], ...], remove_duplicate_ents: bool = False
+) -> EntityAnnotation:
     """Normalize clusters (coreferent mentions) by sorting mentions, removing duplicates, and
     lowercasing the text."""
     preprocessed_clusters = tuple(
@@ -102,4 +114,7 @@ def _normalize_clusters(clusters: Tuple[Tuple[str, str], ...]) -> EntityAnnotati
     preprocessed_clusters = tuple(
         (mentions, label) for mentions, label in preprocessed_clusters if mentions
     )
+    # Optionally remove duplicate clusters
+    if remove_duplicate_ents:
+        preprocessed_clusters = tuple(dict.fromkeys(preprocessed_clusters))
     return preprocessed_clusters

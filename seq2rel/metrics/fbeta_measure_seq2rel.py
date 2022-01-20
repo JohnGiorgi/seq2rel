@@ -68,6 +68,10 @@ class FBetaMeasureSeq2Rel(FBetaMeasure):
     ordered_ents : `bool`, optional (default = `False`)
         True if the entities should be considered ordered (e.g. there are distinct head and tail
         entities). Defaults to False.
+    remove_duplicate_ents : `bool`, optional (default = `False`)
+        True if non-unique entities within a relation should be removed. These are not common,
+        so removing them can improve performance. However, in some domains they are possible
+        (e.g. homodimers in protein-protein interactions). Defaults to False.
     """
 
     supports_distributed = True
@@ -77,6 +81,7 @@ class FBetaMeasureSeq2Rel(FBetaMeasure):
         labels: List[str],
         cluster_threshold: Optional[float] = None,
         ordered_ents: bool = False,
+        remove_duplicate_ents: bool = False,
         beta: float = 1.0,
         average: Optional[str] = None,
     ) -> None:
@@ -92,6 +97,7 @@ class FBetaMeasureSeq2Rel(FBetaMeasure):
             raise ValueError(f"cluster_threshold must be between (0, 1]. Got {cluster_threshold}.")
         self._cluster_threshold = cluster_threshold
         self._ordered_ents = ordered_ents
+        self._remove_duplicate_ents = remove_duplicate_ents
 
     def __call__(self, predictions: List[str], ground_truths: List[str]) -> None:
         """
@@ -116,7 +122,11 @@ class FBetaMeasureSeq2Rel(FBetaMeasure):
             self._pred_sum = torch.zeros(self._num_classes)
             self._total_sum = torch.zeros(self._num_classes)
 
-        pred_annotations = deserialize_annotations(predictions, ordered_ents=self._ordered_ents)
+        pred_annotations = deserialize_annotations(
+            predictions,
+            ordered_ents=self._ordered_ents,
+            remove_duplicate_ents=self._remove_duplicate_ents,
+        )
         gold_annotations = deserialize_annotations(ground_truths, ordered_ents=self._ordered_ents)
 
         # Predictions and ground truths are contained with equal length lists as they are per-batch.
@@ -170,12 +180,14 @@ class F1MeasureSeq2Rel(FBetaMeasureSeq2Rel):
         labels: List[str],
         cluster_threshold: Optional[float] = None,
         ordered_ents: bool = False,
+        remove_duplicate_ents: bool = False,
         average: Optional[str] = None,
     ) -> None:
         super().__init__(
             labels=labels,
             cluster_threshold=cluster_threshold,
             ordered_ents=ordered_ents,
+            remove_duplicate_ents=remove_duplicate_ents,
             beta=1.0,
             average=average,
         )

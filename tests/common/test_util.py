@@ -85,7 +85,7 @@ def test_deserialize_annotation() -> None:
 
     # Set `ordered_ents=True` so that mentions aren't sorted (easier to write test cases).
     deduplicated_expected = copy.deepcopy(expected)
-    del deduplicated_expected[-1]["LOCATED_IN_THE_ADMINISTRATIVE_TERRITORIAL_ENTITY"][-1]
+    del deduplicated_expected[-1]["LOCATED_IN_THE_ADMINISTRATIVE_TERRITORIAL_ENTITY"][-1]  # type: ignore
     actual = util.deserialize_annotations(
         serialized_annotations, ordered_ents=True, remove_duplicate_ents=True
     )
@@ -114,5 +114,5 @@ def test_normalize_clusters() -> None:
         (("methamphetamine", "meth"), "CHEMICAL"),
         # The duplicate entity is removed because remove_duplicate_ents is True.
         (("psychotic disorders", "psychosis"), "DISEASE"),
-    )
+    )  # type: ignore
     assert actual == expected

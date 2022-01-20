@@ -46,6 +46,7 @@ pytest = "^6.2.3"
 pytest-cov = "^3.0.0"
 coverage = "^6.0"
 codecov = "^2.1.12"
+overrides = "^3.1.0"
 # This is required to run the demo. Because streamlit installs
 # all dev dependencies, we stick it here.
 pyvis = "^0.1.9"

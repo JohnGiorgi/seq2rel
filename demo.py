@@ -9,67 +9,59 @@ from seq2rel.common import util
 
 TEXT_EXAMPLES = {
     "bc5cdr": (
-        "Neuroleptic malignant syndrome induced by ziprasidone on the second day of"
-        " treatment. Neuroleptic malignant syndrome (NMS) is the rarest and most serious of the"
-        " neuroleptic-induced movement disorders. We describe a case of neuroleptic malignant"
-        " syndrome (NMS) associated with the use of ziprasidone. Although conventional neuroleptics"
-        " are more frequently associated with NMS, atypical antipsychotic drugs like ziprasidone"
-        " may also be a cause. The patient is a 24-year-old male with a history of schizophrenia"
-        " who developed signs and symptoms of NMS after 2 days of treatment with an 80-mg/day dose"
-        " of orally administrated ziprasidone. This case is the earliest (second day of treatment)"
-        " NMS due to ziprasidone reported in the literature."
-    ),
-    "biogrid": (
-        "DNA-dependent protein kinase (DNA-PK) is composed of a 460-kDa catalytic component (p460)"
-        " and a DNA-binding component Ku protein. Immunoblot analysis after treatment of Jurkat"
-        " cells with anti-Fas antibody demonstrated the cleavage of p460 concomitantly with an"
-        " increase in CPP32/Yama/apopain activity. Recombinant CPP32/Yama/apopain specifically"
-        " cleaved p460 in the DNA-PK preparation that had been purified from Raji cells into 230-"
-        " and 160-kDa polypeptides, the latter of which was detected in anti-Fas-treated Jurkat"
-        " cells. The regulatory component Ku protein was not significantly affected by"
-        " CPP32/Yama/apopain. DNA-PK activity was decreased with the disappearance of p460 in the"
-        " incubation of DNA-PK with CPP32/Yama/apopain. These results suggest that the catalytic"
-        " component of DNA-PK is one of the target proteins for CPP32/Yama/apopain in Fas-mediated"
-        "apoptosis."
+        "Bortezomib and dexamethasone as salvage therapy in patients with relapsed/refractory"
+        " multiple myeloma: analysis of long-term clinical outcomes. Bortezomib"
+        " (bort)-dexamethasone (dex) is an effective therapy for relapsed/refractory (R/R) multiple"
+        " myeloma (MM). This retrospective study investigated the combination of bort (1.3 mg/m(2)"
+        " on days 1, 4, 8, and 11 every 3 weeks) and dex (20 mg on the day of and the day after"
+        " bort) as salvage treatment in 85 patients with R/R MM after prior autologous stem cell"
+        " transplantation or conventional chemotherapy. The median number of prior lines of therapy"
+        " was 2. Eighty-seven percent of the patients had received immunomodulatory drugs included"
+        " in some line of therapy before bort-dex. The median number of bort-dex cycles was 6, up"
+        " to a maximum of 12 cycles. On an intention-to-treat basis, 55 % of the patients achieved"
+        " at least partial response, including 19 % CR and 35 % achieved at least very good partial"
+        " response. Median durations of response, time to next therapy and treatment-free interval"
+        " were 8, 11.2, and 5.1 months, respectively. The most relevant adverse event was"
+        " peripheral neuropathy, which occurred in 78 % of the patients (grade II, 38 %; grade III,"
+        " 21 %) and led to treatment discontinuation in 6 %. With a median follow up of 22 months,"
+        " median time to progression, progression-free survival (PFS) and overall survival (OS)"
+        " were 8.9, 8.7, and 22 months, respectively. Prolonged PFS and OS were observed in"
+        " patients achieving CR and receiving bort-dex a single line of prior therapy. Bort-dex was"
+        " an effective salvage treatment for MM patients, particularly for those in first relapse."
     ),
     "gda": (
-        "Functional gene polymorphisms in aggressive and chronic periodontitis. There is strong"
-        " evidence that genetic as well as environmental factors affect the development of"
-        " periodontitis, and some suggestion that aggressive and chronic forms of the disease share"
-        " the same genetic predisposition. This study addresses the hypothesis that there are both"
-        " shared and unique genetic associations in these forms of periodontitis. A sample of 51"
-        " patients with aggressive disease, 57 patients with chronic disease, and 100 healthy"
-        " controls was recruited for this study. Ten functional polymorphisms in 7 candidate genes"
-        " were genotyped. The results show statistically significant (p <or= 0.05) differences"
-        " between genotype frequencies in aggressive and controls (IL-1B +3954 IL-6 -174); chronic"
-        " and controls (IL-6 -174 VDR -1056); chronic and aggressive periodontitis (IL-1A -889);"
-        " and periodontitis as a whole and controls (VDR -1056, TLR-4 399 _ IL-6 -174). These"
-        " results suggest that there are in fact both shared and unique genetic associations in"
-        " aggressive and chronic periodontitis."
+        "A polymorphism in the cystatin C gene is a novel risk factor for late-onset Alzheimer's"
+        " disease. OBJECTIVE: To investigate whether or not a coding polymorphism in the cystatin"
+        " C gene (CST3) contributes risk for AD. DESIGN: A case-control genetic association study"
+        " of a Caucasian dataset of 309 clinic- and community-based cases and 134 community-based"
+        " controls. RESULTS: The authors find a signficant interaction between the GG genotype of"
+        " CST3 and age/age of onset on risk for AD, such that in the over-80 age group the GG"
+        " genotype contributes two-fold increased risk for the disease. The authors also see a"
+        " trend toward interaction between APOE epsilon4-carrying genotype and age/age of onset"
+        " in this dataset, but in the case of APOE the risk decreases with age. Analysis of only"
+        " the community-based cases versus controls reveals a significant three-way interaction"
+        " between APOE, CST3 and age/age of onset. CONCLUSION: The reduced or absent risk for AD"
+        " conferred by APOE in older populations has been well reported in the literature,"
+        " prompting the suggestion that additional genetic risk factors confer risk for"
+        " later-onset AD. In the author's dataset the opposite effects of APOE and CST3 genotype on"
+        " risk for AD with increasing age suggest that CST3 is one of the risk factors for"
+        " later-onset AD. Although the functional significance of this coding polymorphism has not"
+        " yet been reported, several hypotheses can be proposed as to how variation in an"
+        " amyloidogenic cysteine protease inhibitor may have pathologic consequences for AD."
     ),
     "docred": (
-        "'Satellite' is a song recorded by Canadian rock group Nickelback for their eighth"
-        " studio album, No Fixed Address (2014). A pop rock 'power ballad' about an"
-        " all-encompassing love, the song was written by group members Chad Kroeger and Ryan Peake"
-        " with Josh Ramsay and David Hodges. Nickelback co-produced the track with Chris Baseford."
-        " 'Satellite' was released March 23, 2015 as the album's sixth single and serves as the"
-        " second pop single in continental Europe. The song was later serviced to hot adult"
-        " contemporary radio stations in the United States on May 11, 2015 as the album's third pop"
-        " single in North America. An accompanying music video for the song, directed by Nigel Dick"
-        ", serves as the second half of a two-part story started in the video for 'Get' Em Up'."
-        " Music critics were divided on their opinion of 'Satellite', with some praising the ballad"
-        " form and others labelling the song as cliché. The song only charted in Canada, where it"
-        " peaked outside the top 40 on the national adult contemporary chart."
+        "Darksiders is a hack and slash action-adventure video game developed by Vigil Games and"
+        " published by THQ. The game takes its inspiration from the Four Horsemen of the"
+        " Apocalypse, with the player taking the role of the horseman War. The game was released"
+        " for the PlayStation 3 and Xbox 360 on January 5, 2010 in North America, January 7 in"
+        " Australia, January 8 in Europe, and March 18 in Japan."
     ),
 }
 
 
 @st.cache(allow_output_mutation=True, max_entries=1, ttl=3600)
 def load_model(model_name: str):
-    return Seq2Rel(
-        model_name,
-        overrides={"dataset_reader.type": "seq2rel"},
-    )
+    return Seq2Rel(model_name)
 
 
 def process_ent(text: str, ents: Tuple[str, ...]) -> str:
@@ -92,9 +84,10 @@ st.sidebar.write(
     f"""
     # Seq2Rel
 
-    A demo for our [Seq2Rel](https://github.com/JohnGiorgi/seq2rel) models.
+    A demo for our [Seq2Rel](https://github.com/JohnGiorgi/seq2rel) method.
 
-    Seq2Rel is a sequence-to-sequence based architecture for joint entity and relation extraction.
+    Seq2Rel is a generative, sequence-to-sequence based method for end-to-end document-level
+    entity and relation extraction.
 
     1. Select a pretrained model below (it may take a few seconds to load).
     2. Enter some text on the right, and the extracted entity mentions and relations will be visualized
@@ -106,10 +99,16 @@ st.sidebar.write(
 )
 
 
-model_name = st.sidebar.selectbox("Model name", ("BC5CDR", "GDA", "DocRED")).strip().lower()
+model_name = (
+    st.sidebar.selectbox(
+        "Model name",
+        ("BC5CDR", "GDA", "DocRED"),
+        help="Name of pretrained model to load. Most models are named after the dataset they are trained on.",
+    )
+    .strip()
+    .lower()
+)
 
-st.sidebar.subheader("Additional Settings")
-verbose = st.sidebar.checkbox("Verbose", False)
 
 if model_name:
     model = load_model(model_name)
@@ -124,31 +123,33 @@ if input_text:
     output = model(input_text)
     deserialize_annotations = util.deserialize_annotations(output)
 
-    # Display the input text
-    st.subheader("Input text")
+    st.subheader(":memo: Input text")
     st.write(input_text)
 
-    # Optiionally, displaty the verbose output
-    if verbose:
-        st.subheader("Raw output")
-        st.write(output)
+    st.subheader(":gear: Model outputs")
+    with st.expander("Click to expand"):
+        st.markdown("#### Raw output")
+        st.write("The raw output of the model as a string.")
+        # We index by 0 because there will only ever be one output.
+        st.markdown(f"`{output[0]}`")
 
-        st.subheader("Parsed output")
-        st.write(deserialize_annotations)
+        st.markdown("#### Parsed output")
+        st.write("The parsed output of the model as a dictionary, keyed by relation class.")
+        st.write(deserialize_annotations[0])
 
-    # Visualize output as a graph
-    net = Network(notebook=True)
-    st.subheader("Extracted relations")
+    st.subheader(":left_right_arrow: Extracted relations")
+    st.write("The models outputs, visualized as a graph.")
+    net = Network(width="100%", bgcolor="#F0F2F6", layout=True, notebook=True)
     for prediction in deserialize_annotations:
         for rel_type, rels in prediction.items():
             # TODO: This should be extended to n-ary relations.
             for rel in rels:
                 ent_1, ent_1_type = process_ent(input_text, rel[0][0]), rel[0][1]
                 ent_2, ent_2_type = process_ent(input_text, rel[1][0]), rel[1][1]
-                net.add_node(ent_1, title=ent_1_type)
-                net.add_node(ent_2, title=ent_2_type)
+                net.add_node(ent_1, title=ent_1_type, color="#FF4B4B", borderWidth=0)
+                net.add_node(ent_2, title=ent_2_type, color="#FF4B4B", borderWidth=0)
                 net.add_edge(ent_1, ent_2, title=rel_type)
     net.show("network.html")
     HtmlFile = open("network.html", "r", encoding="utf-8")
     source_code = HtmlFile.read()
-    components.html(source_code, height=1200, width=1000)
+    components.html(source_code, height=800)

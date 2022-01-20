@@ -34,6 +34,7 @@ python = "^3.7.1"
 typer = { extras = ["all"], version = "^0.4.0" }
 validators = "^0.18.2"
 more-itertools = "^8.10.0"
+allennlp = { git = "https://github.com/allenai/allennlp.git", branch = "main" }
 allennlp-models = { git = "https://github.com/allenai/allennlp-models.git", branch = "main" }
 
 [tool.poetry.dev-dependencies]

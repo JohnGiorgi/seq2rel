@@ -33,7 +33,7 @@ class Seq2RelDatasetReader(CopyNetDatasetReader):
 
     @overrides
     def text_to_instance(
-        self, source_string: str, target_string: str = None, _id: str = None
+        self, source_string: str, target_string: str = None, weight: float = None, _id: str = None
     ) -> Instance:  # type: ignore
 
         if self._max_length is not None:
@@ -49,7 +49,7 @@ class Seq2RelDatasetReader(CopyNetDatasetReader):
         source_string = " " + source_string.lstrip()
         if target_string:
             target_string = " " + target_string.lstrip()
-        instance = super().text_to_instance(source_string, target_string)
+        instance = super().text_to_instance(source_string, target_string, weight)
         # If an unique ID was provided (optional), add it to the metadata
         if _id is not None:
             instance.fields["metadata"].metadata["_id"] = _id
@@ -61,8 +61,9 @@ class Seq2RelDatasetReader(CopyNetDatasetReader):
         `source_string` is less than `self._max_length`, it is returned unmodified.
         """
         # Account for special tokens
+        transformer_tokenizer = self._source_tokenizer.tokenizer
         max_length = self._max_length - self._source_tokenizer.num_special_tokens_for_sequence()
-        tokenized_source = self._source_tokenizer.tokenizer.tokenize(source_string)
+        tokenized_source = transformer_tokenizer.encode(source_string, add_special_tokens=False)
         if len(tokenized_source) > max_length:
             # Truncate by concatenating the first 75% of tokens and the last 25% of tokens
             head = floor(max_length * 0.75)
@@ -71,7 +72,7 @@ class Seq2RelDatasetReader(CopyNetDatasetReader):
             tokenized_source = (
                 tokenized_source[:head] + tokenized_source[len(tokenized_source) - tail :]
             )
-            source_string = self._source_tokenizer.tokenizer.convert_tokens_to_string(
-                tokenized_source
-            )
+            # This is the preferred way to detokenize a string.
+            # See: https://github.com/huggingface/transformers/issues/14502
+            source_string = transformer_tokenizer.decode(tokenized_source)
         return source_string

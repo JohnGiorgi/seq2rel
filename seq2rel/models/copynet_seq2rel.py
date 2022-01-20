@@ -22,7 +22,7 @@ class CopyNetSeq2Rel(CopyNetSeq2Seq):
     """
     This is a thin wrapper around `CopyNetSeq2Seq` to provide any of the modifications necessary to
     use the model for information extraction. For details, please see:
-    [`CopyNetSeq2Seq`](https://github.com/allenai/allennlp-models/blob/main/allennlp_models/generation/models/copynet_seq2seq.py),
+    [`CopyNetSeq2Seq`](https://github.com/allenai/allennlp-models/blob/main/allennlp_models/generation/models/copynet_seq2seq.py).
 
     # Parameters
 
@@ -263,9 +263,15 @@ class CopyNetSeq2Rel(CopyNetSeq2Seq):
         if isinstance(self._target_tokenizer, PretrainedTransformerTokenizer):
 
             def _tokens_to_string(tokens: List[str]) -> str:
-                return sanitize_text(
-                    self._target_tokenizer.tokenizer.convert_tokens_to_string(tokens)
+                string = self._target_tokenizer.tokenizer.convert_tokens_to_string(tokens)
+                # Depending on the tokenizer, convert_tokens_to_string may not correctly insert
+                # spaces around the special token. We can fix that by encoding (tokenizing + indexing)
+                # and then decoding. See: https://github.com/huggingface/transformers/issues/14502
+                string = self._target_tokenizer.tokenizer.decode(
+                    self._target_tokenizer.tokenizer.encode(string, add_special_tokens=False)
                 )
+                string = sanitize_text(string)
+                return string
 
         else:
 

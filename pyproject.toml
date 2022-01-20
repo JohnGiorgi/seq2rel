@@ -31,15 +31,10 @@ exclude = ["tests", "test_fixtures", "training_config"]
 
 [tool.poetry.dependencies]
 python = "^3.7.1"
-typer = {extras = ["all"], version = "^0.4.0"}
-allennlp = "^2.6.0"
-allennlp-models = "^2.6.0"
-allennlp-optuna = { version = "^0.1.6", optional = true }
+typer = { extras = ["all"], version = "^0.4.0" }
 validators = "^0.18.2"
 more-itertools = "^8.10.0"
-
-[tool.poetry.extras]
-optuna = ["allennlp-optuna"]
+allennlp-models = { git = "https://github.com/allenai/allennlp-models.git", branch = "main" }
 
 [tool.poetry.dev-dependencies]
 black = "^21.4b2"

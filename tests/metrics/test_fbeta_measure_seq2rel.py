@@ -257,6 +257,39 @@ class TestFBetaMeasureSeq2Rel(FBetaMeasureSeq2RelTestCase):
         assert isinstance(recalls, List)
         assert isinstance(fscores, List)
 
+    def test_fbeta_seq2rel_multiclass_metric_remove_duplicate_ents(self):
+        fbeta = FBetaMeasureSeq2Rel(labels=self.labels, remove_duplicate_ents=True)
+        fbeta(self.predictions, self.targets)
+        metric = fbeta.get_metric()
+        precisions = metric["precision"]
+        recalls = metric["recall"]
+        fscores = metric["fscore"]
+
+        # With `remove_duplicate_ents=True`, one of the predictions for the class at index 0 is now
+        # removed. Decrement the true positives by 1 and recompute the desired values.
+        pred_sum = copy.deepcopy(self.pred_sum)
+        true_positive_sum = copy.deepcopy(self.true_positive_sum)
+        desired_precisions = copy.deepcopy(self.desired_precisions)
+        desired_recalls = copy.deepcopy(self.desired_recalls)
+        pred_sum[0] -= 1
+        true_positive_sum[0] -= 1
+        desired_precisions[0] = (true_positive_sum[0]) / pred_sum[0]
+        desired_recalls[0] = (true_positive_sum[0]) / self.true_sum[0]
+        desired_fscores = [
+            (2 * p * r) / (p + r) if p + r != 0.0 else 0.0
+            for p, r in zip(desired_precisions, desired_recalls)
+        ]
+
+        # check value
+        assert_allclose(precisions, desired_precisions)
+        assert_allclose(recalls, desired_recalls)
+        assert_allclose(fscores, desired_fscores)
+
+        # check type
+        assert isinstance(precisions, List)
+        assert isinstance(recalls, List)
+        assert isinstance(fscores, List)
+
     def test_fbeta_seq2rel_multiclass_macro_average_metric(self):
         fbeta = FBetaMeasureSeq2Rel(labels=self.labels, average="macro")
         fbeta(self.predictions, self.targets)

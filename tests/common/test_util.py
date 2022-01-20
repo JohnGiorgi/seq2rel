@@ -1,3 +1,4 @@
+import copy
 import re
 
 from hypothesis import given
@@ -23,19 +24,16 @@ def test_sanitize_text(text: str, lowercase: bool) -> None:
 
 
 def test_deserialize_annotation() -> None:
-    # Test:
-    # - the empty string
-    # - non-empty string with no relation
-    # - non-empty string with an invalid relation
-    # - a single relation string
-    # - a multiple relation string
-    # - a more complicated relation type with non-alpha-numeric characters in the special tokens
-    # - duplicate entity mentions and duplicate coreferent mentions
     serialized_annotations = [
+        # Empty string
         "",
+        # Non-empty string with no relation
         "I don't contain anything of interest!",
+        # Non-empty string with no relation
         "fenoprofen @DRUG@ @ADE@",
+        # A valid string with one relation
         "fenoprofen @DRUG@ pure red cell aplasia @EFFECT@ @ADE@",
+        # A valid string with multiple relations
         (
             "bimatoprost @DRUG@ cystoid macula edema @EFFECT@ @ADE@"
             # A duplicate relation that should not be included in the deserialized annotation
@@ -44,7 +42,12 @@ def test_deserialize_annotation() -> None:
             # A duplicate mention that should not be included in the deserialized annotation
             " methamphetamine ; meth ; meth @CHEMICAL@ psychosis ; psychotic disorders @DISEASE@ @CID@"
         ),
-        "pasay city @LOC@ metro manila @LOC@ @LOCATED_IN_THE_ADMINISTRATIVE_TERRITORIAL_ENTITY@",
+        # A valid string with multiple relations and non-alpha-numeric characters in the special tokens
+        (
+            "pasay city @LOC@ metro manila @LOC@ @LOCATED_IN_THE_ADMINISTRATIVE_TERRITORIAL_ENTITY@"
+            # A duplicate entity that should only be retained if remove_duplicate_ents is False
+            " pasay city @LOC@ pasay city @LOC@ @LOCATED_IN_THE_ADMINISTRATIVE_TERRITORIAL_ENTITY@"
+        ),
     ]
 
     # Check that we can call the function on a list of strings
@@ -67,7 +70,8 @@ def test_deserialize_annotation() -> None:
         },
         {
             "LOCATED_IN_THE_ADMINISTRATIVE_TERRITORIAL_ENTITY": [
-                ((("pasay city",), "LOC"), (("metro manila",), "LOC"))
+                ((("pasay city",), "LOC"), (("metro manila",), "LOC")),
+                ((("pasay city",), "LOC"), (("pasay city",), "LOC")),
             ],
         },
     ]
@@ -79,21 +83,36 @@ def test_deserialize_annotation() -> None:
     actual = util.deserialize_annotations(serialized_annotations[-1], ordered_ents=True)
     assert [expected[-1]] == actual
 
+    # Set `ordered_ents=True` so that mentions aren't sorted (easier to write test cases).
+    deduplicated_expected = copy.deepcopy(expected)
+    del deduplicated_expected[-1]["LOCATED_IN_THE_ADMINISTRATIVE_TERRITORIAL_ENTITY"][-1]
+    actual = util.deserialize_annotations(
+        serialized_annotations, ordered_ents=True, remove_duplicate_ents=True
+    )
+    assert deduplicated_expected == actual
+
 
 def test_normalize_clusters() -> None:
     clusters = (
         # Duplicate coreferent mentions + case insensitivity
         ("methamphetamine ; Meth ; meth", "CHEMICAL"),
-        # Duplicate clusters + case insensitivity + order insensitivity
+        # Duplicate entity + case insensitivity + order insensitivity
         ("psychosis ; Psychotic disorders", "DISEASE"),
         ("psychotic disorders ; psychosis", "DISEASE"),
     )
-    actual = util._normalize_clusters(clusters)
+    actual = util._normalize_clusters(clusters, remove_duplicate_ents=False)
     expected = (
         (("methamphetamine", "meth"), "CHEMICAL"),
         (("psychotic disorders", "psychosis"), "DISEASE"),
-        # The duplicate cluster is kept because some relations do contain repeated
-        # clusters (like homodimers in protein-protein interactions).
+        # The duplicate entity is kept because remove_duplicate_ents is False.
+        (("psychotic disorders", "psychosis"), "DISEASE"),
+    )
+    assert actual == expected
+
+    actual = util._normalize_clusters(clusters, remove_duplicate_ents=True)
+    expected = (
+        (("methamphetamine", "meth"), "CHEMICAL"),
+        # The duplicate entity is removed because remove_duplicate_ents is True.
         (("psychotic disorders", "psychosis"), "DISEASE"),
     )
     assert actual == expected

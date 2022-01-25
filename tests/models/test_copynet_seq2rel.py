@@ -20,7 +20,18 @@ class TestCopyNetSeq2Rel(ModelTestCase):
         )
 
     def test_model_can_train_save_load(self):
-        self.ensure_model_can_train_save_and_load(self.param_file, tolerance=1e-2)
+        self.ensure_model_can_train_save_and_load(
+            self.param_file,
+            tolerance=1e-2,
+            gradients_to_ignore=[
+                # We don't currently use the attention projection layer in the decoder.
+                "_attention._multihead_attn.out_proj.weight",
+                "_attention._multihead_attn.out_proj.bias",
+                # HF initializes a pooler, and AllenNLP complains because we don't train it.
+                "_source_embedder.token_embedder_tokens.transformer_model.pooler.dense.weight",
+                "_source_embedder.token_embedder_tokens.transformer_model.pooler.dense.bias",
+            ],
+        )
 
     def test_invalid_init_decoder_state_strategy(self):
         params = Params.from_file(self.param_file)

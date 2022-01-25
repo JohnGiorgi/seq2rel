@@ -1,5 +1,5 @@
 import re
-from typing import Dict, List, Tuple, Union
+from typing import Dict, List, Optional, Tuple, Union
 
 # Used to separate coreferent mentions in a linearized relation string.
 COREF_SEP_SYMBOL = ";"
@@ -29,6 +29,7 @@ def deserialize_annotations(
     serialized_annotations: Union[str, List[str]],
     ordered_ents: bool = False,
     remove_duplicate_ents: bool = False,
+    filtered_relations: Optional[Union[str, List[str]]] = None,
 ) -> List[RelationAnnotation]:
     """Returns dictionaries containing the entities and relations present in
     `serialized_annotations`, the string serialized representation of entities and relations.
@@ -52,11 +53,18 @@ def deserialize_annotations(
     """
     if isinstance(serialized_annotations, str):
         serialized_annotations = [serialized_annotations]
+    if isinstance(filtered_relations, str):
+        filtered_relations = [filtered_relations]
 
     deserialized: List[RelationAnnotation] = []
-    for annotation in serialized_annotations:
+    for i, annotation in enumerate(serialized_annotations):
         deserialized.append({})
         rels = REL_PATTERN.findall(annotation)
+        # If filtered_relations was provided, we remove them from the given relations.
+        if filtered_relations:
+            for filtered_rel in REL_PATTERN.findall(filtered_relations[i]):
+                rels.remove(filtered_rel)
+
         for rel_string, rel_label in rels:
             raw_clusters = tuple(CLUSTER_PATTERN.findall(rel_string))
             # Normalizes entity mentions so that evaluation is insensitive to order, case and duplicates.

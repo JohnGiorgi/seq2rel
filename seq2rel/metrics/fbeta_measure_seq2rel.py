@@ -99,7 +99,12 @@ class FBetaMeasureSeq2Rel(FBetaMeasure):
         self._ordered_ents = ordered_ents
         self._remove_duplicate_ents = remove_duplicate_ents
 
-    def __call__(self, predictions: List[str], ground_truths: List[str]) -> None:
+    def __call__(
+        self,
+        predictions: List[str],
+        ground_truths: List[str],
+        filtered_relations: Optional[List[str]] = None,
+    ) -> None:
         """
         # Parameters
 
@@ -126,6 +131,7 @@ class FBetaMeasureSeq2Rel(FBetaMeasure):
             predictions,
             ordered_ents=self._ordered_ents,
             remove_duplicate_ents=self._remove_duplicate_ents,
+            filtered_relations=filtered_relations,
         )
         gold_annotations = deserialize_annotations(ground_truths, ordered_ents=self._ordered_ents)
 

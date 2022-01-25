@@ -113,6 +113,6 @@ def test_normalize_clusters() -> None:
     expected = (
         (("methamphetamine", "meth"), "CHEMICAL"),
         # The duplicate entity is removed because remove_duplicate_ents is True.
-        (("psychotic disorders", "psychosis"), "DISEASE"),
-    )  # type: ignore
+        (("psychotic disorders", "psychosis"), "DISEASE"),  # type: ignore
+    )
     assert actual == expected

@@ -61,11 +61,9 @@ class Seq2Rel:
             pretrained_model_name_or_path = PRETRAINED_MODELS[pretrained_model_name_or_path]
         common_util.import_module_and_submodules("seq2rel")
         # Setup any default overrides here. For example, we don't want to load the pretrained
-        # weights from HuggingFace because this model has been fine-tuned. To avoid another warning,
-        # we also set reinit_modules to None.
+        # weights from HuggingFace because this model has been fine-tuned.
         overrides = {
             "model.source_embedder.token_embedders.tokens.load_weights": False,
-            "model.source_embedder.token_embedders.tokens.reinit_modules": None,
         }
         # Allow user to update these with kwargs.
         if "overrides" in kwargs:

@@ -38,8 +38,8 @@ class MultiheadAttention(Attention):
         key = matrix.transpose(0, 1)
         value = key.clone()
         key_padding_mask = None if matrix_mask is None else ~matrix_mask  # type: ignore
-        _, attn_output_weights = self._multihead_attn(
-            query, key, value, key_padding_mask=key_padding_mask
+        attn_output, _ = self._multihead_attn(
+            query, key, value, key_padding_mask=key_padding_mask, need_weights=False
         )
-        attn_output_weights = attn_output_weights.squeeze(1)
-        return attn_output_weights
+        attn_output = attn_output.squeeze(0)
+        return attn_output

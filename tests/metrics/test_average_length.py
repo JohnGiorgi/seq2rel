@@ -24,5 +24,27 @@ class TestAverageLength(AverageLengthTestCase):
             "targets_mean_length": self.targets_mean_length,
             "predictions_to_targets_length_ratio": self.predictions_to_targets_length_ratio,
         }
-        actual = metric.get_metric()
+        actual = metric.get_metric(reset=True)
+        assert actual == expected
+
+        # Test case where predictions are empty.
+        predictions = [[]]
+        metric(predictions, self.targets)
+        expected = {
+            "predictions_mean_length": 0,
+            "targets_mean_length": self.targets_mean_length,
+            "predictions_to_targets_length_ratio": round(0 / self.targets_mean_length, 2),
+        }
+        actual = metric.get_metric(reset=True)
+        assert actual == expected
+
+        # Test case where targets are empty.
+        targets = [[]]
+        metric(self.predictions, targets)
+        expected = {
+            "predictions_mean_length": self.predictions_mean_length,
+            "targets_mean_length": 0,
+            "predictions_to_targets_length_ratio": 0,
+        }
+        actual = metric.get_metric(reset=True)
         assert actual == expected

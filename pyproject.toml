@@ -34,8 +34,8 @@ python = "^3.7.1"
 typer = { extras = ["all"], version = "^0.4.0" }
 validators = "^0.18.2"
 more-itertools = "^8.10.0"
-allennlp = { git = "https://github.com/allenai/allennlp.git", branch = "main" }
-allennlp-models = { git = "https://github.com/allenai/allennlp-models.git", branch = "main" }
+allennlp = "^2.8.0"
+allennlp-models = "^2.8.0"
 
 [tool.poetry.dev-dependencies]
 black = "^21.4b2"
@@ -46,9 +46,9 @@ pytest = "^6.2.3"
 pytest-cov = "^3.0.0"
 coverage = "^6.0"
 codecov = "^2.1.12"
-overrides = "^3.1.0"
-# This is required to run the demo. Because streamlit installs
-# all dev dependencies, we stick it here.
+# These are required to run the demo.
+# Streamlit installs all dev dependencies, so we stick them here.
+streamlit = "^1.4.0"
 pyvis = "^0.1.9"
 
 # This configuration is borrowed from: https://github.com/allenai/allennlp/blob/main/pyproject.toml

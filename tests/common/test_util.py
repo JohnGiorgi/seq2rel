@@ -101,7 +101,7 @@ def test_normalize_clusters() -> None:
         ("psychotic disorders ; psychosis", "DISEASE"),
     )
     actual = util._normalize_clusters(clusters, remove_duplicate_ents=False)
-    expected = (
+    expected: util.EntityAnnotation = (
         (("methamphetamine", "meth"), "CHEMICAL"),
         (("psychotic disorders", "psychosis"), "DISEASE"),
         # The duplicate entity is kept because remove_duplicate_ents is False.
@@ -114,5 +114,5 @@ def test_normalize_clusters() -> None:
         (("methamphetamine", "meth"), "CHEMICAL"),
         # The duplicate entity is removed because remove_duplicate_ents is True.
         (("psychotic disorders", "psychosis"), "DISEASE"),
-    )  # type: ignore
+    )
     assert actual == expected

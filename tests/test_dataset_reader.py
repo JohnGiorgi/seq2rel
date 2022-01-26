@@ -31,7 +31,10 @@ class TestSeq2RelDatasetReader(AllenNlpTestCase):
             " occur even in patients who have received prior treatment with cisplatin."
         )
 
-        expected_string = "anaphylaxis to cisplatin is an infrequent life treatment with cisplatin."
+        expected_string = (
+            "anaphylaxis to cisplatin is an infrequent life - threatening"
+            " complication which may occur even in patients received prior treatment with cisplatin."
+        )
         expected_length = max_length - reader._target_tokenizer.num_special_tokens_for_sequence()
 
         actual_string = reader._head_tail_truncation(source_string)

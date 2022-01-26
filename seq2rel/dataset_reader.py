@@ -2,11 +2,12 @@ import logging
 from math import floor
 from typing import Optional
 
+from allennlp.common.file_utils import cached_path
 from allennlp.data.dataset_readers.dataset_reader import DatasetReader
 from allennlp.data.instance import Instance
+from allennlp.data.tokenizers import PretrainedTransformerTokenizer
 from allennlp_models.generation.dataset_readers import CopyNetDatasetReader
 from overrides import overrides
-from allennlp.data.tokenizers import PretrainedTransformerTokenizer
 
 logger = logging.getLogger(__name__)
 
@@ -32,8 +33,33 @@ class Seq2RelDatasetReader(CopyNetDatasetReader):
         self._max_length = max_length
 
     @overrides
+    def _read(self, file_path):
+        with open(cached_path(file_path), "r") as data_file:
+            logger.info("Reading instances from lines in file at: %s", file_path)
+            for line_num, line in self.shard_iterable(enumerate(data_file)):
+                line = line.strip("\n")
+                if not line:
+                    continue
+                line_parts = line.split("\t")
+                if len(line_parts) == 2:
+                    source_sequence, target_sequence, filtered_relations = *line_parts, None  # type: ignore
+                elif len(line_parts) == 3:
+                    source_sequence, target_sequence, filtered_relations = line_parts
+                else:
+                    raise RuntimeError(
+                        "Invalid line format: %s (line number %d)" % (line, line_num + 1)
+                    )
+                if not source_sequence:
+                    continue
+                yield self.text_to_instance(source_sequence, target_sequence, filtered_relations)
+
+    @overrides
     def text_to_instance(
-        self, source_string: str, target_string: str = None, weight: float = None, _id: str = None
+        self,
+        source_string: str,
+        target_string: str = None,
+        filtered_relations: str = None,
+        weight: float = None,
     ) -> Instance:  # type: ignore
 
         if self._max_length is not None:
@@ -50,9 +76,9 @@ class Seq2RelDatasetReader(CopyNetDatasetReader):
         if target_string:
             target_string = " " + target_string.lstrip()
         instance = super().text_to_instance(source_string, target_string, weight)
-        # If an unique ID was provided (optional), add it to the metadata
-        if _id is not None:
-            instance.fields["metadata"].metadata["_id"] = _id
+        # These are relations that should be filtered from a models predictions before evaluation.
+        if filtered_relations is not None:
+            instance.fields["metadata"].metadata["filtered_relations"] = filtered_relations
         return instance
 
     def _head_tail_truncation(self, source_string: str) -> str:

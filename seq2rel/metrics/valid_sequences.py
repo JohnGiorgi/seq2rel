@@ -2,7 +2,7 @@ import re
 from typing import Dict, List, Optional
 
 from allennlp.training.metrics import Metric
-from seq2rel.common.util import REL_PATTERN, deserialize_annotations
+from seq2rel.common.util import REL_PATTERN, extract_relations
 
 
 @Metric.register("valid_sequences")
@@ -12,18 +12,48 @@ class ValidSequences(Metric):
     to valid predicted ratios is much greater than 1.0, it suggests that the model is having trouble
     generating valid relations. Note that the argument `ground_truths` to `__call__` is ignored and
     provided only for API consistency.
+
+    # Parameters
+
+    remove_duplicate_ents : `bool`, optional (default = `False`)
+        True if non-unique entities within a relation should be removed. These are not common,
+        so removing them can improve performance. However, in some domains they are possible
+        (e.g. homodimers in protein-protein interactions). Defaults to False.
     """
 
-    def __init__(self):
+    def __init__(self, remove_duplicate_ents: bool = False):
         # The number of predictions, valid or not.
         self._pred_count = 0
         # The number of valid predictions.
         self._valid_pred_count = 0
 
-    def __call__(self, predictions: List[str], ground_truths: Optional[List[str]] = None) -> None:
+        self._remove_duplicate_ents = remove_duplicate_ents
+
+    def __call__(
+        self,
+        predictions: List[str],
+        ground_truths: Optional[List[str]] = None,
+        filtered_relations: Optional[List[str]] = None,
+    ) -> None:
+        """
+        # Parameters
+
+        predictions : `list`, required.
+            A list of predictions.
+        ground_truths : `torch.Tensor`, required.
+            This argument is ignored and exists only for API consistency.
+         filtered_relations : `list`, optional (default = `None`)
+            A list of strings containing linearized relations which should be filtered from
+            `predictions` before extracting relations. Defaults to None.
+        """
 
         self._valid_pred_count += sum(
-            len(deserialized.values()) for deserialized in deserialize_annotations(predictions)
+            len(deserialized.values())
+            for deserialized in extract_relations(
+                predictions,
+                remove_duplicate_ents=self._remove_duplicate_ents,
+                filtered_relations=filtered_relations,
+            )
         )
         for pred in predictions:
             # Check how many relations we can parse out.

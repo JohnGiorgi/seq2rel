@@ -204,8 +204,11 @@ class CopyNetSeq2Rel(CopyNetSeq2Seq):
                 if self._sequence_based_metrics:
                     output_dict = self.make_output_human_readable(output_dict)
                     for metric in self._sequence_based_metrics:
-                        metric(output_dict["predicted_strings"], output_dict["target_strings"])  # type: ignore
-
+                        metric(
+                            predictions=output_dict["predicted_strings"],
+                            ground_truths=output_dict["target_strings"],
+                            filtered_relations=output_dict.get("filtered_relations"),
+                        )
         return output_dict
 
     @overrides
@@ -282,10 +285,15 @@ class CopyNetSeq2Rel(CopyNetSeq2Seq):
         output_dict["predicted_strings"] = predicted_strings
 
         # Metadata is a list of dicts, enough to check if any of them contain "target_tokens".
-        if "target_tokens" in output_dict["metadata"][-1]:
-            target_tokens = [x["target_tokens"] for x in output_dict["metadata"]]
+        if any("target_tokens" in od for od in output_dict["metadata"]):
+            target_tokens = [od["target_tokens"] for od in output_dict["metadata"]]
             target_strings = [_tokens_to_string(tokens) for tokens in target_tokens]
             output_dict["target_strings"] = target_strings
+
+        # Metadata is a list of dicts, enough to check if any of them contain "filtered_relations".
+        if any("filtered_relations" in od for od in output_dict["metadata"]):
+            filtered_relations = [od["filtered_relations"] for od in output_dict["metadata"]]
+            output_dict["filtered_relations"] = filtered_relations
 
         return output_dict
 

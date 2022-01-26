@@ -1,5 +1,6 @@
 import re
-from typing import Dict, List, Tuple, Union
+from itertools import zip_longest
+from typing import Dict, List, Optional, Tuple
 
 # Used to separate coreferent mentions in a linearized relation string.
 COREF_SEP_SYMBOL = ";"
@@ -7,11 +8,11 @@ COREF_SEP_SYMBOL = ";"
 HINT_SEP_SYMBOL = "@HINTS@"
 # Regex patterns used to parse the string serialized representation of entities and relations.
 REL_PATTERN = re.compile(r"(.*?@)\s*(?:@)([^\s]*)\b[^@]*@")
-CLUSTER_PATTERN = re.compile(r"(?:\s?)(.*?)(?:\s?)@([^\s]*)\b[^@]*@")
+ENT_PATTERN = re.compile(r"(?:\s?)(.*?)(?:\s?)@([^\s]*)\b[^@]*@")
 
 # Custom annotation types
-ClusterAnnotation = Tuple[Tuple[str, ...], str]
-EntityAnnotation = Tuple[ClusterAnnotation, ...]
+MentionAnnotation = Tuple[Tuple[str, ...], str]
+EntityAnnotation = Tuple[MentionAnnotation, ...]
 RelationAnnotation = Dict[str, List[EntityAnnotation]]
 
 
@@ -25,69 +26,123 @@ def sanitize_text(text: str, lowercase: bool = False) -> str:
     return sanitized_text
 
 
-def deserialize_annotations(
-    serialized_annotations: Union[str, List[str]],
-    ordered_ents: bool = False,
-    remove_duplicate_ents: bool = False,
-) -> List[RelationAnnotation]:
-    """Returns dictionaries containing the entities and relations present in
-    `serialized_annotations`, the string serialized representation of entities and relations.
+def extract_entities(
+    linearization: str, ordered_ents: bool = False, remove_duplicate_ents: bool = False
+) -> EntityAnnotation:
+    """Given a linearized relation string `linearization`, extracts the entities and
+    returns them as a tuple of tuples, where the inner tuples contain an entities mentions and its
+    label.
 
     # Parameters
 
-    serialized_annotations: `list`
-        A list containing the string serialized representation of entities and relations.
+    linearization: `str`
+        A string containing a linearized relation string.
     ordered_ents : `bool`, optional (default = `False`)
-        True if the entities should be considered ordered (e.g. there are distinct head and tail
-        entities). Defaults to False.
+        True if entities should be considered ordered (e.g. there are distinct head and tail entities).
+        Defaults to False.
     remove_duplicate_ents : `bool`, optional (default = `False`)
-        True if non-unique entities within a relation should be removed. These are not common so
-        removing them can improve performance. However, in some domains they are possible
+        True if non-unique entities should be removed. These are not common, so
+        removing them can improve performance. However, in some domains, they are possible
         (e.g. homodimers in protein-protein interactions). Defaults to False.
 
     # Returns
 
-    A list of dictionaries, keyed by relation class name, containing the relations of the string
-    serialized representations `serialized_strings`.
+    A tuple of tuples, where the inner tuples contain an entities mentions and its label.
     """
-    if isinstance(serialized_annotations, str):
-        serialized_annotations = [serialized_annotations]
+    raw_entities = tuple(ENT_PATTERN.findall(linearization))
+    # Normalizes entity mentions so that evaluation is insensitive to order, case and duplicates.
+    entities = _normalize_entities(raw_entities, remove_duplicate_ents=remove_duplicate_ents)
+    # Optional sort the entities to make evaluation insensitive to order.
+    if not ordered_ents:
+        entities = tuple(sorted(entities))
+    return entities
 
-    deserialized: List[RelationAnnotation] = []
-    for annotation in serialized_annotations:
-        deserialized.append({})
-        rels = REL_PATTERN.findall(annotation)
-        for rel_string, rel_label in rels:
-            raw_clusters = tuple(CLUSTER_PATTERN.findall(rel_string))
-            # Normalizes entity mentions so that evaluation is insensitive to order, case and duplicates.
-            clusters = _normalize_clusters(
-                raw_clusters, remove_duplicate_ents=remove_duplicate_ents
-            )  # type: ignore
-            # Optional sort the entities to make evaluation insensitive to order.
-            if not ordered_ents:
-                clusters = tuple(sorted(clusters))
+
+def extract_relations(
+    linearizations: List[str],
+    ordered_ents: bool = False,
+    remove_duplicate_ents: bool = False,
+    filtered_relations: Optional[List[str]] = None,
+) -> List[RelationAnnotation]:
+    """Given a batch of linearized relation strings `linearizations`, extracts the relations and
+    returns them as a list of dictionaries, where the keys are relation labels, and the values are
+    lists of relations belonging to that label.
+
+    # Parameters
+
+    linearizations: `list`
+        A list containing a batch of linearized relation strings.
+    ordered_ents : `bool`, optional (default = `False`)
+        True if entities should be considered ordered (e.g. there are distinct head and tail entities).
+        Defaults to False.
+    remove_duplicate_ents : `bool`, optional (default = `False`)
+        True if non-unique entities within a relation should be removed. These are not common, so
+        removing them can improve performance. However, in some domains, they are possible
+        (e.g. homodimers in protein-protein interactions). Defaults to False.
+    filtered_relations : `list`, optional (default = `None`)
+        A list containing a batch of linearized relation strings in the same format as
+        `linearizations`. If provided, these relations will be excluded from the output.
+        Defaults to None.
+
+    # Returns
+
+    A list of dictionaries, keyed by the relation label name, containing the relations extracted
+    from the linearized relation strings `linearizations`.
+    """
+    if filtered_relations is not None:
+        if len(linearizations) != len(filtered_relations):
+            raise ValueError(
+                "Arguments 'linearizations' and 'filtered_relations' to"
+                " 'seq2rel.common.util.extract_relations' must be the same length. Got"
+                f" {len(linearizations)} and {len(filtered_relations)} respectively."
+            )
+    else:
+        filtered_relations = []
+
+    extracted_relations: List[RelationAnnotation] = []
+
+    for linearization, filtered in zip_longest(linearizations, filtered_relations):
+        extracted_relations.append({})
+        # Extract relations from the linearized relation string.
+        relations = REL_PATTERN.findall(linearization)
+        for rel_string, rel_label in relations:
+            entities = extract_entities(
+                rel_string, ordered_ents=ordered_ents, remove_duplicate_ents=remove_duplicate_ents
+            )
             # A relation must contain at least two entities. These are easy to detect at training
             # and at inference, so we purposfully drop them.
-            if len(clusters) < 2:
+            if len(entities) < 2:
                 continue
-            if rel_label in deserialized[-1]:
-                # Don't retain duplicate relations
-                if clusters not in deserialized[-1][rel_label]:
-                    deserialized[-1][rel_label].append(clusters)
-            else:
-                deserialized[-1][rel_label] = [clusters]
-    return deserialized
+            # Accumulate unique relations
+            if rel_label not in extracted_relations[-1]:
+                extracted_relations[-1][rel_label] = []
+            if entities not in extracted_relations[-1][rel_label]:
+                extracted_relations[-1][rel_label].append(entities)
+        # If a filtered relation is provided, remove it from the output.
+        if filtered is not None:
+            relations = REL_PATTERN.findall(filtered)
+            for rel_string, rel_label in relations:
+                entities = extract_entities(
+                    rel_string,
+                    ordered_ents=ordered_ents,
+                    remove_duplicate_ents=remove_duplicate_ents,
+                )
+                if len(entities) < 2:
+                    continue
+                if entities in extracted_relations[-1][rel_label]:
+                    extracted_relations[-1][rel_label].remove(entities)
+
+    return extracted_relations
 
 
 # Private functions #
 
 
-def _normalize_clusters(
-    clusters: Tuple[Tuple[str, str], ...], remove_duplicate_ents: bool = False
+def _normalize_entities(
+    entities: Tuple[Tuple[str, str], ...], remove_duplicate_ents: bool = False
 ) -> EntityAnnotation:
-    """Normalize clusters (coreferent mentions) by sorting mentions, removing duplicates, and
-    lowercasing the text."""
-    preprocessed_clusters = tuple(
+    """Normalize entities by sorting mentions, removing duplicates, and lowercasing the text."""
+    normalized_entities = tuple(
         # Evaluation is insensitive to...
         (
             tuple(
@@ -97,9 +152,9 @@ def _normalize_clusters(
                     dict.fromkeys(
                         # ...case
                         (
-                            coref.strip().lower()
-                            for coref in mentions.split(COREF_SEP_SYMBOL)
-                            if coref.strip()
+                            mention.strip().lower()
+                            for mention in mentions.split(COREF_SEP_SYMBOL)
+                            if mention.strip()
                         )
                     ),
                     key=len,
@@ -108,13 +163,13 @@ def _normalize_clusters(
             ),
             label,
         )
-        for mentions, label in clusters
+        for mentions, label in entities
     )
-    # Drop clusters with no predicted mentions
-    preprocessed_clusters = tuple(
-        (mentions, label) for mentions, label in preprocessed_clusters if mentions
+    # Drop entities with no predicted mentions.
+    normalized_entities = tuple(
+        (mentions, label) for mentions, label in normalized_entities if mentions
     )
-    # Optionally remove duplicate clusters
+    # Optionally remove duplicate entities.
     if remove_duplicate_ents:
-        preprocessed_clusters = tuple(dict.fromkeys(preprocessed_clusters))
-    return preprocessed_clusters
+        normalized_entities = tuple(dict.fromkeys(normalized_entities))
+    return normalized_entities

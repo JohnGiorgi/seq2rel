@@ -121,7 +121,7 @@ input_text = st.text_area(
 if input_text:
     # Run the model and parse the output
     output = model(input_text)
-    deserialize_annotations = util.deserialize_annotations(output)
+    extract_relations = util.extract_relations(output)
 
     st.subheader(":memo: Input text")
     st.write(input_text)
@@ -135,12 +135,12 @@ if input_text:
 
         st.markdown("#### Parsed output")
         st.write("The parsed output of the model as a dictionary, keyed by relation class.")
-        st.write(deserialize_annotations[0])
+        st.write(extract_relations[0])
 
     st.subheader(":left_right_arrow: Extracted relations")
     st.write("The models outputs, visualized as a graph.")
     net = Network(width="100%", bgcolor="#F0F2F6", layout=True, notebook=True)
-    for prediction in deserialize_annotations:
+    for prediction in extract_relations:
         for rel_type, rels in prediction.items():
             # TODO: This should be extended to n-ary relations.
             for rel in rels:

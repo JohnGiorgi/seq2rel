@@ -16,9 +16,6 @@ EntityAnnotation = Tuple[MentionAnnotation, ...]
 RelationAnnotation = Dict[str, List[EntityAnnotation]]
 
 
-# Public functions #
-
-
 def sanitize_text(text: str, lowercase: bool = False) -> str:
     """Cleans text by removing whitespace, newlines and tabs and (optionally) lowercasing."""
     sanitized_text = " ".join(text.strip().split())
@@ -49,10 +46,36 @@ def extract_entities(
 
     A tuple of tuples, where the inner tuples contain an entities mentions and its label.
     """
-    raw_entities = tuple(ENT_PATTERN.findall(linearization))
-    # Normalizes entity mentions so that evaluation is insensitive to order, case and duplicates.
-    entities = _normalize_entities(raw_entities, remove_duplicate_ents=remove_duplicate_ents)
-    # Optional sort the entities to make evaluation insensitive to order.
+    entities = tuple(ENT_PATTERN.findall(linearization))
+    # Normalizes entity mentions so that evaluation is insensitive to...
+    entities = tuple(
+        (
+            tuple(
+                # ...mention order
+                sorted(
+                    # ...duplicate mentions
+                    dict.fromkeys(
+                        # ...case
+                        (
+                            mention.strip().lower()
+                            for mention in mentions.split(COREF_SEP_SYMBOL)
+                            if mention.strip()
+                        )
+                    ),
+                    key=len,
+                    reverse=True,
+                ),
+            ),
+            label,
+        )
+        for mentions, label in entities
+        # Additionaly, drop entities with no predicted mentions.
+        if mentions
+    )
+    # Optionally remove duplicate entities.
+    if remove_duplicate_ents:
+        entities = tuple(dict.fromkeys(entities))
+    # Optionally sort the entities to make evaluation insensitive to order.
     if not ordered_ents:
         entities = tuple(sorted(entities))
     return entities
@@ -127,49 +150,7 @@ def extract_relations(
                     ordered_ents=ordered_ents,
                     remove_duplicate_ents=remove_duplicate_ents,
                 )
-                if len(entities) < 2:
-                    continue
                 if entities in extracted_relations[-1][rel_label]:
                     extracted_relations[-1][rel_label].remove(entities)
 
     return extracted_relations
-
-
-# Private functions #
-
-
-def _normalize_entities(
-    entities: Tuple[Tuple[str, str], ...], remove_duplicate_ents: bool = False
-) -> EntityAnnotation:
-    """Normalize entities by sorting mentions, removing duplicates, and lowercasing the text."""
-    normalized_entities = tuple(
-        # Evaluation is insensitive to...
-        (
-            tuple(
-                # ...order
-                sorted(
-                    # ...duplicate mentions
-                    dict.fromkeys(
-                        # ...case
-                        (
-                            mention.strip().lower()
-                            for mention in mentions.split(COREF_SEP_SYMBOL)
-                            if mention.strip()
-                        )
-                    ),
-                    key=len,
-                    reverse=True,
-                ),
-            ),
-            label,
-        )
-        for mentions, label in entities
-    )
-    # Drop entities with no predicted mentions.
-    normalized_entities = tuple(
-        (mentions, label) for mentions, label in normalized_entities if mentions
-    )
-    # Optionally remove duplicate entities.
-    if remove_duplicate_ents:
-        normalized_entities = tuple(dict.fromkeys(normalized_entities))
-    return normalized_entities

@@ -88,15 +88,16 @@ def test_extract_relations() -> None:
     assert deduplicated_expected == actual
 
 
-def test_normalize_entities() -> None:
-    entities = (
+def test_extract_entities() -> None:
+    linearization = (
         # Duplicate coreferent mentions + case insensitivity
-        ("methamphetamine ; Meth ; meth", "CHEMICAL"),
+        "methamphetamine ; Meth ; meth @CHEMICAL@"
         # Duplicate entity + case insensitivity + order insensitivity
-        ("psychosis ; Psychotic disorders", "DISEASE"),
-        ("psychotic disorders ; psychosis", "DISEASE"),
+        " psychosis ; Psychotic disorders @DISEASE@"
+        " psychotic disorders ; psychosis @DISEASE@"
+        " @CID@"
     )
-    actual = util._normalize_entities(entities, remove_duplicate_ents=False)
+    actual = util.extract_entities(linearization, remove_duplicate_ents=False)
     expected: util.EntityAnnotation = (
         (("methamphetamine", "meth"), "CHEMICAL"),
         (("psychotic disorders", "psychosis"), "DISEASE"),
@@ -105,7 +106,7 @@ def test_normalize_entities() -> None:
     )
     assert actual == expected
 
-    actual = util._normalize_entities(entities, remove_duplicate_ents=True)
+    actual = util.extract_entities(linearization, remove_duplicate_ents=True)
     expected = (
         (("methamphetamine", "meth"), "CHEMICAL"),
         # The duplicate entity is removed because remove_duplicate_ents is True.

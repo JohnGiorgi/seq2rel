@@ -285,14 +285,14 @@ class CopyNetSeq2Rel(CopyNetSeq2Seq):
         output_dict["predicted_strings"] = predicted_strings
 
         # Metadata is a list of dicts, enough to check if any of them contain "target_tokens".
-        if any("target_tokens" in od for od in output_dict["metadata"]):
-            target_tokens = [od["target_tokens"] for od in output_dict["metadata"]]
+        if any("target_tokens" in batch for batch in output_dict["metadata"]):
+            target_tokens = [batch["target_tokens"] for batch in output_dict["metadata"]]
             target_strings = [_tokens_to_string(tokens) for tokens in target_tokens]
             output_dict["target_strings"] = target_strings
 
         # Metadata is a list of dicts, enough to check if any of them contain "filtered_relations".
-        if any("filtered_relations" in od for od in output_dict["metadata"]):
-            filtered_relations = [od["filtered_relations"] for od in output_dict["metadata"]]
+        if any("filtered_relations" in batch for batch in output_dict["metadata"]):
+            filtered_relations = [batch["filtered_relations"] for batch in output_dict["metadata"]]
             output_dict["filtered_relations"] = filtered_relations
 
         return output_dict

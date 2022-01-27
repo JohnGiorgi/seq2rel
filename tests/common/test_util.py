@@ -24,7 +24,7 @@ def test_sanitize_text(text: str, lowercase: bool) -> None:
 
 
 def test_extract_relations() -> None:
-    serialized_annotations = [
+    linearizations = [
         # Empty string
         "",
         # Non-empty string with no relation
@@ -76,16 +76,24 @@ def test_extract_relations() -> None:
         },
     ]
     # Set `ordered_ents=True` so that mentions aren't sorted (easier to write test cases).
-    actual = util.extract_relations(serialized_annotations, ordered_ents=True)
+    actual = util.extract_relations(linearizations, ordered_ents=True)
     assert expected == actual
 
-    # Set `ordered_ents=True` so that mentions aren't sorted (easier to write test cases).
+    # Check that a relation with duplicate entities is removed when `remove_duplicate_ents` is True.
     deduplicated_expected = copy.deepcopy(expected)
     del deduplicated_expected[-1]["LOCATED_IN_THE_ADMINISTRATIVE_TERRITORIAL_ENTITY"][-1]  # type: ignore
-    actual = util.extract_relations(
-        serialized_annotations, ordered_ents=True, remove_duplicate_ents=True
-    )
+    actual = util.extract_relations(linearizations, ordered_ents=True, remove_duplicate_ents=True)
     assert deduplicated_expected == actual
+
+    # Check that a relation provided via `filtered_relations` are removed from the output.
+    filtered_expected = copy.deepcopy(expected)
+    filtered_relations = [""] * len(linearizations)
+    filtered_relations[3] = "fenoprofen @DRUG@ pure red cell aplasia @EFFECT@ @ADE@"
+    del filtered_expected[3]["ADE"][-1]  # type: ignore
+    actual = util.extract_relations(
+        linearizations, ordered_ents=True, filtered_relations=filtered_relations
+    )
+    assert filtered_expected == actual
 
 
 def test_extract_entities() -> None:

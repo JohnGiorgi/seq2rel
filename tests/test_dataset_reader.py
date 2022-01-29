@@ -51,7 +51,7 @@ class TestSeq2RelDatasetReader(AllenNlpTestCase):
         dataset_reader_params = params.pop("dataset_reader")
         reader = DatasetReader.from_params(dataset_reader_params)
         instances = reader.read(
-            self.FIXTURES_ROOT / "data" / "train_filtered.tsv",
+            self.FIXTURES_ROOT / "data" / "valid.tsv",
         )
         instances = ensure_list(instances)
 

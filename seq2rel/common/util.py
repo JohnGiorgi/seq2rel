@@ -150,7 +150,7 @@ def extract_relations(
                     ordered_ents=ordered_ents,
                     remove_duplicate_ents=remove_duplicate_ents,
                 )
-                if entities in extracted_relations[-1][rel_label]:
+                if entities in extracted_relations[-1].get(rel_label, []):
                     extracted_relations[-1][rel_label].remove(entities)
 
     return extracted_relations

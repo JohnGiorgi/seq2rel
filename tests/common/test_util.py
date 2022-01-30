@@ -23,8 +23,8 @@ def test_sanitize_text(text: str, lowercase: bool) -> None:
         assert all(not char.isupper() for char in sanitized)
 
 
-def test_deserialize_annotation() -> None:
-    serialized_annotations = [
+def test_extract_relations() -> None:
+    linearizations = [
         # Empty string
         "",
         # Non-empty string with no relation
@@ -76,31 +76,36 @@ def test_deserialize_annotation() -> None:
         },
     ]
     # Set `ordered_ents=True` so that mentions aren't sorted (easier to write test cases).
-    actual = util.deserialize_annotations(serialized_annotations, ordered_ents=True)
+    actual = util.extract_relations(linearizations, ordered_ents=True)
     assert expected == actual
 
-    # Check that we can call the function on a single string
-    actual = util.deserialize_annotations(serialized_annotations[-1], ordered_ents=True)
-    assert [expected[-1]] == actual
-
-    # Set `ordered_ents=True` so that mentions aren't sorted (easier to write test cases).
+    # Check that a relation with duplicate entities is removed when `remove_duplicate_ents` is True.
     deduplicated_expected = copy.deepcopy(expected)
     del deduplicated_expected[-1]["LOCATED_IN_THE_ADMINISTRATIVE_TERRITORIAL_ENTITY"][-1]  # type: ignore
-    actual = util.deserialize_annotations(
-        serialized_annotations, ordered_ents=True, remove_duplicate_ents=True
-    )
+    actual = util.extract_relations(linearizations, ordered_ents=True, remove_duplicate_ents=True)
     assert deduplicated_expected == actual
 
-
-def test_normalize_clusters() -> None:
-    clusters = (
-        # Duplicate coreferent mentions + case insensitivity
-        ("methamphetamine ; Meth ; meth", "CHEMICAL"),
-        # Duplicate entity + case insensitivity + order insensitivity
-        ("psychosis ; Psychotic disorders", "DISEASE"),
-        ("psychotic disorders ; psychosis", "DISEASE"),
+    # Check that a relation provided via `filtered_relations` are removed from the output.
+    filtered_expected = copy.deepcopy(expected)
+    filtered_relations = [""] * len(linearizations)
+    filtered_relations[3] = "fenoprofen @DRUG@ pure red cell aplasia @EFFECT@ @ADE@"
+    del filtered_expected[3]["ADE"][-1]  # type: ignore
+    actual = util.extract_relations(
+        linearizations, ordered_ents=True, filtered_relations=filtered_relations
     )
-    actual = util._normalize_clusters(clusters, remove_duplicate_ents=False)
+    assert filtered_expected == actual
+
+
+def test_extract_entities() -> None:
+    linearization = (
+        # Duplicate coreferent mentions + case insensitivity
+        "methamphetamine ; Meth ; meth @CHEMICAL@"
+        # Duplicate entity + case insensitivity + order insensitivity
+        " psychosis ; Psychotic disorders @DISEASE@"
+        " psychotic disorders ; psychosis @DISEASE@"
+        " @CID@"
+    )
+    actual = util.extract_entities(linearization, remove_duplicate_ents=False)
     expected: util.EntityAnnotation = (
         (("methamphetamine", "meth"), "CHEMICAL"),
         (("psychotic disorders", "psychosis"), "DISEASE"),
@@ -109,7 +114,7 @@ def test_normalize_clusters() -> None:
     )
     assert actual == expected
 
-    actual = util._normalize_clusters(clusters, remove_duplicate_ents=True)
+    actual = util.extract_entities(linearization, remove_duplicate_ents=True)
     expected = (
         (("methamphetamine", "meth"), "CHEMICAL"),
         # The duplicate entity is removed because remove_duplicate_ents is True.

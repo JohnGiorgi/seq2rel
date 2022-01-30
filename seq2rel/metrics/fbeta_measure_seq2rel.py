@@ -3,7 +3,7 @@ from typing import List, Optional, Set
 import torch
 from allennlp.training.metrics.fbeta_measure import FBetaMeasure
 from allennlp.training.metrics.metric import Metric
-from seq2rel.common.util import EntityAnnotation, deserialize_annotations
+from seq2rel.common.util import EntityAnnotation, extract_relations
 
 
 def _fuzzy_cluster_match(
@@ -99,7 +99,12 @@ class FBetaMeasureSeq2Rel(FBetaMeasure):
         self._ordered_ents = ordered_ents
         self._remove_duplicate_ents = remove_duplicate_ents
 
-    def __call__(self, predictions: List[str], ground_truths: List[str]) -> None:
+    def __call__(
+        self,
+        predictions: List[str],
+        ground_truths: List[str],
+        filtered_relations: Optional[List[str]] = None,
+    ) -> None:
         """
         # Parameters
 
@@ -122,12 +127,13 @@ class FBetaMeasureSeq2Rel(FBetaMeasure):
             self._pred_sum = torch.zeros(self._num_classes)
             self._total_sum = torch.zeros(self._num_classes)
 
-        pred_annotations = deserialize_annotations(
+        pred_annotations = extract_relations(
             predictions,
             ordered_ents=self._ordered_ents,
             remove_duplicate_ents=self._remove_duplicate_ents,
+            filtered_relations=filtered_relations,
         )
-        gold_annotations = deserialize_annotations(ground_truths, ordered_ents=self._ordered_ents)
+        gold_annotations = extract_relations(ground_truths, ordered_ents=self._ordered_ents)
 
         # Predictions and ground truths are contained with equal length lists as they are per-batch.
         for pred_ann, gold_ann in zip(pred_annotations, gold_annotations):

@@ -3,23 +3,87 @@ import pathlib
 import pytest
 from allennlp.common import Params
 from allennlp.common.testing import AllenNlpTestCase
-from allennlp.common.util import ensure_list
+from allennlp.common.util import END_SYMBOL, START_SYMBOL, ensure_list
 from allennlp.data import DatasetReader
-from allennlp.data.vocabulary import Vocabulary
-from seq2rel.dataset_reader import Seq2RelDatasetReader
 
 
 class TestSeq2RelDatasetReader(AllenNlpTestCase):
     def setup_method(self):
         super().setup_method()
         self.FIXTURES_ROOT = (pathlib.Path(__file__).parent / "..").resolve() / "test_fixtures"
-        params = Params.from_file(self.FIXTURES_ROOT / "experiment.jsonnet")
-        self.reader: Seq2RelDatasetReader = DatasetReader.from_params(params["dataset_reader"])
-        instances = self.reader.read(
+
+    def test_default_format(self, params: Params) -> None:
+        dataset_reader_params = params.pop("dataset_reader")
+        reader = DatasetReader.from_params(dataset_reader_params)
+        instances = reader.read(
             self.FIXTURES_ROOT / "data" / "train.tsv",
         )
-        self.instances = ensure_list(instances)
-        self.vocab = Vocabulary.from_params(params=params["vocabulary"], instances=self.instances)
+        instances = ensure_list(instances)
+
+        assert len(instances) == 1
+        fields = instances[0].fields
+        assert [t.text for t in fields["source_tokens"].tokens] == [
+            reader._source_tokenizer.tokenizer.cls_token,
+            "lidocaine",
+            "-",
+            "induced",
+            "cardiac",
+            "as",
+            "##yst",
+            "##ole",
+            ".",
+            reader._source_tokenizer.tokenizer.sep_token,
+        ]
+        assert [t.text for t in fields["target_tokens"].tokens] == [
+            START_SYMBOL,
+            "lidocaine",
+            "@CHEMICAL@",
+            "cardiac",
+            "as",
+            "##yst",
+            "##ole",
+            "@DISEASE@",
+            "@CID@",
+            END_SYMBOL,
+        ]
+
+    def test_filtered_format(self, params: Params) -> None:
+        dataset_reader_params = params.pop("dataset_reader")
+        reader = DatasetReader.from_params(dataset_reader_params)
+        instances = reader.read(
+            self.FIXTURES_ROOT / "data" / "valid.tsv",
+        )
+        instances = ensure_list(instances)
+
+        assert len(instances) == 1
+        fields = instances[0].fields
+        assert [t.text for t in fields["source_tokens"].tokens] == [
+            reader._source_tokenizer.tokenizer.cls_token,
+            "lidocaine",
+            "-",
+            "induced",
+            "cardiac",
+            "as",
+            "##yst",
+            "##ole",
+            ".",
+            reader._source_tokenizer.tokenizer.sep_token,
+        ]
+        assert [t.text for t in fields["target_tokens"].tokens] == [
+            START_SYMBOL,
+            "lidocaine",
+            "@CHEMICAL@",
+            "cardiac",
+            "as",
+            "##yst",
+            "##ole",
+            "@DISEASE@",
+            "@CID@",
+            END_SYMBOL,
+        ]
+        fields["metadata"].metadata[
+            "filtered_relations"
+        ] = "lidocaine @CHEMICAL@ cardiac asystole @DISEASE@ @CID@"
 
     def test_head_tail_truncation(self, params: Params) -> None:
         max_length = 24

@@ -1,5 +1,6 @@
-from seq2rel import __version__
-from seq2rel import Seq2Rel
+from pathlib import Path
+
+from seq2rel import Seq2Rel, __version__
 
 
 def test_version():
@@ -22,6 +23,17 @@ class TestSeq2Rel:
             "nicergoline ; sermion @CHEMICAL@ interstitial nephritis @DISEASE@ @CID@",
         ]
         actual = model(texts)
+        assert actual == expected
+
+        # Test that we can provide a string as input.
+        actual = model(texts[0])
+        assert actual[0] == expected[0]
+
+        # Test that we can provide a filepath as input
+        input_fp = str(
+            (Path(__file__).parent / ".." / "test_fixtures" / "data").resolve() / "test.txt"
+        )
+        actual = model(input_fp)
         assert actual == expected
 
     def test_gda_model(self):

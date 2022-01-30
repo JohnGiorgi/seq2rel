@@ -39,7 +39,7 @@ local COMMON = import "common.libsonnet";
 
 // These are provided as external variables
 local train_data_path = "test_fixtures/data/train.tsv";
-local validation_data_path = "test_fixtures/data/train.tsv";
+local validation_data_path = "test_fixtures/data/valid.tsv";
 
 // Validation will begin at the end of this epoch.
 local validation_start = std.floor(num_epochs - 4);

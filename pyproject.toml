@@ -44,7 +44,7 @@ hypothesis = "^6.14.2"
 mypy = "^0.931"
 pytest = "^6.2.3"
 pytest-cov = "^3.0.0"
-coverage = "^6.0"
+coverage = "^6.3"
 codecov = "^2.1.12"
 # These are required to run the demo.
 # Streamlit installs all dev dependencies, so we stick them here.

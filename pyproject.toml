@@ -40,7 +40,7 @@ allennlp-models = "^2.8.0"
 [tool.poetry.dev-dependencies]
 black = "^22.1"
 flake8 = "^4.0.1"
-hypothesis = "^6.36.1"
+hypothesis = "^6.36.2"
 mypy = "^0.931"
 pytest = "^7.0.1"
 pytest-cov = "^3.0.0"

@@ -34,8 +34,8 @@ python = "^3.7.1"
 typer = { extras = ["all"], version = "^0.4.0" }
 validators = "^0.18.2"
 more-itertools = "^8.10.0"
-allennlp = "^2.8.0"
-allennlp-models = "^2.8.0"
+allennlp = "^2.9.0"
+allennlp-models = "^2.9.0"
 
 [tool.poetry.dev-dependencies]
 black = "^22.1"
@@ -46,8 +46,7 @@ pytest = "^7.0.1"
 pytest-cov = "^3.0.0"
 coverage = "^6.3"
 codecov = "^2.1.12"
-# These are required to run the demo.
-# Streamlit installs all dev dependencies, so we stick them here.
+# Required to run the demo. Streamlit installs all dev dependencies, so we stick them here.
 streamlit = "^1.5.1"
 pyvis = "^0.1.9"
 
@@ -73,5 +72,5 @@ exclude = '''
 '''
 
 [build-system]
-requires = ["poetry-core>=1.1.12"]
+requires = ["poetry-core>=1.1.13"]
 build-backend = "poetry.core.masonry.api"

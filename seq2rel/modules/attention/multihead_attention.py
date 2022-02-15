@@ -2,7 +2,7 @@ from typing import Any
 
 import torch
 from allennlp.modules.attention.attention import Attention
-from overrides import overrides
+
 from torch import nn
 
 
@@ -30,7 +30,6 @@ class MultiheadAttention(Attention):
 
         self._multihead_attn = nn.MultiheadAttention(embed_dim, num_heads, **kwargs)
 
-    @overrides
     def forward(
         self, vector: torch.Tensor, matrix: torch.Tensor, matrix_mask: torch.BoolTensor = None
     ) -> torch.Tensor:

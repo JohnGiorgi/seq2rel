@@ -11,7 +11,7 @@ from allennlp.modules.seq2seq_encoders import PassThroughEncoder
 from allennlp.nn import util
 from allennlp.training.metrics import Metric
 from allennlp_models.generation.models import CopyNetSeq2Seq
-from overrides import overrides
+
 from seq2rel.common.util import COREF_SEP_SYMBOL, sanitize_text
 
 logger = logging.getLogger(__name__)
@@ -88,7 +88,6 @@ class CopyNetSeq2Rel(CopyNetSeq2Seq):
         # in "tensor based metrics", so revert it to the users input.
         self._tensor_based_metric = tensor_based_metric
 
-    @overrides
     def _init_decoder_state(self, state: Dict[str, torch.Tensor]) -> Dict[str, torch.Tensor]:
         """
         Initialize the encoded state to be passed to the first decoding time step.
@@ -124,7 +123,6 @@ class CopyNetSeq2Rel(CopyNetSeq2Seq):
 
         return state
 
-    @overrides
     def forward(
         self,  # type: ignore
         source_tokens: TextFieldTensors,
@@ -211,7 +209,6 @@ class CopyNetSeq2Rel(CopyNetSeq2Seq):
                         )
         return output_dict
 
-    @overrides
     def _decoder_step(
         self,
         last_predictions: torch.Tensor,
@@ -245,7 +242,6 @@ class CopyNetSeq2Rel(CopyNetSeq2Seq):
 
         return state
 
-    @overrides
     def make_output_human_readable(self, output_dict: Dict[str, Any]) -> Dict[str, Any]:
         """
         Finalize predictions.
@@ -297,7 +293,6 @@ class CopyNetSeq2Rel(CopyNetSeq2Seq):
 
         return output_dict
 
-    @overrides
     def get_metrics(self, reset: bool = False) -> Dict[str, float]:
         all_metrics: Dict[str, float] = {}
         if not self.training:

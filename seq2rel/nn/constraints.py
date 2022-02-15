@@ -4,7 +4,7 @@ import torch
 from allennlp.common.util import END_SYMBOL
 from allennlp.nn.beam_search import Constraint, ConstraintStateType
 from allennlp.nn.util import min_value_of_dtype
-from overrides import overrides
+
 from seq2rel.common.util import COREF_SEP_SYMBOL
 
 
@@ -50,7 +50,6 @@ class EnforceValidLinearization(Constraint):
 
         self._n_ary = n_ary
 
-    @overrides
     def init_state(
         self,
         batch_size: int,
@@ -65,7 +64,6 @@ class EnforceValidLinearization(Constraint):
             for _ in range(batch_size)
         ]
 
-    @overrides
     def apply(
         self,
         state: ConstraintStateType,
@@ -89,7 +87,6 @@ class EnforceValidLinearization(Constraint):
                 )
         return class_log_probabilities
 
-    @overrides
     def _update_state(
         self,
         state: ConstraintStateType,

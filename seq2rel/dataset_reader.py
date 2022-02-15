@@ -7,7 +7,6 @@ from allennlp.data.dataset_readers.dataset_reader import DatasetReader
 from allennlp.data.instance import Instance
 from allennlp.data.tokenizers import PretrainedTransformerTokenizer
 from allennlp_models.generation.dataset_readers import CopyNetDatasetReader
-from overrides import overrides
 
 logger = logging.getLogger(__name__)
 
@@ -32,7 +31,6 @@ class Seq2RelDatasetReader(CopyNetDatasetReader):
         super().__init__(**kwargs)
         self._max_length = max_length
 
-    @overrides
     def _read(self, file_path):
         with open(cached_path(file_path), "r") as data_file:
             logger.info("Reading instances from lines in file at: %s", file_path)
@@ -53,7 +51,6 @@ class Seq2RelDatasetReader(CopyNetDatasetReader):
                     continue
                 yield self.text_to_instance(source_sequence, target_sequence, filtered_relations)
 
-    @overrides
     def text_to_instance(
         self,
         source_string: str,

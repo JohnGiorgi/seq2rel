@@ -11,7 +11,7 @@ from allennlp.modules.seq2seq_encoders import PassThroughEncoder
 from allennlp.nn import util
 from allennlp.training.metrics import Metric
 from allennlp_models.generation.models import CopyNetSeq2Seq
-
+from fastai.text.models import WeightDropout
 from seq2rel.common.util import COREF_SEP_SYMBOL, sanitize_text
 
 logger = logging.getLogger(__name__)
@@ -38,6 +38,9 @@ class CopyNetSeq2Rel(CopyNetSeq2Seq):
         un-tokenize the target sequence, otherwise tokens are joined by whitespace.
     dropout : `float` (default = `0.1`)
         Dropout probability applied to the target embeddings and decoders inputs.
+    weight_dropout : `float` (default = `0.5`)
+        Dropout probability applied to the decoders hidden-to-hidden weights.
+        See: https://arxiv.org/abs/1708.02182
     sequence_based_metrics : `List[Metric]`, optional (default = `None`)
         A list of metrics to track on validation data that takes lists of strings as input. These
         metrics must accept two arguments when called, both of type `List[str]`. The first is a
@@ -57,6 +60,7 @@ class CopyNetSeq2Rel(CopyNetSeq2Seq):
         encoder: Seq2SeqEncoder = None,
         target_tokenizer: Tokenizer = None,
         dropout: float = 0.1,
+        weight_dropout: float = 0.5,
         tensor_based_metric: Metric = None,
         sequence_based_metrics: List[Metric] = None,
         init_decoder_state_strategy: str = "mean",
@@ -81,6 +85,11 @@ class CopyNetSeq2Rel(CopyNetSeq2Seq):
 
         # Dropout to apply to the target embeddings and decoder inputs
         self._dropout = torch.nn.Dropout(dropout) if dropout else torch.nn.Identity()
+        # Dropout to apply to the decoders hidden-to-hidden weights
+        self._weight_dropout = weight_dropout
+        self._decoder_cell = WeightDropout(
+            self._decoder_cell, self._weight_dropout, layer_names="weight_hh"
+        )
 
         # The strategy to use for initializing the decoders hidden state
         self._init_decoder_state_strategy = init_decoder_state_strategy

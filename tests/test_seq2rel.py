@@ -70,6 +70,8 @@ class TestSeq2Rel:
             "",
             'ernest julian " ernie " cole @PER@ 1916 @TIME@ @DATE_OF_BIRTH@'
             ' ernest julian " ernie " cole @PER@ november 9, 2000 @TIME@ @DATE_OF_DEATH@'
+            # The model duplicates this output
+            ' ernest julian " ernie " cole @PER@ canada @LOC@ @COUNTRY_OF_CITIZENSHIP@'
             ' ernest julian " ernie " cole @PER@ canada @LOC@ @COUNTRY_OF_CITIZENSHIP@'
             " saskatchewan @LOC@ canada @LOC@ @LOCATED_IN_THE_ADMINISTRATIVE_TERRITORIAL_ENTITY@"
             " saskatchewan @LOC@ canada @LOC@ @COUNTRY@"

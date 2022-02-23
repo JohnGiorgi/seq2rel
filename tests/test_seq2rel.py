@@ -8,8 +8,8 @@ def test_version():
 
 
 class TestSeq2Rel:
-    def test_bc5cdr_model(self):
-        model = Seq2Rel("bc5cdr")
+    def test_cdr_model(self):
+        model = Seq2Rel("cdr")
 
         # These are roughly organized in order of increasing difficulty.
         texts = [
@@ -20,7 +20,7 @@ class TestSeq2Rel:
         expected = [
             "famotidine @CHEMICAL@ delirium @DISEASE@ @CID@",
             "clopidogrel @CHEMICAL@ hepatitis @DISEASE@ @CID@",
-            "nicergoline ; sermion @CHEMICAL@ interstitial nephritis @DISEASE@ @CID@",
+            "nicergoline ; sermion @CHEMICAL@ acute interstitial nephritis @DISEASE@ @CID@",
         ]
         actual = model(texts)
         assert actual == expected

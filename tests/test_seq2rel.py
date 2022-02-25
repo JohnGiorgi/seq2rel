@@ -8,8 +8,8 @@ def test_version():
 
 
 class TestSeq2Rel:
-    def test_bc5cdr_model(self):
-        model = Seq2Rel("bc5cdr")
+    def test_cdr_model(self):
+        model = Seq2Rel("cdr")
 
         # These are roughly organized in order of increasing difficulty.
         texts = [
@@ -20,7 +20,7 @@ class TestSeq2Rel:
         expected = [
             "famotidine @CHEMICAL@ delirium @DISEASE@ @CID@",
             "clopidogrel @CHEMICAL@ hepatitis @DISEASE@ @CID@",
-            "nicergoline ; sermion @CHEMICAL@ interstitial nephritis @DISEASE@ @CID@",
+            "nicergoline ; sermion @CHEMICAL@ acute interstitial nephritis @DISEASE@ @CID@",
         ]
         actual = model(texts)
         assert actual == expected
@@ -70,6 +70,8 @@ class TestSeq2Rel:
             "",
             'ernest julian " ernie " cole @PER@ 1916 @TIME@ @DATE_OF_BIRTH@'
             ' ernest julian " ernie " cole @PER@ november 9, 2000 @TIME@ @DATE_OF_DEATH@'
+            # The model duplicates this output
+            ' ernest julian " ernie " cole @PER@ canada @LOC@ @COUNTRY_OF_CITIZENSHIP@'
             ' ernest julian " ernie " cole @PER@ canada @LOC@ @COUNTRY_OF_CITIZENSHIP@'
             " saskatchewan @LOC@ canada @LOC@ @LOCATED_IN_THE_ADMINISTRATIVE_TERRITORIAL_ENTITY@"
             " saskatchewan @LOC@ canada @LOC@ @COUNTRY@"

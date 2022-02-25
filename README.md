@@ -11,7 +11,7 @@ A Python package that makes it easy to use sequence-to-sequence (seq2seq) learni
 
 ## Installation
 
-This repository requires Python 3.8 or later. The preferred way to install is via pip:
+This repository requires Python 3.7.1 or later. The preferred way to install is via pip:
 
 
 ```bash

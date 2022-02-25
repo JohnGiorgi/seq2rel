@@ -13,23 +13,16 @@ A Python package that makes it easy to use sequence-to-sequence (seq2seq) learni
 
 This repository requires Python 3.7.1 or later. The preferred way to install is via pip:
 
-```
-pip install seq2rel
+
+```bash
+pip install git+https://github.com/JohnGiorgi/seq2rel.git
 ```
 
 If you need pointers on setting up an appropriate Python environment, please see the [AllenNLP install instructions](https://github.com/allenai/allennlp#installing-via-pip).
 
 ### Installing from source
 
-You can also install from source. 
-
-Using `pip`:
-
-```
-pip install git+https://github.com/JohnGiorgi/seq2rel
-```
-
-Using [Poetry](https://python-poetry.org/):
+You can also install from source using [Poetry](https://python-poetry.org/):
 
 ```bash
 # Install poetry for your system: https://python-poetry.org/docs/#installation

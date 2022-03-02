@@ -7,8 +7,11 @@ from pyvis.network import Network
 from seq2rel import Seq2Rel
 from seq2rel.common import util
 
+# Font properties passes to VisJS. See: https://visjs.github.io/vis-network/docs/network/nodes.html
+FONT = {"face": "sans-serif", "strokeWidth": 8, "strokeColor": "#fff"}
+
 TEXT_EXAMPLES = {
-    "bc5cdr": (
+    "cdr": (
         "Bortezomib and dexamethasone as salvage therapy in patients with relapsed/refractory"
         " multiple myeloma: analysis of long-term clinical outcomes. Bortezomib"
         " (bort)-dexamethasone (dex) is an effective therapy for relapsed/refractory (R/R) multiple"
@@ -102,7 +105,7 @@ st.sidebar.write(
 model_name = (
     st.sidebar.selectbox(
         "Model name",
-        ("BC5CDR", "GDA", "DocRED"),
+        ("CDR", "GDA", "DocRED"),
         help="Name of pretrained model to load. Most models are named after the dataset they are trained on.",
     )
     .strip()
@@ -146,8 +149,21 @@ if input_text:
             for rel in rels:
                 ent_1, ent_1_type = process_ent(input_text, rel[0][0]), rel[0][1]
                 ent_2, ent_2_type = process_ent(input_text, rel[1][0]), rel[1][1]
-                net.add_node(ent_1, title=ent_1_type, color="#FF4B4B", borderWidth=0)
-                net.add_node(ent_2, title=ent_2_type, color="#FF4B4B", borderWidth=0)
+                net.add_node(
+                    ent_1,
+                    label=ent_1,
+                    title=ent_1_type,
+                    color="#FF4B4B",
+                    font=FONT,
+                    borderWidth=0,
+                )
+                net.add_node(
+                    ent_2,
+                    title=ent_2_type,
+                    color="#FF4B4B",
+                    font=FONT,
+                    borderWidth=0,
+                )
                 net.add_edge(ent_1, ent_2, title=rel_type)
     net.show("network.html")
     HtmlFile = open("network.html", "r", encoding="utf-8")

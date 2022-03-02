@@ -14,9 +14,9 @@ local batch_size = 1;         // Per-GPU batch size
 local grad_acc_steps = 1;     // Number of training steps before backpropagating gradients
 local decoder_lr = 5e-4;      // Learning rate for decoder params
 
-local reinit_layers = 2;      // Re-initializes the last N layers of the encoder
-local dropout = 0.0;          // Dropout applied to decoder inputs and cross-attention weights
-local weight_dropout = 0.0;   // Weight dropout applied to hidden-to-hidden decoder weights
+local reinit_layers = 1;      // Re-initializes the last N layers of the encoder
+local dropout = 0.10;          // Dropout applied to decoder inputs and cross-attention weights
+local weight_dropout = 0.50;  // Weight dropout applied to hidden-to-hidden decoder weights
 
 local beam_size = 1;          // Beam size to use during decoding (test time only)
 local length_penalty = 1.0;   // >1.0 favours longer decodings and <1.0 shorter (test time only)
@@ -32,6 +32,15 @@ local use_wandb = false;
 
 // ================================================================
 
+// Lists containing the special entity/relation tokens in your target vocabulary
+local ent_tokens = [
+    "@CHEMICAL@",
+    "@DISEASE@",
+];
+local rel_tokens = [
+    "@CID@",
+];
+
 // ------ !! You probably don't need to edit below here !! --------
 
 // This config contains anything that doesn't change across experiments and datasets
@@ -46,14 +55,8 @@ local validation_start = std.floor(num_epochs - 4);
 // Learning rate will be linearly increased for the first 10% of training steps.
 local warmup_steps = std.floor(0.10 * num_epochs);
 
-// Lists containing the special entity/relation tokens in your target vocabulary
-local ent_tokens = [
-    "@CHEMICAL@",
-    "@DISEASE@",
-];
-local rel_tokens = [
-    "@CID@",
-];
+// Assumes relation labels match the special relation tokens minus the "@" symbol
+local rel_labels = [std.stripChars(token, "@") for token in rel_tokens];
 
 local special_source_tokens = ent_tokens;
 local special_target_tokens = ent_tokens + rel_tokens + COMMON["special_target_tokens"];
@@ -117,8 +120,7 @@ local TARGET_TOKENIZER = {
                     "type": "pretrained_transformer",
                     "model_name": model_name,
                     "tokenizer_kwargs": source_tokenizer_kwargs,
-                    // TODO: Add this back when we update to AllenNLP>2.8.0
-                    // "reinit_modules": reinit_layers,
+                    "reinit_modules": reinit_layers,
                 },
             },
         },
@@ -131,7 +133,7 @@ local TARGET_TOKENIZER = {
         "sequence_based_metrics": [
             {
                 "type": "seq2rel.metrics.F1MeasureSeq2Rel",
-                "labels": ["CID"],
+                "labels": rel_labels,
                 "average": "micro",
                 "remove_duplicate_ents": true,
             },
@@ -213,14 +215,13 @@ local TARGET_TOKENIZER = {
             "warmup_steps": warmup_steps
         },
         "use_amp": use_amp,
-        // TODO: Add back when we update to AllenNLP>2.8.0
-        // "callbacks": [
-        //     {
-        //         "type": "should_validate_callback",
-        //         "validation_start": validation_start,
-        //         "validation_interval": 1
-        //     },
-	    // ],
+        "callbacks": [
+            {
+                "type": "should_validate_callback",
+                "validation_start": validation_start,
+                "validation_interval": 1
+            },
+	    ],
     },
     [if num_gpus > 1 then "distributed"]: {
         "cuda_devices": std.range(0, num_gpus - 1),

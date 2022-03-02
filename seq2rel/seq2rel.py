@@ -12,7 +12,7 @@ from validators.url import url
 from seq2rel.common.util import sanitize_text
 
 PRETRAINED_MODELS = {
-    "bc5cdr": "https://github.com/JohnGiorgi/seq2rel/releases/download/v0.1.0rc1/bc5cdr.tar.gz",
+    "cdr": "https://github.com/JohnGiorgi/seq2rel/releases/download/v0.1.0rc1/cdr.tar.gz",
     "gda": "https://github.com/JohnGiorgi/seq2rel/releases/download/v0.1.0rc1/gda.tar.gz",
     "docred": "https://github.com/JohnGiorgi/seq2rel/releases/download/v0.1.0rc1/docred.tar.gz",
 }

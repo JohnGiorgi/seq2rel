@@ -1,4 +1,4 @@
-# seq2rel
+# seq2rel: A sequence-to-sequence approach for document-level relation extraction
 
 [![ci](https://github.com/JohnGiorgi/seq2rel/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/JohnGiorgi/seq2rel/actions/workflows/ci.yml)
 [![codecov](https://codecov.io/gh/JohnGiorgi/seq2rel/branch/main/graph/badge.svg?token=RKJ7EV4WQK)](https://codecov.io/gh/JohnGiorgi/seq2rel)
@@ -6,23 +6,37 @@
 ![GitHub](https://img.shields.io/github/license/JohnGiorgi/seq2rel?color=blue)
 [![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://share.streamlit.io/johngiorgi/seq2rel/main/demo.py)
 
+The corresponding code for our paper: A sequence-to-sequence approach for document-level relation extraction. Checkout our demo [here](https://share.streamlit.io/johngiorgi/seq2rel/main/demo.py)!
 
-A Python package that makes it easy to use sequence-to-sequence (seq2seq) learning for information extraction. Checkout our demo [here](https://share.streamlit.io/johngiorgi/seq2rel/main/demo.py)!
+## Table of contents
+
+- [seq2rel: A sequence-to-sequence approach for document-level relation extraction](#seq2rel-a-sequence-to-sequence-approach-for-document-level-relation-extraction)
+  - [Table of contents](#table-of-contents)
+  - [Installation](#installation)
+    - [Setting up a virtual environment](#setting-up-a-virtual-environment)
+    - [Installing the library and dependencies](#installing-the-library-and-dependencies)
+  - [Usage](#usage)
+    - [Preparing a dataset](#preparing-a-dataset)
+    - [Training](#training)
+    - [Inference](#inference)
 
 ## Installation
 
-This repository requires Python 3.7.1 or later. The preferred way to install is via pip:
+This repository requires Python 3.7.1 or later.
 
+### Setting up a virtual environment
+
+Before installing, you should create and activate a Python virtual environment. If you need pointers on setting up a virtual environment environment, please see the [AllenNLP install instructions](https://github.com/allenai/allennlp#installing-via-pip).
+
+### Installing the library and dependencies
+
+If you _don't_ plan on modifying the source code, install from `git` using `pip`
 
 ```bash
 pip install git+https://github.com/JohnGiorgi/seq2rel.git
 ```
 
-If you need pointers on setting up an appropriate Python environment, please see the [AllenNLP install instructions](https://github.com/allenai/allennlp#installing-via-pip).
-
-### Installing from source
-
-You can also install from source using [Poetry](https://python-poetry.org/):
+Otherwise, clone the repository and install from source using [Poetry](https://python-poetry.org/):
 
 ```bash
 # Install poetry for your system: https://python-poetry.org/docs/#installation
@@ -70,10 +84,6 @@ allennlp train "training_config/transformer_copynet_ade.jsonnet" \
 ```
 
 The `--overrides` flag allows you to override any field in the config with a JSON-formatted string, but you can equivalently update the config itself if you prefer. During training, models, vocabulary, configuration, and log files will be saved to the directory provided by `--serialization-dir`. This can be changed to any directory you like. 
-
-#### Hyperparameter tuning
-
-Coming soon.
 
 ### Inference
 

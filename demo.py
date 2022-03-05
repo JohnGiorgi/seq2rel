@@ -7,9 +7,14 @@ from pyvis.network import Network
 from seq2rel import Seq2Rel
 from seq2rel.common import util
 
+# Streamlit theme colours
+PRIMARY = "#FF4B4B"
+BACKGROUND = "#F0F2F6"
+
 # Font properties passes to VisJS. See: https://visjs.github.io/vis-network/docs/network/nodes.html
 FONT = {"face": "sans-serif", "strokeWidth": 8, "strokeColor": "#fff"}
 
+# Example text that will be automatically loaded for each model
 TEXT_EXAMPLES = {
     "cdr": (
         "Bortezomib and dexamethasone as salvage therapy in patients with relapsed/refractory"
@@ -52,6 +57,18 @@ TEXT_EXAMPLES = {
         " yet been reported, several hypotheses can be proposed as to how variation in an"
         " amyloidogenic cysteine protease inhibitor may have pathologic consequences for AD."
     ),
+    "dgm": (
+        "Acquired resistance to BRAF inhibitors can occur through MAPK pathway reactivation due to"
+        " a number of genetic aberrations, including BRAF V600E amplification, alternate splicing"
+        " of BRAF, NRAS mutation, KRAS mutation, and MEK1 mutation. Co-inhibition of BRAF and MEK"
+        " may overcome resistance, and the combination of dabrafenib and trametinib has provided a"
+        " response rate of 68 % in BRAF-mutant NSCLC, providing the basis for FDA Breakthrough"
+        " Therapy Designation (2015) for this combination regimen in this indication. Dual MEK–ERK"
+        " inhibitors exhibit additive/synergistic effects and can delay the emergence of, and"
+        " potentially overcome, acquired MEK inhibitor resistance. PIK3CA mutations have also been"
+        " implicated in resistance to BRAF inhibitors, and diagnostic detection of this mutation"
+        " during therapy may thus direct decisions on subsequent PI3K inhibitor combination therapy."
+    ),
     "docred": (
         "Darksiders is a hack and slash action-adventure video game developed by Vigil Games and"
         " published by THQ. The game takes its inspiration from the Four Horsemen of the"
@@ -61,25 +78,27 @@ TEXT_EXAMPLES = {
     ),
 }
 
-
+# Load and cache models (one at a time)
 @st.cache(allow_output_mutation=True, max_entries=1, ttl=3600)
 def load_model(model_name: str):
     return Seq2Rel(model_name)
 
 
-def process_ent(text: str, ents: Tuple[str, ...]) -> str:
-    matched_ents = []
-    for ent in ents:
+def process_mentions(text: str, mentions: Tuple[str, ...]) -> str:
+    matched_mentions = []
+    for mention in mentions:
         try:
-            start = text.lower().index(ent.lower())
-            end = start + len(ent)
-            matched_ents.append(text[start:end])
+            start = text.lower().index(mention.lower())
+            end = start + len(mention)
+            matched_mentions.append(text[start:end])
         except ValueError:
-            matched_ents.append(ent)
+            matched_mentions.append(mention)
 
-    ent_text = f"{matched_ents[0]}"
-    if matched_ents[1:]:
-        ent_text += f"{util.COREF_SEP_SYMBOL} {f'{util.COREF_SEP_SYMBOL} '.join(matched_ents[1:])}"
+    ent_text = f"{matched_mentions[0]}"
+    if matched_mentions[1:]:
+        ent_text += (
+            f"{util.COREF_SEP_SYMBOL} {f'{util.COREF_SEP_SYMBOL} '.join(matched_mentions[1:])}"
+        )
     return ent_text
 
 
@@ -105,7 +124,7 @@ st.sidebar.write(
 model_name = (
     st.sidebar.selectbox(
         "Model name",
-        ("CDR", "GDA", "DocRED"),
+        ("CDR", "GDA", "DGM", "DocRED"),
         help="Name of pretrained model to load. Most models are named after the dataset they are trained on.",
     )
     .strip()
@@ -124,7 +143,7 @@ input_text = st.text_area(
 if input_text:
     # Run the model and parse the output
     output = model(input_text)
-    extract_relations = util.extract_relations(output)
+    extract_relations = util.extract_relations(output, ordered_ents=True)
 
     st.subheader(":memo: Input text")
     st.write(input_text)
@@ -142,29 +161,25 @@ if input_text:
 
     st.subheader(":left_right_arrow: Extracted relations")
     st.write("The models outputs, visualized as a graph.")
-    net = Network(width="100%", bgcolor="#F0F2F6", layout=True, notebook=True)
+    net = Network(width="100%", bgcolor=BACKGROUND, layout=True, notebook=True)
+    # Loop over predicted relations. Create a node for each entity, and an edge for each relation.
+    # To handle n-ary relations, assume the relations are between consecutive pairs of entities.
     for prediction in extract_relations:
-        for rel_type, rels in prediction.items():
-            # TODO: This should be extended to n-ary relations.
-            for rel in rels:
-                ent_1, ent_1_type = process_ent(input_text, rel[0][0]), rel[0][1]
-                ent_2, ent_2_type = process_ent(input_text, rel[1][0]), rel[1][1]
-                net.add_node(
-                    ent_1,
-                    label=ent_1,
-                    title=ent_1_type,
-                    color="#FF4B4B",
-                    font=FONT,
-                    borderWidth=0,
-                )
-                net.add_node(
-                    ent_2,
-                    title=ent_2_type,
-                    color="#FF4B4B",
-                    font=FONT,
-                    borderWidth=0,
-                )
-                net.add_edge(ent_1, ent_2, title=rel_type)
+        for rel_type, relations in prediction.items():
+            for rel in relations:
+                nodes = []
+                for mentions, ent_label in rel:
+                    ent_text = process_mentions(input_text, mentions)
+                    nodes.append(ent_text)
+                    net.add_node(
+                        ent_text,
+                        title=ent_label,
+                        color=PRIMARY,
+                        font=FONT,
+                        borderWidth=0,
+                    )
+                for i in range(len(nodes) - 1):
+                    net.add_edge(nodes[i], nodes[i + 1], title=rel_type)
     net.show("network.html")
     HtmlFile = open("network.html", "r", encoding="utf-8")
     source_code = HtmlFile.read()

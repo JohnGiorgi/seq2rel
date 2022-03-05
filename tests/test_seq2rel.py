@@ -56,6 +56,36 @@ class TestSeq2Rel:
         actual = model(texts)
         assert actual == expected
 
+    def test_dgm_model(self):
+        model = Seq2Rel("dgm")
+
+        # These are roughly organized in order of increasing difficulty.
+        texts = [
+            (
+                "The tumor was found to harbor an epidermal growth factor receptor (EGFR) mutation of"
+                " L858R, so he was subsequently treated with gefitinib (250 mg/day) and his general"
+                " condition immediately improved."
+            ),
+            (
+                "Recently, the addition of cetuximab to afatinib has yielded impressive results in the"
+                " treatment of EGFR reversible TKI resistant lung cancer due to T790M mutation."
+            ),
+            (
+                "Imatinib inhibition of KIT phosphorylation in mast cell lines correlates with the"
+                " inhibition of cellular proliferation (Zermati et al, 2003), suggesting that the"
+                " cells are critically dependent on KIT activity. In systemic mastocytosis, the"
+                " most common activating mutation in C-KIT D816V, occurs in the catalytic region of"
+                " the enzyme, and also prevents binding of imatinib."
+            ),
+        ]
+        expected = [
+            "gefitinib @DRUG@ epidermal growth factor receptor ( egfr ) ; egfr @GENE@ l858r @VARIANT@ @DGM@",
+            "cetuximab @DRUG@ egfr @GENE@ t790m @VARIANT@ @DGM@ afatinib @DRUG@ egfr @GENE@ t790m @VARIANT@ @DGM@",
+            "imatinib @DRUG@ kit ; c - kit @GENE@ d816v @VARIANT@ @DGM@",
+        ]
+        actual = model(texts)
+        assert actual == expected
+
     def test_docred_model(self):
         model = Seq2Rel("docred")
 

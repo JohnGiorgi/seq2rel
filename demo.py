@@ -78,6 +78,7 @@ TEXT_EXAMPLES = {
     ),
 }
 
+
 # Load and cache models (one at a time)
 @st.cache(allow_output_mutation=True, max_entries=1, ttl=3600)
 def load_model(model_name: str):

@@ -41,7 +41,7 @@ fastai = "^2.5.3"
 [tool.poetry.dev-dependencies]
 black = "^22.1"
 flake8 = "^4.0.1"
-hypothesis = "^6.38.0"
+hypothesis = "^6.39.4"
 mypy = "^0.931"
 pytest = "^7.0.1"
 pytest-cov = "^3.0.0"

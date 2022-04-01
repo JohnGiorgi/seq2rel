@@ -12,10 +12,13 @@ from validators.url import url
 from seq2rel.common.util import sanitize_text
 
 PRETRAINED_MODELS = {
-    "cdr": "https://github.com/JohnGiorgi/seq2rel/releases/download/v0.1.0rc1/cdr.tar.gz",
-    "gda": "https://github.com/JohnGiorgi/seq2rel/releases/download/v0.1.0rc1/gda.tar.gz",
-    "dgm": "https://github.com/JohnGiorgi/seq2rel/releases/download/v0.1.0rc1/dgm.tar.gz",
-    "docred": "https://github.com/JohnGiorgi/seq2rel/releases/download/v0.1.0rc1/docred.tar.gz",
+    "cdr": "https://github.com/JohnGiorgi/seq2rel/releases/download/pretrained-models/cdr.tar.gz",
+    "cdr_hints": "https://github.com/JohnGiorgi/seq2rel/releases/download/pretrained-models/cdr_hints.tar.gz",
+    "gda": "https://github.com/JohnGiorgi/seq2rel/releases/download/pretrained-models/gda.tar.gz",
+    "gda_hints": "https://github.com/JohnGiorgi/seq2rel/releases/download/pretrained-models/gda_hints.tar.gz",
+    "dgm": "https://github.com/JohnGiorgi/seq2rel/releases/download/pretrained-models/dgm.tar.gz",
+    "dgm_hints": "https://github.com/JohnGiorgi/seq2rel/releases/download/pretrained-models/dgm_hints.tar.gz",
+    "docred": "https://github.com/JohnGiorgi/seq2rel/releases/download/pretrained-models/docred.tar.gz",
 }
 
 

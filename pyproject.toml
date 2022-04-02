@@ -30,7 +30,7 @@ classifiers = [
 exclude = ["tests", "test_fixtures", "training_config"]
 
 [tool.poetry.dependencies]
-python = "^3.7.1"
+python = "^3.8"
 typer = { extras = ["all"], version = "^0.4.0" }
 validators = "^0.18.2"
 more-itertools = "^8.10.0"

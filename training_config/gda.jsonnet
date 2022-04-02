@@ -6,11 +6,11 @@
 local model_name = "microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract-fulltext";
 
 // These are reasonable defaults.
-local max_length = 16;        // Max length of input text
-local max_steps = 16;         // Max number of decoding steps
+local max_length = 512;       // Max length of input text
+local max_steps = 96;         // Max number of decoding steps
 
-local num_epochs = 1;         // Number of training epochs
-local batch_size = 1;         // Per-GPU batch size
+local num_epochs = 30;        // Number of training epochs
+local batch_size = 4;         // Per-GPU batch size
 local grad_acc_steps = 1;     // Number of training steps before backpropagating gradients
 local decoder_lr = 5e-4;      // Learning rate for decoder params
 
@@ -20,33 +20,33 @@ local reinit_layers = 1;      // Re-initializes the last N layers of the encoder
 local dropout = 0.10;         // Dropout applied to decoder inputs and cross-attention weights
 local weight_dropout = 0.50;  // Weight dropout applied to hidden-to-hidden decoder weights
 
-local beam_size = 1;          // Beam size to use during decoding (test time only)
-local length_penalty = 1.0;   // >1.0 favours longer decodings and <1.0 shorter (test time only)
+local beam_size = 4;          // Beam size to use during decoding (test time only)
+local length_penalty = 0.8;   // >1.0 favours longer decodings and <1.0 shorter (test time only)
 
 // Number of GPUs to use. 0 means CPU only, 1 means one GPU, etc.
-local num_gpus = 0;
+local num_gpus = 1;
 
 // Set to `true` to use automatic mixed precision.
-local use_amp = false;
+local use_amp = true;
 
 // ================================================================
 
 // Lists containing the special entity/relation tokens in your target vocabulary
 local ent_tokens = [
-    "@CHEMICAL@",
+    "@GENE@",
     "@DISEASE@",
 ];
 local rel_tokens = [
-    "@CID@",
+    "@GDA@",
 ];
 
-// NOTE: Typically these would be parsed from external variables, but here we hardcode them.
-local train_data_path = "test_fixtures/data/train.tsv";
-local validation_data_path = "test_fixtures/data/valid.tsv";
-local dataset_size = 1;
+// These are provided as external variables
+local train_data_path = std.extVar("train_data_path");
+local validation_data_path = std.extVar("valid_data_path");
+local dataset_size = std.parseInt(std.extVar('dataset_size'));
 
-// Validation begins at the end of the validation_start epoch...
-local validation_start = std.floor(num_epochs - 4);
+// Validation will begin at the end of this epoch.
+local validation_start = std.floor(num_epochs - 2);
 // ...and continues for every validation_interval epochs after that
 local validation_interval = 1;
 
@@ -104,7 +104,7 @@ local TARGET_TOKENIZER = {
     "train_data_path": train_data_path,
     "validation_data_path": validation_data_path,
     "dataset_reader": {
-        "type": "seq2rel.dataset_reader.Seq2RelDatasetReader",
+        "type": "seq2rel",
         "max_length": max_length,
         "target_namespace": target_namespace,
         "source_tokenizer": SOURCE_TOKENIZER,
@@ -118,7 +118,7 @@ local TARGET_TOKENIZER = {
         },
     },
     "model": {
-        "type": "seq2rel.models.copynet_seq2rel.CopyNetSeq2Rel",
+        "type": "copynet_seq2rel",
         "source_embedder": {
             "token_embedders": {
                 "tokens": {
@@ -132,23 +132,20 @@ local TARGET_TOKENIZER = {
         "target_tokenizer": TARGET_TOKENIZER,
         "dropout": dropout,
         "weight_dropout": weight_dropout,
-        "token_based_metric": {
-            "type": "seq2rel.metrics.AverageLength"
-        },
         "sequence_based_metrics": [
             {
-                "type": "seq2rel.metrics.F1MeasureSeq2Rel",
+                "type": "f1_seq2rel",
                 "labels": rel_labels,
                 "average": "micro",
                 "remove_duplicate_ents": true,
             },
         ],
         "attention": {
-            "type": "seq2rel.modules.attention.multihead_attention.MultiheadAttention",
+            "type": "multihead_attention",
             "num_heads": 6,
             "dropout": dropout,
         },
-        "target_embedding_dim": 128,
+        "target_embedding_dim": 256,
         "beam_search": {
             "max_steps": max_steps,
             "beam_size": beam_size,
@@ -157,14 +154,6 @@ local TARGET_TOKENIZER = {
                 // Larger values favour longer decodings and vice versa
                 "length_penalty": length_penalty,
             },
-            "constraints": [
-                {
-                    "type": "seq2rel.nn.constraints.EnforceValidLinearization",
-                    "ent_tokens": ent_tokens,
-                    "rel_tokens": rel_tokens,
-                    "target_namespace": target_namespace,
-                },
-            ],
         },
     },
     "data_loader": {
@@ -181,9 +170,7 @@ local TARGET_TOKENIZER = {
             // the batch size used during training.
             "batch_size": batch_size * 32,
             "sorting_keys": sorting_keys,
-            // We don't care about deterministic batches during validation, so drop
-            // padding noise to further speed things up.
-            "padding_noise": 0.0
+            "padding_noise": 0.0,
         },
     },
         "trainer": {

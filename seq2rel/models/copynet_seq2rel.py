@@ -87,7 +87,7 @@ class CopyNetSeq2Rel(CopyNetSeq2Seq):
         self._dropout = torch.nn.Dropout(dropout) if dropout else torch.nn.Identity()
         # Dropout to apply to the decoders hidden-to-hidden weights
         self._weight_dropout = weight_dropout
-        self._decoder_cell = WeightDropout(
+        self._decoder_cell: torch.nn.Module = WeightDropout(
             self._decoder_cell, self._weight_dropout, layer_names="weight_hh"
         )
 

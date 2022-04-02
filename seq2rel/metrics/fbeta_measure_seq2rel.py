@@ -3,6 +3,7 @@ from typing import List, Optional, Set
 import torch
 from allennlp.training.metrics.fbeta_measure import FBetaMeasure
 from allennlp.training.metrics.metric import Metric
+
 from seq2rel.common.util import EntityAnnotation, extract_relations
 
 

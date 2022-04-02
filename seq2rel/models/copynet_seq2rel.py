@@ -12,6 +12,7 @@ from allennlp.nn import util
 from allennlp.training.metrics import Metric
 from allennlp_models.generation.models import CopyNetSeq2Seq
 from fastai.text.models import WeightDropout
+
 from seq2rel.common.util import COREF_SEP_SYMBOL, sanitize_text
 
 logger = logging.getLogger(__name__)

@@ -2,6 +2,7 @@ import re
 from typing import Dict, List, Optional
 
 from allennlp.training.metrics import Metric
+
 from seq2rel.common.util import REL_PATTERN, extract_relations
 
 

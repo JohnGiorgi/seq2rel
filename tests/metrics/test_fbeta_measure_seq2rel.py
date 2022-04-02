@@ -5,13 +5,14 @@ import hypothesis.strategies as st
 import pytest
 import torch
 from hypothesis import given
+from torch.testing import assert_allclose
+
 from seq2rel.common.util import EntityAnnotation
 from seq2rel.metrics.fbeta_measure_seq2rel import (
     F1MeasureSeq2Rel,
     FBetaMeasureSeq2Rel,
     _fuzzy_cluster_match,
 )
-from torch.testing import assert_allclose
 
 
 def test_fuzzy_cluster_match() -> None:

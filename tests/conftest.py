@@ -4,6 +4,7 @@ from typing import Callable
 import pytest
 from allennlp.common import Params
 from allennlp.data import Vocabulary
+
 from seq2rel.common.util import HINT_SEP_SYMBOL
 from seq2rel.training.callbacks.concatenation_augmentation import ConcatenationAugmentationCallback
 

@@ -10,8 +10,13 @@ repository = "https://github.com/johngiorgi/seq2rel"
 documentation = "https://github.com/johngiorgi/seq2rel"
 keywords = [
     "named entity recognition",
+    "entity extraction",
     "relation extraction",
+    "coreference resolution",
     "information extraction",
+    "pytorch",
+    "allennnlp",
+    "seq2rel",
     "seq2seq"
 ]
 classifiers = [
@@ -34,7 +39,7 @@ python = "^3.8"
 typer = { extras = ["all"], version = "^0.4.0" }
 validators = "^0.18.2"
 more-itertools = "^8.10.0"
-allennlp = "^2.9.0"
+allennlp = "^2.9.0,!=2.9.2"
 allennlp-models = "^2.9.0"
 fastai = "^2.5.3"
 

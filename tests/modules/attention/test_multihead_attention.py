@@ -4,6 +4,7 @@ from allennlp.common import Params
 from allennlp.common.testing.test_case import AllenNlpTestCase
 from allennlp.modules.attention.attention import Attention
 from numpy.testing import assert_almost_equal
+
 from seq2rel.modules.attention.multihead_attention import MultiheadAttention
 
 

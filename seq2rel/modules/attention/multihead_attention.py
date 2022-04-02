@@ -2,7 +2,6 @@ from typing import Any
 
 import torch
 from allennlp.modules.attention.attention import Attention
-
 from torch import nn
 
 

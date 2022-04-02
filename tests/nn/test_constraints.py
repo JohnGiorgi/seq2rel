@@ -2,9 +2,9 @@ import random
 from typing import Callable
 
 import torch
+from allennlp.common import Params
 from allennlp.nn.beam_search import Constraint
 from allennlp.nn.util import min_value_of_dtype
-from allennlp.common import Params
 
 
 class TestEnforceValidLinearization:

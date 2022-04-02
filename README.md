@@ -22,7 +22,7 @@ The corresponding code for our paper: A sequence-to-sequence approach for docume
 
 ## Installation
 
-This repository requires Python 3.7.1 or later.
+This repository requires Python 3.8 or later.
 
 ### Setting up a virtual environment
 

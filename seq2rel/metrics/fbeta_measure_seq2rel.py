@@ -7,41 +7,41 @@ from allennlp.training.metrics.metric import Metric
 from seq2rel.common.util import EntityAnnotation, extract_relations
 
 
-def _fuzzy_cluster_match(
+def _relaxed_entity_match(
     pred_rel: EntityAnnotation,
     gold_rels: Set[EntityAnnotation],
     threshold: float = 0.5,
     ordered_ents: bool = False,
 ) -> bool:
-    """Given some predicted relation `pred_rel`, returns True if there is a fuzzy match to any
-    relation in the ground truth relations `gold_rels`. A fuzzy match occurs if there exists a
-    ground truth relation where, for every predicted cluster, P, there is a gold cluster G such
-    that | P ∩ G | / |P| > cluster_threshold. The number of predicted clusters and their predicted
+    """Given some predicted relation `pred_rel`, returns True if there is a relaxed match to any
+    relation in the ground truth relations `gold_rels`. A relaxed match occurs if there exists a
+    ground truth relation where, for every predicted entity, P, there is a gold entity G such
+    that | P ∩ G | / |P| > threshold. The number of predicted entities and their predicted
     entity classes must exactly match the ground truth regardless of threshold.
     """
     for gold_rel in gold_rels:
-        # If the number of gold and predicted clusters differ then we don't have a match.
+        # If the number of gold and predicted entities differ then we don't have a match.
         if len(gold_rel) != len(pred_rel):
             continue
         matched_indices = []
         for i, (pred_mentions, pred_label) in enumerate(pred_rel):
             for j, (gold_mentions, gold_label) in enumerate(gold_rel):
-                # If `ordered_ents`, order of predicted clusters must match order of gold clusters.
+                # If `ordered_ents`, order of predicted entities must match order of gold entities.
                 if ordered_ents and i != j:
                     continue
-                # Avoid matching different predicted clusters to the same gold cluster.
+                # Avoid matching different predicted entities to the same gold entity.
                 if j in matched_indices:
                     continue
                 # Convert to a set, as we don't care about duplicates or order.
                 pred = set(pred_mentions)
                 gold = set(gold_mentions)
-                # A predicted cluster (P) matches a gold cluster (G) if:
+                # A predicted entity (P) matches a gold entity (G) if:
                 #   1. | P ∩ G | / |P| > threshold
-                #   2. The predicted cluster label matches the gold cluster label
+                #   2. The predicted entity label matches the gold entity label
                 if (len(pred & gold) / len(pred)) > threshold and pred_label == gold_label:
                     matched_indices.append(j)
                     break
-        # Did not find a fuzzy match for all clusters, therefore the predicted relation is incorrect.
+        # Did not find relaxed match for all entities, therefore predicted relation is incorrect.
         if len(matched_indices) == len(pred_rel):
             return True
 
@@ -62,9 +62,9 @@ class FBetaMeasureSeq2Rel(FBetaMeasure):
         Labels present in the data can be excluded, for example to calculate a
         multi-class average ignoring a majority negative class. Labels not present
         in the data will result in 0 components in a macro or weighted average.
-    cluster_threshold : `float`, optional (default = `None`)
-        If `cluster_threshold`, use fuzzy matching, where a predicted cluster (P) is considered a
-        true positive if | P ∩ G | / | P | > `cluster_threshold` for at least one gold cluster (G).
+    threshold : `float`, optional (default = `None`)
+        If `threshold`, use relaxed entity matching, where a predicted entity (P) is considered a
+        true positive if | P ∩ G | / | P | > `threshold` for at least one gold entity (G).
         A reasonable threshold value is `0.5`.
     ordered_ents : `bool`, optional (default = `False`)
         True if the entities should be considered ordered (e.g. there are distinct head and tail
@@ -80,7 +80,7 @@ class FBetaMeasureSeq2Rel(FBetaMeasure):
     def __init__(
         self,
         labels: List[str],
-        cluster_threshold: Optional[float] = None,
+        threshold: Optional[float] = None,
         ordered_ents: bool = False,
         remove_duplicate_ents: bool = False,
         beta: float = 1.0,
@@ -94,9 +94,9 @@ class FBetaMeasureSeq2Rel(FBetaMeasure):
         self._labels = list(range(len(labels)))
         self._num_classes = len(self._labels)
 
-        if cluster_threshold is not None and (cluster_threshold <= 0 or cluster_threshold > 1):
-            raise ValueError(f"cluster_threshold must be between (0, 1]. Got {cluster_threshold}.")
-        self._cluster_threshold = cluster_threshold
+        if threshold is not None and (threshold <= 0 or threshold > 1):
+            raise ValueError(f"threshold must be between (0, 1]. Got {threshold}.")
+        self._threshold = threshold
         self._ordered_ents = ordered_ents
         self._remove_duplicate_ents = remove_duplicate_ents
 
@@ -149,13 +149,13 @@ class FBetaMeasureSeq2Rel(FBetaMeasure):
                     # Convert to a set, as we don't care about duplicates or order.
                     dedup_pred_rels = set(pred_rels)
                     dedup_gold_rels = set(gold_rels)
-                    # If cluster_threshold, use fuzzy matching to determine true positives.
-                    if self._cluster_threshold:
+                    # If threshold, use relaxed entity matching to determine true positives.
+                    if self._threshold:
                         for rel in dedup_pred_rels:
-                            if _fuzzy_cluster_match(
+                            if _relaxed_entity_match(
                                 rel,
                                 dedup_gold_rels,
-                                threshold=self._cluster_threshold,
+                                threshold=self._threshold,
                                 ordered_ents=self._ordered_ents,
                             ):
                                 self._true_positive_sum[class_index] += 1  # type: ignore
@@ -185,14 +185,14 @@ class F1MeasureSeq2Rel(FBetaMeasureSeq2Rel):
     def __init__(
         self,
         labels: List[str],
-        cluster_threshold: Optional[float] = None,
+        threshold: Optional[float] = None,
         ordered_ents: bool = False,
         remove_duplicate_ents: bool = False,
         average: Optional[str] = None,
     ) -> None:
         super().__init__(
             labels=labels,
-            cluster_threshold=cluster_threshold,
+            threshold=threshold,
             ordered_ents=ordered_ents,
             remove_duplicate_ents=remove_duplicate_ents,
             beta=1.0,

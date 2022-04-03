@@ -11,11 +11,11 @@ from seq2rel.common.util import EntityAnnotation
 from seq2rel.metrics.fbeta_measure_seq2rel import (
     F1MeasureSeq2Rel,
     FBetaMeasureSeq2Rel,
-    _fuzzy_cluster_match,
+    _relaxed_entity_match,
 )
 
 
-def test_fuzzy_cluster_match() -> None:
+def test_relaxed_entity_match() -> None:
     threshold = 0.5
     # The matching gold annotation purposely comes second to ensure that order doesn't matter.
     gold_rels: Set[EntityAnnotation] = set(
@@ -35,39 +35,39 @@ def test_fuzzy_cluster_match() -> None:
         (("suxamethonium chloride", "suxamethonium", "sch"), "ARBITRARY"),
         (("fasciculations", "fasciculation"), "DISEASE"),
     )
-    assert not _fuzzy_cluster_match(pred_rel, gold_rels, threshold=threshold)
-    # Missing an entire cluster
+    assert not _relaxed_entity_match(pred_rel, gold_rels, threshold=threshold)
+    # Missing an entire entity
     pred_rel = (
         # 0 / 1, NOT over threshold
         (("arbitrary",), "CHEMICAL"),
         # 2 / 2, over threshold
         (("fasciculations", "fasciculation"), "DISEASE"),
     )
-    assert not _fuzzy_cluster_match(pred_rel, gold_rels, threshold=threshold)
-    # Two additional mentions in each cluster
+    assert not _relaxed_entity_match(pred_rel, gold_rels, threshold=threshold)
+    # Two additional mentions in each entity
     pred_rel = (
         # 3 / 5, over threshold
         (("suxamethonium chloride", "suxamethonium", "sch", "wrong", "incorrect"), "CHEMICAL"),
         # 2 / 4, NOT the threshold
         (("fasciculations", "fasciculation", "wrong", "incorrect"), "DISEASE"),
     )
-    assert not _fuzzy_cluster_match(pred_rel, gold_rels, threshold=threshold)
-    # Missing a single mention in each cluster
+    assert not _relaxed_entity_match(pred_rel, gold_rels, threshold=threshold)
+    # Missing a single mention in each entity
     pred_rel = (
         # 2 / 3, over threshold
         (("suxamethonium chloride", "suxamethonium"), "CHEMICAL"),
         # 1 / 1, over threshold
         (("fasciculations",), "DISEASE"),
     )
-    assert _fuzzy_cluster_match(pred_rel, gold_rels, threshold=threshold)
-    # One additional mention in each cluster
+    assert _relaxed_entity_match(pred_rel, gold_rels, threshold=threshold)
+    # One additional mention in each entity
     pred_rel = (
         # 2 / 3, over threshold
         (("suxamethonium chloride", "suxamethonium", "arbitrary"), "CHEMICAL"),
         # 2 / 2, over threshold
         (("fasciculations", "fasciculation", "arbitrary"), "DISEASE"),
     )
-    assert _fuzzy_cluster_match(pred_rel, gold_rels, threshold=threshold)
+    assert _relaxed_entity_match(pred_rel, gold_rels, threshold=threshold)
     # Mention order differs
     pred_rel = (
         # 2 / 3, over threshold
@@ -75,7 +75,7 @@ def test_fuzzy_cluster_match() -> None:
         # 2 / 2, over threshold
         (("fasciculation", "fasciculations"), "DISEASE"),
     )
-    assert _fuzzy_cluster_match(pred_rel, gold_rels, threshold=threshold)
+    assert _relaxed_entity_match(pred_rel, gold_rels, threshold=threshold)
     # Entity order differs but `ordered_ents=False`
     pred_rel = (
         # 2 / 3, over threshold
@@ -83,7 +83,7 @@ def test_fuzzy_cluster_match() -> None:
         # 2 / 2, over threshold
         (("suxamethonium", "suxamethonium chloride", "arbitrary"), "CHEMICAL"),
     )
-    assert _fuzzy_cluster_match(pred_rel, gold_rels, threshold=threshold, ordered_ents=False)
+    assert _relaxed_entity_match(pred_rel, gold_rels, threshold=threshold, ordered_ents=False)
     # Entity order differs but `ordered_ents=True`
     pred_rel = (
         # 2 / 3, over threshold
@@ -91,7 +91,7 @@ def test_fuzzy_cluster_match() -> None:
         # 2 / 2, over threshold
         (("suxamethonium", "suxamethonium chloride", "arbitrary"), "CHEMICAL"),
     )
-    assert not _fuzzy_cluster_match(pred_rel, gold_rels, threshold=threshold, ordered_ents=True)
+    assert not _relaxed_entity_match(pred_rel, gold_rels, threshold=threshold, ordered_ents=True)
 
 
 class FBetaMeasureSeq2RelTestCase:
@@ -105,7 +105,7 @@ class FBetaMeasureSeq2RelTestCase:
             "atg1 @GGP@ atg1 @GGP@ @PHYSICAL@ atg17 @GGP@ atg1 @GGP@ @PHYSICAL@",
             # This prediction is missing a relation
             "b-myb @GGP@ cbp @GGP@ @PHYSICAL@ b-myb @GGP@ cbp @GGP@ @GENETIC@",
-            # This prediction contains coreferent mentions, where one cluster is missing a mention
+            # This prediction contains coreferent mentions, where one entity is missing a mention
             "insulin @GGP@ peroxiredoxin 4; prdx4 @GGP@ @PHYSICAL@",
         ]
         self.targets = [
@@ -136,8 +136,8 @@ class FBetaMeasureSeq2RelTestCase:
         self.desired_recalls = desired_recalls
         self.desired_fscores = desired_fscores
 
-        # Threshold used for fuzzy cluster matching
-        self.cluster_threshold = 0.5
+        # Threshold used for relaxed entity matching
+        self.threshold = 0.5
 
 
 class TestFBetaMeasureSeq2Rel(FBetaMeasureSeq2RelTestCase):
@@ -148,16 +148,14 @@ class TestFBetaMeasureSeq2Rel(FBetaMeasureSeq2RelTestCase):
     def setup_method(self):
         super().setup_method()
 
-    @given(cluster_threshold=st.floats(min_value=-1, max_value=1))
-    def test_fbeta_seq2rel_invalid_cluster_threshold_raises_value_error(
-        self, cluster_threshold: float
-    ):
-        if cluster_threshold <= 0.0 or cluster_threshold > 1.0:
+    @given(threshold=st.floats(min_value=-1, max_value=1))
+    def test_fbeta_seq2rel_invalid_threshold_raises_value_error(self, threshold: float):
+        if threshold <= 0.0 or threshold > 1.0:
             with pytest.raises(ValueError):
-                _ = FBetaMeasureSeq2Rel(labels=self.labels, cluster_threshold=cluster_threshold)
+                _ = FBetaMeasureSeq2Rel(labels=self.labels, threshold=threshold)
         # Sanity check that valid values don't raise an error.
         else:
-            _ = FBetaMeasureSeq2Rel(labels=self.labels, cluster_threshold=cluster_threshold)
+            _ = FBetaMeasureSeq2Rel(labels=self.labels, threshold=threshold)
 
     def test_fbeta_seq2rel_diff_pred_and_ground_truth_lens_raises_value_error(
         self,
@@ -196,15 +194,15 @@ class TestFBetaMeasureSeq2Rel(FBetaMeasureSeq2RelTestCase):
         assert isinstance(recalls, List)
         assert isinstance(fscores, List)
 
-    def test_fbeta_seq2rel_multiclass_metric_fuzzy_match(self):
-        fbeta = FBetaMeasureSeq2Rel(labels=self.labels, cluster_threshold=self.cluster_threshold)
+    def test_fbeta_seq2rel_multiclass_metric_relaxed_entity_match(self):
+        fbeta = FBetaMeasureSeq2Rel(labels=self.labels, threshold=self.threshold)
         fbeta(self.predictions, self.targets)
         metric = fbeta.get_metric()
         precisions = metric["precision"]
         recalls = metric["recall"]
         fscores = metric["fscore"]
 
-        # With fuzzy matching, one of the predictions for the class at index 0 is now correct.
+        # With relaxed entity matching, one of the preds for the class at index 0 is now correct.
         # increment the true positives by 1 and recompute the desired values.
         true_positive_sum = copy.deepcopy(self.true_positive_sum)
         desired_precisions = copy.deepcopy(self.desired_precisions)

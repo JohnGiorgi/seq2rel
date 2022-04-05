@@ -6,7 +6,7 @@
 ![GitHub](https://img.shields.io/github/license/JohnGiorgi/seq2rel?color=blue)
 [![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://share.streamlit.io/johngiorgi/seq2rel/main/demo.py)
 
-The corresponding code for our paper: A sequence-to-sequence approach for document-level relation extraction. Checkout our demo [here](https://share.streamlit.io/johngiorgi/seq2rel/main/demo.py)!
+The corresponding code for our paper: [A sequence-to-sequence approach for document-level relation extraction](https://arxiv.org/abs/2204.01098). Checkout our demo [here](https://share.streamlit.io/johngiorgi/seq2rel/main/demo.py)!
 
 ## Table of contents
 
@@ -19,6 +19,7 @@ The corresponding code for our paper: A sequence-to-sequence approach for docume
     - [Preparing a dataset](#preparing-a-dataset)
     - [Training](#training)
     - [Inference](#inference)
+  - [Citing](#citing)
 
 ## Installation
 
@@ -62,7 +63,7 @@ Take the following example, which expresses a _gene-disease association_ (`"@GDA
 Variants in the estrogen receptor alpha (ESR1) gene and its mRNA contribute to risk for schizophrenia. estrogen receptor alpha ; ESR1 @GENE@ schizophrenia @DISEASE@ @GDA@
 ```
 
-For convenience, we provide a second package, [seq2rel-ds](https://github.com/JohnGiorgi/seq2rel-ds), which makes it easy to generate data in this format for various popular corpora. See our paper for more details on serializing relations.
+For convenience, we provide a second package, [seq2rel-ds](https://github.com/JohnGiorgi/seq2rel-ds), which makes it easy to generate data in this format for various popular corpora. See [our paper](https://arxiv.org/abs/2204.01098) for more details on serializing relations.
 
 ### Training
 
@@ -130,3 +131,17 @@ See the list of available `PRETRAINED_MODELS` in [seq2rel/seq2rel.py](seq2rel/se
 python -c "from seq2rel import PRETRAINED_MODELS ; print(list(PRETRAINED_MODELS.keys()))"
 ```
 
+## Citing
+
+If you use seq2rel in your work, please consider citing our paper:
+
+```
+@misc{giorgi2022sequencetosequence,
+	title        = {A sequence-to-sequence approach for document-level relation extraction},
+	author       = {John Giorgi and Gary D. Bader and Bo Wang},
+	year         = 2022,
+	eprint       = {2204.01098},
+	archiveprefix = {arXiv},
+	primaryclass = {cs.CL}
+}
+```

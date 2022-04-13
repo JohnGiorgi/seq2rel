@@ -46,7 +46,7 @@ local validation_data_path = std.extVar("valid_data_path");
 local dataset_size = std.parseInt(std.extVar('dataset_size'));
 
 // Validation will begin at the end of this epoch.
-local validation_start = std.floor(num_epochs - 2);
+local validation_start = std.max(std.floor(num_epochs - 2), 0);
 // ...and continues for every validation_interval epochs after that
 local validation_interval = 1;
 

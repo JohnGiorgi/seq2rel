@@ -46,7 +46,7 @@ local validation_data_path = "test_fixtures/data/valid.tsv";
 local dataset_size = 1;
 
 // Validation begins at the end of the validation_start epoch...
-local validation_start = std.floor(num_epochs - 4);
+local validation_start = std.max(std.floor(num_epochs - 4), 0);
 // ...and continues for every validation_interval epochs after that
 local validation_interval = 1;
 

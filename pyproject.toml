@@ -39,7 +39,7 @@ python = "^3.8"
 typer = { extras = ["all"], version = "^0.4.0" }
 validators = "^0.18.2"
 more-itertools = "^8.10.0"
-allennlp = "^2.9.0,!=2.9.2"
+allennlp = "^2.9.3"
 allennlp-models = "^2.9.0,!=2.9.2"
 fastai = "^2.5.3"
 

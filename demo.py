@@ -144,7 +144,7 @@ input_text = st.text_area(
 if input_text:
     # Run the model and parse the output
     output = model(input_text)
-    extract_relations = util.extract_relations(output, ordered_ents=True)
+    extracted_relations = util.extract_relations(output, ordered_ents=True)
 
     st.subheader(":memo: Input text")
     st.write(input_text)
@@ -158,14 +158,14 @@ if input_text:
 
         st.markdown("#### Parsed output")
         st.write("The parsed output of the model as a dictionary, keyed by relation class.")
-        st.write(extract_relations[0])
+        st.write(extracted_relations[0])
 
     st.subheader(":left_right_arrow: Extracted relations")
     st.write("The models outputs, visualized as a graph.")
     net = Network(width="100%", bgcolor=BACKGROUND, layout=True, notebook=True)
     # Loop over predicted relations. Create a node for each entity, and an edge for each relation.
     # To handle n-ary relations, assume the relations are between consecutive pairs of entities.
-    for prediction in extract_relations:
+    for prediction in extracted_relations:
         for rel_type, relations in prediction.items():
             for rel in relations:
                 nodes = []

@@ -28,8 +28,6 @@ jobs:
         uses: abatilo/actions-poetry@v2.1.4
       - name: Install dependencies with Poetry
         run: |
-          poetry shell
-          pip install pyarrow
           poetry install
       - name: Format code with black
         run: |

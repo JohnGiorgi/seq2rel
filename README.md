@@ -20,6 +20,7 @@ The corresponding code for our paper: [A sequence-to-sequence approach for docum
     - [Preparing a dataset](#preparing-a-dataset)
     - [Training](#training)
     - [Inference](#inference)
+    - [Reproducing results](#reproducing-results)
   - [Citing](#citing)
 
 ## Notebooks
@@ -27,6 +28,7 @@ The corresponding code for our paper: [A sequence-to-sequence approach for docum
 The easiest way to get started is to follow along with one of our [notebooks](notebooks):
 
 - Training your own model [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnGiorgi/seq2rel/blob/main/notebooks/training.ipynb)
+- Reproducing results [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnGiorgi/seq2rel/blob/main/notebooks/reproducing-results.ipynb)
 
 ## Installation
 
@@ -34,7 +36,7 @@ This repository requires Python 3.8 or later.
 
 ### Setting up a virtual environment
 
-Before installing, you should create and activate a Python virtual environment. If you need pointers on setting up a virtual environment, please see the [AllenNLP install instructions](https://github.com/allenai/allennlp#installing-via-pip).
+Before installing, you should create and activate a Python virtual environment. If you need pointers on setting up a virtual environment, please see the [AllenNLP install instructions](https://github.com/allenai/allennlp#setting-up-a-virtual-environment).
 
 ### Installing the library and dependencies
 
@@ -93,7 +95,7 @@ allennlp train "training_config/cdr.jsonnet" \
     --include-package "seq2rel" 
 ```
 
-The best model checkpoint (measured by micro-F1 score on the validation set), vocabulary, configuration, and log files will be saved to `--serialization-dir`. This can be changed to any directory you like.
+The best model checkpoint (measured by micro-F1 score on the validation set), vocabulary, configuration, and log files will be saved to `--serialization-dir`. This can be changed to any directory you like. Please see the [training](https://colab.research.google.com/github/JohnGiorgi/seq2rel/blob/main/notebooks/training.ipynb) notebook for more details.
 
 ### Inference
 
@@ -137,6 +139,29 @@ See the list of available `PRETRAINED_MODELS` in [seq2rel/seq2rel.py](seq2rel/se
 ```bash
 python -c "from seq2rel import PRETRAINED_MODELS ; print(list(PRETRAINED_MODELS.keys()))"
 ```
+
+### Reproducing results
+
+To reproduce the main results of the paper, use the [`allennlp evaluate`](https://docs.allennlp.org/main/api/commands/evaluate/) command with [one of our pretrained models](https://github.com/JohnGiorgi/seq2rel/releases/tag/pretrained-models)
+
+For example, to reproduce our results on the [BioCreative V CDR task corpus](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4860626/), first, preprocess this data with [seq2rel-ds](https://github.com/JohnGiorgi/seq2rel-ds)
+
+```bash
+seq2rel-ds cdr main "path/to/preprocessed/cdr"
+```
+
+Then, call `allennlp evaluate` with the [pretrained CDR model](https://github.com/JohnGiorgi/seq2rel/releases/download/pretrained-models/cdr.tar.gz)
+
+```bash
+!allennlp evaluate "https://github.com/JohnGiorgi/seq2rel/releases/download/pretrained-models/cdr.tar.gz" \
+  "path/to/preprocessed/cdr/test.tsv" \
+  --output-file "output/test_metrics.jsonl" \
+  --cuda-device 0 \
+  --predictions-output-file "output/test_predictions.jsonl" \
+  --include-package "seq2rel"
+```
+
+The results and predictions will be saved to `--output-file` and `--predictions-output-file`. Please see the [reproducing-results](https://colab.research.google.com/github/JohnGiorgi/seq2rel/blob/main/notebooks/reproducing-results.ipynb) notebook for more details.
 
 ## Citing
 

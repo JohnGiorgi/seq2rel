@@ -12,6 +12,7 @@ The corresponding code for our paper: [A sequence-to-sequence approach for docum
 
 - [seq2rel: A sequence-to-sequence approach for document-level relation extraction](#seq2rel-a-sequence-to-sequence-approach-for-document-level-relation-extraction)
   - [Table of contents](#table-of-contents)
+  - [Notebooks](#notebooks)
   - [Installation](#installation)
     - [Setting up a virtual environment](#setting-up-a-virtual-environment)
     - [Installing the library and dependencies](#installing-the-library-and-dependencies)
@@ -20,6 +21,12 @@ The corresponding code for our paper: [A sequence-to-sequence approach for docum
     - [Training](#training)
     - [Inference](#inference)
   - [Citing](#citing)
+
+## Notebooks
+
+The easiest way to get started is to follow along with one of our [notebooks](notebooks):
+
+- Training your own model [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnGiorgi/seq2rel/blob/master/notebooks/training.ipynb)
 
 ## Installation
 
@@ -55,7 +62,7 @@ poetry install
 
 ### Preparing a dataset
 
-Datasets are tab-separated files, where each example is contained on its own line. The first column contains the text, and the second column contains the relation. Relations themselves must be serialized to strings.
+Datasets are tab-separated files, where each example is contained on its own line. The first column contains the text, and the second column contains the relations. Relations themselves must be serialized to strings.
 
 Take the following example, which expresses a _gene-disease association_ (`"@GDA@"`) between _ESR1_ (`"@GENE@"`) and _schizophrenia_ (`"@DISEASE@`")
 
@@ -86,7 +93,7 @@ allennlp train "training_config/cdr.jsonnet" \
     --include-package "seq2rel" 
 ```
 
-During training, models, vocabulary, configuration, and log files will be saved to the directory provided by `--serialization-dir`. This can be changed to any directory you like. 
+The best model checkpoint (measured by micro-F1 score on the validation set), vocabulary, configuration, and log files will be saved to `--serialization-dir`. This can be changed to any directory you like.
 
 ### Inference
 

@@ -26,7 +26,7 @@ The corresponding code for our paper: [A sequence-to-sequence approach for docum
 
 The easiest way to get started is to follow along with one of our [notebooks](notebooks):
 
-- Training your own model [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnGiorgi/seq2rel/blob/master/notebooks/training.ipynb)
+- Training your own model [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnGiorgi/seq2rel/blob/main/notebooks/training.ipynb)
 
 ## Installation
 

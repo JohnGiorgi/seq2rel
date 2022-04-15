@@ -34,7 +34,7 @@ This repository requires Python 3.8 or later.
 
 ### Setting up a virtual environment
 
-Before installing, you should create and activate a Python virtual environment. If you need pointers on setting up a virtual environment, please see the [AllenNLP install instructions](https://github.com/allenai/allennlp#installing-via-pip).
+Before installing, you should create and activate a Python virtual environment. If you need pointers on setting up a virtual environment, please see the [AllenNLP install instructions](https://github.com/allenai/allennlp#setting-up-a-virtual-environment).
 
 ### Installing the library and dependencies
 

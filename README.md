@@ -28,7 +28,7 @@ The corresponding code for our paper: [A sequence-to-sequence approach for docum
 The easiest way to get started is to follow along with one of our [notebooks](notebooks):
 
 - Training your own model [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnGiorgi/seq2rel/blob/main/notebooks/training.ipynb)
-- Reproducing results [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnGiorgi/seq2rel/blob/main/notebooks/reproducing-results.ipynb)
+- Reproducing results [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnGiorgi/seq2rel/blob/main/notebooks/reproducing_results.ipynb)
 
 ## Installation
 
@@ -161,7 +161,7 @@ Then, call `allennlp evaluate` with the [pretrained CDR model](https://github.co
   --include-package "seq2rel"
 ```
 
-The results and predictions will be saved to `--output-file` and `--predictions-output-file`. Please see the [reproducing-results](https://colab.research.google.com/github/JohnGiorgi/seq2rel/blob/main/notebooks/reproducing-results.ipynb) notebook for more details.
+The results and predictions will be saved to `--output-file` and `--predictions-output-file`. Please see the [reproducing-results](https://colab.research.google.com/github/JohnGiorgi/seq2rel/blob/main/notebooks/reproducing_results.ipynb) notebook for more details.
 
 ## Citing
 

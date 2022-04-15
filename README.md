@@ -150,7 +150,7 @@ For example, to reproduce our results on the [BioCreative V CDR task corpus](htt
 seq2rel-ds cdr main "path/to/preprocessed/cdr"
 ```
 
-Then, call `allennlp evaluate` with the [pretrained CDR model](https://github.com/JohnGiorgi/seq2rel/releases/tag/pretrained-models)
+Then, call `allennlp evaluate` with the [pretrained CDR model](https://github.com/JohnGiorgi/seq2rel/releases/download/pretrained-models/cdr.tar.gz)
 
 ```bash
 !allennlp evaluate "https://github.com/JohnGiorgi/seq2rel/releases/download/pretrained-models/cdr.tar.gz" \

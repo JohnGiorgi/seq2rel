@@ -1,4 +1,4 @@
-# This config is borrowed from: https://github.com/allenai/allennlp/blob/main/codecov.yml
+# This config is adapted from: https://github.com/allenai/allennlp/blob/main/codecov.yml
 coverage:
   precision: 0
   round: down

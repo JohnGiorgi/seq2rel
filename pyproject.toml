@@ -56,7 +56,7 @@ codecov = "^2.1.12"
 streamlit = "^1.5.1"
 pyvis = "^0.1.9"
 
-# This configuration is borrowed from: https://github.com/allenai/allennlp/blob/main/pyproject.toml
+# This configuration is adapted from: https://github.com/allenai/allennlp/blob/main/pyproject.toml
 [tool.black]
 line-length = 100
 

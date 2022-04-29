@@ -153,12 +153,12 @@ seq2rel-ds cdr main "path/to/preprocessed/cdr"
 Then, call `allennlp evaluate` with the [pretrained CDR model](https://github.com/JohnGiorgi/seq2rel/releases/download/pretrained-models/cdr.tar.gz)
 
 ```bash
-!allennlp evaluate "https://github.com/JohnGiorgi/seq2rel/releases/download/pretrained-models/cdr.tar.gz" \
-  "path/to/preprocessed/cdr/test.tsv" \
-  --output-file "output/test_metrics.jsonl" \
-  --cuda-device 0 \
-  --predictions-output-file "output/test_predictions.jsonl" \
-  --include-package "seq2rel"
+allennlp evaluate "https://github.com/JohnGiorgi/seq2rel/releases/download/pretrained-models/cdr.tar.gz" \
+    "path/to/preprocessed/cdr/test.tsv" \
+    --output-file "output/test_metrics.jsonl" \
+    --cuda-device 0 \
+    --predictions-output-file "output/test_predictions.jsonl" \
+    --include-package "seq2rel"
 ```
 
 The results and predictions will be saved to `--output-file` and `--predictions-output-file`. Please see the [reproducing-results](https://colab.research.google.com/github/JohnGiorgi/seq2rel/blob/main/notebooks/reproducing_results.ipynb) notebook for more details.

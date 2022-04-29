@@ -214,6 +214,9 @@ local TARGET_TOKENIZER = {
                 "validation_interval": validation_interval,
             },
 	    ],
+        "checkpointer": {
+            "keep_most_recent_by_count": 1
+        },
     },
     [if num_gpus > 1 then "distributed"]: {
         "cuda_devices": std.range(0, num_gpus - 1),

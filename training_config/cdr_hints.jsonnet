@@ -213,6 +213,12 @@ local TARGET_TOKENIZER = {
                 "validation_interval": validation_interval,
             },
 	    ],
+        "checkpointer": {
+            "keep_most_recent_by_count": 1
+        },
+        "checkpointer": {
+            "num_serialized_models_to_keep": 1
+        },
     },
     [if num_gpus > 1 then "distributed"]: {
         "cuda_devices": std.range(0, num_gpus - 1),

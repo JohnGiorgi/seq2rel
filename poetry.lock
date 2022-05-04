@@ -1931,11 +1931,11 @@ tzdata = {version = "*", markers = "python_version >= \"3.6\""}
 
 [[package]]
 name = "pyvis"
-version = "0.1.9"
-description = "A Python network visualization library"
+version = "0.2.0"
+description = "A Python network graph visualization library"
 category = "dev"
 optional = false
-python-versions = "*"
+python-versions = ">3.6"
 
 [package.dependencies]
 ipython = ">=5.3.0"
@@ -2845,7 +2845,7 @@ testing = ["pytest (>=6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytest-
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "798df6142e63a78af9580b1b2b8e17e1f6e5473ee0dfd4cf0c45c90b91d36061"
+content-hash = "3b8dc1979d2920acb50f25e18d0c388bb688616d3bc48f91eaad4fceddae08ca"
 
 [metadata.files]
 aiohttp = [
@@ -4265,8 +4265,7 @@ pytz-deprecation-shim = [
     {file = "pytz_deprecation_shim-0.1.0.post0.tar.gz", hash = "sha256:af097bae1b616dde5c5744441e2ddc69e74dfdcb0c263129610d85b87445a59d"},
 ]
 pyvis = [
-    {file = "pyvis-0.1.9-py3-none-any.whl", hash = "sha256:4d7cab58f120db544e668ac53194fbb3f312e5ba691d7843e2048a43981b1356"},
-    {file = "pyvis-0.1.9.tar.gz", hash = "sha256:f9ea603025f31f02155760be638e6c443d992050a2e6942496fbba0586170cbf"},
+    {file = "pyvis-0.2.0.tar.gz", hash = "sha256:d5662dbb4a1c4d2eb6b727abe50d5bb9caed7b6ad03a356eea0f68787cd6e30d"},
 ]
 pywin32 = [
     {file = "pywin32-303-cp310-cp310-win32.whl", hash = "sha256:6fed4af057039f309263fd3285d7b8042d41507343cd5fa781d98fcc5b90e8bb"},

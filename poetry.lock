@@ -2343,7 +2343,7 @@ tests = ["pytest", "typeguard", "pygments", "littleutils", "cython"]
 
 [[package]]
 name = "streamlit"
-version = "1.8.1"
+version = "1.9.0"
 description = "The fastest way to build data apps in Python"
 category = "dev"
 optional = false
@@ -2845,7 +2845,7 @@ testing = ["pytest (>=6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytest-
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "798df6142e63a78af9580b1b2b8e17e1f6e5473ee0dfd4cf0c45c90b91d36061"
+content-hash = "7b41fec17e10f91291b90a00a26b7dce6dfa9d97c816c0b16e5f57e528fc15a8"
 
 [metadata.files]
 aiohttp = [
@@ -4736,8 +4736,8 @@ stack-data = [
     {file = "stack_data-0.2.0.tar.gz", hash = "sha256:45692d41bd633a9503a5195552df22b583caf16f0b27c4e58c98d88c8b648e12"},
 ]
 streamlit = [
-    {file = "streamlit-1.8.1-py2.py3-none-any.whl", hash = "sha256:24d19c420d760c88eafc3f9508cbbd77ddab4a99a3a3b4db06f7741531f120a5"},
-    {file = "streamlit-1.8.1.tar.gz", hash = "sha256:507c84439996c6ffed150a2bdd1352b46acc8a476a1012e73241f7cc2fda3056"},
+    {file = "streamlit-1.9.0-py2.py3-none-any.whl", hash = "sha256:dd7718147cfc8eb4c5a18b36b67a36de37454e7fe49ac72470ad2a43771aef13"},
+    {file = "streamlit-1.9.0.tar.gz", hash = "sha256:543c809843b0561f5aa3850af2e90f7a6df17c80906b09ab76bab498846e6797"},
 ]
 tensorboardx = [
     {file = "tensorboardX-2.5-py2.py3-none-any.whl", hash = "sha256:b1d8903f8106e2f4484640a293f9680f9757d5f7d2e699e0672bb2382d988e07"},

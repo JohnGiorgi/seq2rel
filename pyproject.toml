@@ -47,7 +47,7 @@ fastai = "^2.6.3"
 black = { extras = ["jupyter"], version = "^22.1" }
 flake8 = "^4.0.1"
 hypothesis = "^6.46.9"
-mypy = "^0.931"
+mypy = "^0.961"
 pytest = "^7.0.1"
 pytest-cov = "^3.0.0"
 coverage = "^6.3"

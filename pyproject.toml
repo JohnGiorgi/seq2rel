@@ -46,7 +46,7 @@ fastai = "^2.7.5"
 [tool.poetry.dev-dependencies]
 black = { extras = ["jupyter"], version = "^22.1" }
 flake8 = "^4.0.1"
-hypothesis = "^6.46.9"
+hypothesis = "^6.49.1"
 mypy = "^0.961"
 pytest = "^7.0.1"
 pytest-cov = "^3.0.0"

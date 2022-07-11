@@ -170,7 +170,7 @@ If you use seq2rel in your work, please consider citing our paper:
 ```
 @inproceedings{giorgi-etal-2022-sequence,
 	title        = {A sequence-to-sequence approach for document-level relation extraction},
-	author       = {Giorgi, John  and Bader, Gary  and Wang, Bo},
+	author       = {Giorgi, John and Bader, Gary and Wang, Bo},
 	year         = 2022,
 	month        = may,
 	booktitle    = {Proceedings of the 21st Workshop on Biomedical Language Processing},

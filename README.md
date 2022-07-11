@@ -168,12 +168,16 @@ The results and predictions will be saved to `--output-file` and `--predictions-
 If you use seq2rel in your work, please consider citing our paper:
 
 ```
-@misc{giorgi2022sequencetosequence,
+@inproceedings{giorgi-etal-2022-sequence,
 	title        = {A sequence-to-sequence approach for document-level relation extraction},
-	author       = {John Giorgi and Gary D. Bader and Bo Wang},
+	author       = {Giorgi, John  and Bader, Gary  and Wang, Bo},
 	year         = 2022,
-	eprint       = {2204.01098},
-	archiveprefix = {arXiv},
-	primaryclass = {cs.CL}
+	month        = may,
+	booktitle    = {Proceedings of the 21st Workshop on Biomedical Language Processing},
+	publisher    = {Association for Computational Linguistics},
+	address      = {Dublin, Ireland},
+	pages        = {10--25},
+	doi          = {10.18653/v1/2022.bionlp-1.2},
+	url          = {https://aclanthology.org/2022.bionlp-1.2}
 }
 ```

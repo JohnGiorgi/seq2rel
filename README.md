@@ -6,7 +6,7 @@
 ![GitHub](https://img.shields.io/github/license/JohnGiorgi/seq2rel?color=blue)
 [![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://share.streamlit.io/johngiorgi/seq2rel/main/demo.py)
 
-The corresponding code for our paper: [A sequence-to-sequence approach for document-level relation extraction](https://arxiv.org/abs/2204.01098). Checkout our demo [here](https://share.streamlit.io/johngiorgi/seq2rel/main/demo.py)!
+The corresponding code for our paper: [A sequence-to-sequence approach for document-level relation extraction](https://aclanthology.org/2022.bionlp-1.2/). Checkout our demo [here](https://share.streamlit.io/johngiorgi/seq2rel/main/demo.py)!
 
 ## Table of contents
 
@@ -72,7 +72,7 @@ Take the following example, which expresses a _gene-disease association_ (`"@GDA
 Variants in the estrogen receptor alpha (ESR1) gene and its mRNA contribute to risk for schizophrenia. estrogen receptor alpha ; ESR1 @GENE@ schizophrenia @DISEASE@ @GDA@
 ```
 
-For convenience, we provide a second package, [seq2rel-ds](https://github.com/JohnGiorgi/seq2rel-ds), which makes it easy to generate data in this format for various popular corpora. See [our paper](https://arxiv.org/abs/2204.01098) for more details on serializing relations.
+For convenience, we provide a second package, [seq2rel-ds](https://github.com/JohnGiorgi/seq2rel-ds), which makes it easy to generate data in this format for various popular corpora. See [our paper](https://aclanthology.org/2022.bionlp-1.2/) for more details on serializing relations.
 
 ### Training
 

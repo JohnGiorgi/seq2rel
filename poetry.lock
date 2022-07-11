@@ -328,7 +328,7 @@ crt = ["awscrt (==0.13.8)"]
 
 [[package]]
 name = "cached-path"
-version = "1.1.5"
+version = "1.1.2"
 description = ""
 category = "main"
 optional = false
@@ -336,14 +336,14 @@ python-versions = ">=3.7"
 
 [package.dependencies]
 boto3 = ">=1.0,<2.0"
-filelock = ">=3.4,<3.8"
-google-cloud-storage = ">=1.32.0,<3.0"
-huggingface-hub = ">=0.8.1,<0.9.0"
+filelock = ">=3.4,<3.7"
+google-cloud-storage = ">=1.0,<3.0"
+huggingface-hub = ">=0.0.12,<0.6.0"
 requests = ">=2.0,<3.0"
-rich = ">=12.1,<13.0"
+tqdm = ">=4.62,<4.65"
 
 [package.extras]
-dev = ["flake8", "mypy (==0.961)", "black (==22.6.0)", "isort (==5.10.1)", "pytest", "flaky", "pytest-cov", "coverage", "codecov", "twine (>=1.11.0)", "setuptools", "wheel", "responses (==0.20.0)", "Sphinx (==5.0.2)", "furo (==2022.6.21)", "myst-parser (==0.18.0)", "sphinx-copybutton (==0.5.0)", "sphinx-autobuild (==2021.3.14)", "sphinx-autodoc-typehints", "packaging"]
+dev = ["flake8", "mypy (==0.942)", "black (==22.3.0)", "isort (==5.10.1)", "pytest", "flaky", "pytest-cov", "coverage", "codecov", "twine (>=1.11.0)", "setuptools", "wheel", "responses (==0.20.0)", "Sphinx (==4.5.0)", "furo (==2022.4.7)", "myst-parser (==0.17.0)", "sphinx-copybutton (==0.5.0)", "sphinx-autobuild (==2021.3.14)", "packaging"]
 
 [[package]]
 name = "cachetools"
@@ -426,7 +426,7 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
 name = "commonmark"
 version = "0.9.1"
 description = "Python parser for the CommonMark Markdown spec"
-category = "main"
+category = "dev"
 optional = false
 python-versions = "*"
 
@@ -910,8 +910,8 @@ numpy = ">=1.14.5"
 
 [[package]]
 name = "huggingface-hub"
-version = "0.8.1"
-description = "Client library to download and publish models, datasets and other repos on the huggingface.co hub"
+version = "0.5.1"
+description = "Client library to download and publish models on the huggingface.co hub"
 category = "main"
 optional = false
 python-versions = ">=3.7.0"
@@ -919,18 +919,17 @@ python-versions = ">=3.7.0"
 [package.dependencies]
 filelock = "*"
 packaging = ">=20.9"
-pyyaml = ">=5.1"
+pyyaml = "*"
 requests = "*"
 tqdm = "*"
 typing-extensions = ">=3.7.4.3"
 
 [package.extras]
-all = ["pytest", "pytest-cov", "datasets", "soundfile", "black (>=22.0,<23.0)", "isort (>=5.5.4)", "flake8 (>=3.8.3)"]
-dev = ["pytest", "pytest-cov", "datasets", "soundfile", "black (>=22.0,<23.0)", "isort (>=5.5.4)", "flake8 (>=3.8.3)"]
-fastai = ["toml", "fastai (>=2.4)", "fastcore (>=1.3.27)"]
+all = ["pytest", "datasets", "soundfile", "black (>=22.0,<23.0)", "isort (>=5.5.4)", "flake8 (>=3.8.3)"]
+dev = ["pytest", "datasets", "soundfile", "black (>=22.0,<23.0)", "isort (>=5.5.4)", "flake8 (>=3.8.3)"]
 quality = ["black (>=22.0,<23.0)", "isort (>=5.5.4)", "flake8 (>=3.8.3)"]
 tensorflow = ["tensorflow", "pydot", "graphviz"]
-testing = ["pytest", "pytest-cov", "datasets", "soundfile"]
+testing = ["pytest", "datasets", "soundfile"]
 torch = ["torch"]
 
 [[package]]
@@ -1857,7 +1856,7 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 name = "pygments"
 version = "2.12.0"
 description = "Pygments is a syntax highlighting package written in Python."
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=3.6"
 
@@ -2050,7 +2049,7 @@ tests = ["pytest (>=4.6)", "coverage (>=6.0.0)", "pytest-cov", "pytest-localserv
 name = "rich"
 version = "12.5.1"
 description = "Render rich text, tables, progress bars, syntax highlighting, markdown and more to the terminal"
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=3.6.3,<4.0.0"
 
@@ -2887,7 +2886,7 @@ testing = ["pytest (>=6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytest-
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "c4742e5760d93487af03c7616c3616577226b95d120f57b21d480670ba90ba3a"
+content-hash = "ec9b236a9a3144e391c85e3072b6853ec1a95d313bc982697b8186673c62afa1"
 
 [metadata.files]
 aiohttp = [
@@ -3086,7 +3085,10 @@ blinker = [
 blis = []
 boto3 = []
 botocore = []
-cached-path = []
+cached-path = [
+    {file = "cached_path-1.1.2-py3-none-any.whl", hash = "sha256:72f570a959876a4df3c52e42dad9109d809a36e975b0c89a6d05ad9078dc16f5"},
+    {file = "cached_path-1.1.2.tar.gz", hash = "sha256:856c238b4019e7721672ac09cee59f7603b2a333f62aa7e2f5c1d902dea3a4d3"},
+]
 cachetools = [
     {file = "cachetools-5.2.0-py3-none-any.whl", hash = "sha256:f9f17d2aec496a9aa6b76f53e3b614c965223c061982d434d160f930c698a9db"},
     {file = "cachetools-5.2.0.tar.gz", hash = "sha256:6a94c6402995a99c3970cc7e4884bb60b4a8639938157eeed436098bf9831757"},
@@ -3462,8 +3464,8 @@ h5py = [
     {file = "h5py-3.7.0.tar.gz", hash = "sha256:3fcf37884383c5da64846ab510190720027dca0768def34dd8dcb659dbe5cbf3"},
 ]
 huggingface-hub = [
-    {file = "huggingface_hub-0.8.1-py3-none-any.whl", hash = "sha256:a11fb8d696a26f927833d46b7633105fd864fd92a2beb1140cbf1b2f703dedb3"},
-    {file = "huggingface_hub-0.8.1.tar.gz", hash = "sha256:75c70797da54b849f06c2cbf7ba2217250ee217230b9f65547d5db3c5bd84bb5"},
+    {file = "huggingface_hub-0.5.1-py3-none-any.whl", hash = "sha256:b9fd1f567a3fb16e73acc613e78d075d1926d4b0c5c56ba08c4f125707b50c70"},
+    {file = "huggingface_hub-0.5.1.tar.gz", hash = "sha256:d90d657dca0d6a577f640ff684a58da8e5c76258e485100e885a0e7307e2eb12"},
 ]
 hypothesis = []
 idna = [

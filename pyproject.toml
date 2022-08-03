@@ -42,7 +42,7 @@ validators = "^0.20.0"
 more-itertools = "^8.10.0"
 allennlp = "^2.9.0,!=2.9.2"
 allennlp-models = "^2.9.0,!=2.9.2"
-fastai = "^2.7.5"
+fastai = "^2.7.8"
 # Needs to be pinned to avoid this issue: https://github.com/allenai/allennlp/issues/5666
 cached-path = "1.1.2"
 

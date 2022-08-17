@@ -50,13 +50,13 @@ cached-path = "1.1.2"
 black = { extras = ["jupyter"], version = "^22.1" }
 flake8 = "^4.0.1"
 hypothesis = "^6.49.1"
-mypy = "^0.961"
+mypy = "^0.971"
 pytest = "^7.0.1"
 pytest-cov = "^3.0.0"
 coverage = "^6.3"
 codecov = "^2.1.12"
 # Required to run the demo. Streamlit installs all dev dependencies, so we stick them here.
-streamlit = "^1.9.1"
+streamlit = "^1.12.0"
 pyvis = "^0.2.1"
 
 # This configuration is adapted from: https://github.com/allenai/allennlp/blob/main/pyproject.toml

@@ -80,7 +80,7 @@ TEXT_EXAMPLES = {
 
 
 # Load and cache models (one at a time)
-@st.cache(allow_output_mutation=True, max_entries=1, ttl=3600)
+@st.cache(allow_output_mutation=True, max_entries=1)
 def load_model(model_name: str):
     return Seq2Rel(model_name)
 
@@ -98,7 +98,7 @@ def process_mentions(text: str, mentions: Tuple[str, ...]) -> str:
     ent_text = f"{matched_mentions[0]}"
     if matched_mentions[1:]:
         ent_text += (
-            f"{util.COREF_SEP_SYMBOL} {f'{util.COREF_SEP_SYMBOL} '.join(matched_mentions[1:])}"
+            f"{util.COREF_SEP_SYMBOL} {f' {util.COREF_SEP_SYMBOL} '.join(matched_mentions[1:])}"
         )
     return ent_text
 

@@ -29,22 +29,35 @@ class Seq2Rel:
 
     ```python
     from seq2rel import Seq2Rel
+    from seq2rel.common import util
 
-    # Pretrained models stored in GitHub. Downloaded and cached automatically.
-    # This model is ~500mb.
-    pretrained_model = "ade"
+    # Pretrained models are stored on GitHub and will be downloaded and cached automatically.
+    # See: https://github.com/JohnGiorgi/seq2rel/releases/tag/pretrained-models.
+    pretrained_model = "gda"
 
-    # Models are loaded via a dead-simple interface.
+    # Models are loaded via a simple interface
     seq2rel = Seq2Rel(pretrained_model)
 
-    # Extremely flexible inputs. User can provide...
+    # Flexible inputs. You can provide...
     # - a string
     # - a list of strings
     # - a text file (local path or URL)
-    input_text = "Ciprofloxacin-induced renal insufficiency in cystic fibrosis."
+    input_text = "Variations in the monoamine oxidase B (MAOB) gene are associated with Parkinson's disease (PD)."
 
-    seq2rel(input_text)
-    >>> ['ciprofloxacin @DRUG@ renal insufficiency @EFFECT@ @ADE@']
+    # Pass any of these to the model to generate the raw output
+    output = seq2rel(input_text)
+    output == ["monoamine oxidase b ; maob @GENE@ parkinson's disease ; pd @DISEASE@ @GDA@"]
+
+    # To get a more structured (and useful!) output, use the `extract_relations` function
+    extract_relations = util.extract_relations(output)
+    extract_relations == [
+        {
+            "GDA": [
+            ((("monoamine oxidase b", "maob"), "GENE"),
+            (("parkinson's disease", "pd"), "DISEASE"))
+            ]
+        }
+    ]
     ```
 
     # Parameters
@@ -76,20 +89,21 @@ class Seq2Rel:
         self._predictor = Predictor.from_archive(archive, predictor_name="seq2seq")
 
     @torch.no_grad()
-    def __call__(
-        self, inputs: Union[str, List[str]], batch_size: Optional[int] = None
-    ) -> torch.Tensor:
-        """Returns a numpy array of embeddings, one for each item in `inputs`.
+    def __call__(self, inputs: Union[str, List[str]], batch_size: Optional[int] = 32) -> List[str]:
+        """Returns a list of strings, one for each item in `inputs`.
 
         # Parameters
 
         inputs : `Union[str, List[str]]`, required
-            The input text to embed. Can be a string, list of strings, or a filepath/URL to a text
-            file with one input per line.
-        batch_size : `int`, optional
-            If given, the `inputs` will be batched before embedding.
+            The input text to extract relations from. Can be a string, list of strings, or a
+            filepath/URL to a text file with one input per line.
+        batch_size : `int`, optional, (default = `32`)
+            The batch size to use when making predictions.
+
+        # Returns:
+
+        A list of strings, containing the serialized relations extracted from the `inputs`.
         """
-        # TODO: This is ugly, clean it up.
         if isinstance(inputs, str):
             try:
                 if Path(inputs).is_file() or url(inputs):
@@ -98,9 +112,6 @@ class Seq2Rel:
                     inputs = [inputs]  # type: ignore
             except OSError:
                 inputs = [inputs]  # type: ignore
-
-        if batch_size is None:
-            batch_size = len(inputs)
 
         predicted_strings = []
         for batch in chunked(inputs, batch_size):

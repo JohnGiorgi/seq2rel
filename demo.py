@@ -113,8 +113,7 @@ st.sidebar.write(
     entity and relation extraction.
 
     1. Select a pretrained model below (it may take a few seconds to load).
-    2. Enter some text on the right, and the extracted entity mentions and relations will be visualized
-    below.
+    2. Enter some text on the right, and the extracted entity mentions and relations will be visualized below.
 
     Coreferent mentions will be seperated by a semicolon (`{util.COREF_SEP_SYMBOL}`). Hover over nodes and
     edges to see their predicted classes.

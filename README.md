@@ -1,5 +1,13 @@
 # seq2rel: A sequence-to-sequence approach for document-level relation extraction
 
+[![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/a-sequence-to-sequence-approach-for-document/joint-entity-and-relation-extraction-on-cdr)](https://paperswithcode.com/sota/joint-entity-and-relation-extraction-on-cdr?p=a-sequence-to-sequence-approach-for-document)
+[![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/a-sequence-to-sequence-approach-for-document/joint-entity-and-relation-extraction-on-gda)](https://paperswithcode.com/sota/joint-entity-and-relation-extraction-on-gda?p=a-sequence-to-sequence-approach-for-document)
+[![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/a-sequence-to-sequence-approach-for-document/joint-entity-and-relation-extraction-on-3)](https://paperswithcode.com/sota/joint-entity-and-relation-extraction-on-3?p=a-sequence-to-sequence-approach-for-document)
+[![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/a-sequence-to-sequence-approach-for-document/relation-extraction-on-gda)](https://paperswithcode.com/sota/relation-extraction-on-gda?p=a-sequence-to-sequence-approach-for-document)
+[![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/a-sequence-to-sequence-approach-for-document/relation-extraction-on-cdr)](https://paperswithcode.com/sota/relation-extraction-on-cdr?p=a-sequence-to-sequence-approach-for-document)
+
+---
+
 [![ci](https://github.com/JohnGiorgi/seq2rel/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/JohnGiorgi/seq2rel/actions/workflows/ci.yml)
 [![codecov](https://codecov.io/gh/JohnGiorgi/seq2rel/branch/main/graph/badge.svg?token=RKJ7EV4WQK)](https://codecov.io/gh/JohnGiorgi/seq2rel)
 [![Checked with mypy](http://www.mypy-lang.org/static/mypy_badge.svg)](http://mypy-lang.org/)

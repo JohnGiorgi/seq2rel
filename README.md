@@ -14,7 +14,7 @@
 ![GitHub](https://img.shields.io/github/license/JohnGiorgi/seq2rel?color=blue)
 [![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://share.streamlit.io/johngiorgi/seq2rel/main/demo.py)
 
-The corresponding code for our paper: [A sequence-to-sequence approach for document-level relation extraction](https://aclanthology.org/2022.bionlp-1.2/). Checkout our demo [here](https://share.streamlit.io/johngiorgi/seq2rel/main/demo.py)!
+The corresponding code for our paper: [A sequence-to-sequence approach for document-level relation extraction](https://aclanthology.org/2022.bionlp-1.2/). Check out our demo [here](https://share.streamlit.io/johngiorgi/seq2rel/main/demo.py)!
 
 ## Table of contents
 
@@ -28,6 +28,7 @@ The corresponding code for our paper: [A sequence-to-sequence approach for docum
     - [Preparing a dataset](#preparing-a-dataset)
     - [Training](#training)
     - [Inference](#inference)
+      - [Running the demo locally](#running-the-demo-locally)
     - [Reproducing results](#reproducing-results)
   - [Citing](#citing)
 
@@ -37,6 +38,12 @@ The easiest way to get started is to follow along with one of our [notebooks](no
 
 - Training your own model [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnGiorgi/seq2rel/blob/main/notebooks/training.ipynb)
 - Reproducing results [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/JohnGiorgi/seq2rel/blob/main/notebooks/reproducing_results.ipynb)
+
+Or to open the demo:
+
+[![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://share.streamlit.io/johngiorgi/seq2rel/main/demo.py)
+
+> __Note__: Unfortunately, the demo is liable to crash as the free resources provided by Streamlit are insufficient to run the model. To run the demo locally, please follow the [instructions below](#running-the-demo-locally).
 
 ## Installation
 
@@ -73,7 +80,7 @@ poetry install
 
 ### Preparing a dataset
 
-Datasets are tab-separated files, where each example is contained on its own line. The first column contains the text, and the second column contains the relations. Relations themselves must be serialized to strings.
+Datasets are tab-separated files where each example is contained on its own line. The first column contains the text, and the second column contains the relations. Relations themselves must be serialized to strings.
 
 Take the following example, which expresses a _gene-disease association_ (`"@GDA@"`) between _ESR1_ (`"@GENE@"`) and _schizophrenia_ (`"@DISEASE@`")
 
@@ -147,6 +154,14 @@ See the list of available `PRETRAINED_MODELS` in [seq2rel/seq2rel.py](seq2rel/se
 
 ```bash
 python -c "from seq2rel import PRETRAINED_MODELS ; print(list(PRETRAINED_MODELS.keys()))"
+```
+
+#### Running the demo locally
+
+To run the demo locally, you will need to additionally install `streamlit` and `pyvis` (see [here](https://github.com/JohnGiorgi/seq2rel/blob/f757d6cc9da87ac527a9485d54843b6a5739657f/pyproject.toml#L58)), then
+
+```bash
+streamlit run demo.py
 ```
 
 ### Reproducing results

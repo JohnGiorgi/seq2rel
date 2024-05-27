@@ -3,7 +3,7 @@
 // The pretrained model to use as encoder. This is a reasonable default for biomedical text.
 // Should be a registered name in the Transformers library (see https://huggingface.co/models) 
 // OR a path on disk to a serialized transformer model.
-local model_name = "microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract-fulltext";
+local model_name = "microsoft/BiomedNLP-BiomedBERT-base-uncased-abstract-fulltext";
 
 // These are reasonable defaults.
 local max_length = 16;        // Max length of input text

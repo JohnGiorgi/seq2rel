@@ -36,7 +36,7 @@ classifiers = [
 exclude = ["tests", "test_fixtures", "training_config"]
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = "^3.8,<3.10"
 typer = { extras = ["all"], version = "^0.4.0" }
 validators = "^0.20.0"
 more-itertools = "^8.10.0"
@@ -58,6 +58,7 @@ codecov = "^2.1.12"
 # Required to run the demo. Streamlit installs all dev dependencies, so we stick them here.
 streamlit = "^1.12.0"
 pyvis = "^0.2.1"
+altair = "^4.0.0"
 
 # This configuration is adapted from: https://github.com/allenai/allennlp/blob/main/pyproject.toml
 [tool.black]

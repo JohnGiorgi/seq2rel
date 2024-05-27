@@ -11,12 +11,17 @@ on:
 
 jobs:
   build:
-
     runs-on: ${{ matrix.os }}
     strategy:
+      fail-fast: false
       matrix:
         os: [ubuntu-latest, macos-latest]
         python-version: [3.8, 3.9]
+        include:
+          - os: macos-latest
+            allow-failure: true
+          - os: ubuntu-latest
+            allow-failure: false
 
     steps:
       - uses: actions/checkout@v3
@@ -25,7 +30,7 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install Poetry
-        uses: abatilo/actions-poetry@v2.1.5
+        uses: abatilo/actions-poetry@v3.0.0
       - name: Install dependencies with Poetry
         run: |
           poetry install

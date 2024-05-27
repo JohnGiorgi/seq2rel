@@ -1,15 +1,23 @@
+import logging
+import os
+import shutil
+from os import PathLike
 from pathlib import Path
-from typing import Any, List, Optional, Union
+from typing import Any, Dict, List, Optional, Union
 
 import torch
 from allennlp.common import util as common_util
 from allennlp.common.file_utils import cached_path
-from allennlp.models.archival import load_archive
+from allennlp.common.meta import Meta
+from allennlp.common.params import Params
+from allennlp.models import archival
 from allennlp.predictors import Predictor
 from more_itertools import chunked
 from validators.url import url
 
 from seq2rel.common.util import sanitize_text
+
+logger = logging.getLogger(__name__)
 
 PRETRAINED_MODELS = {
     "cdr": "https://github.com/JohnGiorgi/seq2rel/releases/download/pretrained-models/cdr.tar.gz",
@@ -20,6 +28,103 @@ PRETRAINED_MODELS = {
     "dgm_hints": "https://github.com/JohnGiorgi/seq2rel/releases/download/pretrained-models/dgm_hints.tar.gz",
     "docred": "https://github.com/JohnGiorgi/seq2rel/releases/download/pretrained-models/docred.tar.gz",
 }
+
+# Needed strictly to rename
+# microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract-fulltext with
+# microsoft/BiomedNLP-BiomedBERT-base-uncased-abstract-fulltext
+# otherwise identical to allennlp.models.archival.load_archive
+def load_archive(
+    archive_file: Union[str, PathLike],
+    cuda_device: int = -1,
+    overrides: Union[str, Dict[str, Any]] = "",
+    weights_file: str = None,
+) -> archival.Archive:
+    """
+    Instantiates an Archive from an archived `tar.gz` file.
+
+    # Parameters
+
+    archive_file : `Union[str, PathLike]`
+        The archive file to load the model from.
+    cuda_device : `int`, optional (default = `-1`)
+        If `cuda_device` is >= 0, the model will be loaded onto the
+        corresponding GPU. Otherwise it will be loaded onto the CPU.
+    overrides : `Union[str, Dict[str, Any]]`, optional (default = `""`)
+        JSON overrides to apply to the unarchived `Params` object.
+    weights_file : `str`, optional (default = `None`)
+        The weights file to use.  If unspecified, weights.th in the archive_file will be used.
+    """
+    # redirect to the cache, if necessary
+    resolved_archive_file = cached_path(archive_file)
+
+    if resolved_archive_file == archive_file:
+        logger.info(f"loading archive file {archive_file}")
+    else:
+        logger.info(f"loading archive file {archive_file} from cache at {resolved_archive_file}")
+
+    meta: Optional[Meta] = None
+
+    tempdir = None
+    try:
+        if os.path.isdir(resolved_archive_file):
+            serialization_dir = resolved_archive_file
+        else:
+            with archival.extracted_archive(resolved_archive_file, cleanup=False) as tempdir:
+                serialization_dir = tempdir
+
+        if weights_file:
+            weights_path = weights_file
+        else:
+            weights_path = archival.get_weights_path(serialization_dir)
+
+        # Load config
+        config = Params.from_file(os.path.join(serialization_dir, archival.CONFIG_NAME), overrides)
+
+        # Rename
+        # microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract-fulltext with
+        # microsoft/BiomedNLP-BiomedBERT-base-uncased-abstract-fulltext
+        def rename_pretrained_model(config: Params) -> Params:
+            for key, value in config.items():
+                if isinstance(value, dict):
+                    rename_pretrained_model(value)
+                else:
+                    if value == "microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract-fulltext":
+                        config[
+                            key
+                        ] = "microsoft/BiomedNLP-BiomedBERT-base-uncased-abstract-fulltext"
+
+        config = config.as_dict()
+        rename_pretrained_model(config)
+        config = Params(config)
+
+        # Instantiate model and dataset readers. Use a duplicate of the config, as it will get consumed.
+        dataset_reader, validation_dataset_reader = archival._load_dataset_readers(
+            config.duplicate(), serialization_dir
+        )
+        model = archival._load_model(
+            config.duplicate(), weights_path, serialization_dir, cuda_device
+        )
+
+        # Load meta.
+        meta_path = os.path.join(serialization_dir, archival.META_NAME)
+        if os.path.exists(meta_path):
+            meta = Meta.from_path(meta_path)
+    finally:
+        if tempdir is not None:
+            logger.info(f"removing temporary unarchived model dir at {tempdir}")
+            shutil.rmtree(tempdir, ignore_errors=True)
+
+    # Check version compatibility.
+    if meta is not None:
+        archival._check_version_compatibility(archive_file, meta)
+
+    return archival.Archive(
+        model=model,
+        config=config,
+        dataset_reader=dataset_reader,
+        validation_dataset_reader=validation_dataset_reader,
+        meta=meta,
+    )
 
 
 class Seq2Rel:
@@ -82,6 +187,7 @@ class Seq2Rel:
         overrides = {
             "model.source_embedder.token_embedders.tokens.load_weights": False,
         }
+
         # Allow user to update these with kwargs.
         if "overrides" in kwargs:
             overrides.update(kwargs.pop("overrides"))

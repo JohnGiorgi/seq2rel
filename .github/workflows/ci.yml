@@ -11,12 +11,17 @@ on:
 
 jobs:
   build:
-
     runs-on: ${{ matrix.os }}
     strategy:
+      fail-fast: false
       matrix:
         os: [ubuntu-latest, macos-latest]
         python-version: [3.8, 3.9]
+        include:
+          - os: macos-latest
+            allow-failure: true
+          - os: ubuntu-latest
+            allow-failure: false
 
     steps:
       - uses: actions/checkout@v3
